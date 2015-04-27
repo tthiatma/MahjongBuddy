@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head
+{
+    <script src="~/Scripts/jquery.signalR-2.0.0.min.js"></script>
+    @*<script src="/signalr/hubs"></script>*@
+}
+<div ng-controller="MahjongController">
+    <div id="WaitingRoom" class="container" ng-hide="gameIsReady">
+        <div class="row">            
+            <div class="col-lg-3"><input type="text" id="usernameTB" class="form-control" /></div>
+            <div class="col-lg-1"><input type="button" id="join" value="join" ng-disabled="isDisonnected" ng-click="join()" class="btn-primary"></div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6"><label id="gameStatus"></label></div>
+        </div>
+    </div><!--end of Waiting Room-->
+
+    <div id="GameRoom" class="container" ng-show="gameIsReady">
+        <div id="TopPlayer" class="row">
+            <div class="col-lg-12">
+                <div class="container">
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                    </div>
+                </div>
+                Current Turn: <label id="isMyTurn">{{isMyturn}}</label><br />
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="LeftPlayer" class="col-lg-3"></div>
+            <div id="TheBoard" class="col-lg-3"></div>
+            <div id="RightPlayer" class="col-lg-3"></div>
+        </div>
+
+
+        <div id="BottomPlayer" class="row">
+            <div class="col-lg-12"></div>
+        </div>
+       
+        My wind: <label id="playerWind">{{currentPlayerWind}}</label><br />
+
+        <input type="button" id="flower" value="flower" class="btn-primary" ng-click="fnPlayerMove('flower', 0)">
+        <input type="button" id="go" value="go" class="btn-primary" ng-click="fnPlayerMove('go' , 0)">
+        <input type="button" id="pick" value="pick" class="btn-primary" ng-click="fnPlayerMove('pick', 0)">
+        <input type="button" id="throw" value="throw" class="btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
+        <input type="button" id="chow" value="chow" class="btn-primary" ng-click="fnPlayerMove('chow', 0)">
+        <input type="button" id="pong" value="pong" class="btn-primary" ng-click="fnPlayerMove('pong', 0)">
+        <input type="button" id="kong" value="kong" class="btn-primary" ng-click="fnPlayerMove('kong', 0)">
+        <input type="button" id="win" value="win" class="btn-primary" ng-click="fnPlayerMove('win', 0)">
+
+        <div id="playerTiles">
+
+            <strong>Active</strong> - {{selectedTileId}}
+            <div id="activeTiles">
+                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
+                    <div ng-click="fnSelectTile(tile.Id)">{{tile.Name}}</div>
+                </div>
+            </div>            
+            <br />
+            <strong>My Discarded Tiles</strong>
+            <div id="myGraveyardTiles">
+                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + currentUserId}: true">
+                    {{tile.Name}}
+                </div>
+            </div>
+            <br />
+            <strong>Discarded Tiles</strong>
+            <div id="discardedTiles">
+                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true">
+                    {{tile.Name}}
+                </div>
+            </div>
+            <div id="warningMessage">
+                {{warningMessage}}
+            </div>
+        </div>
+    </div><!--end of GameRoom-->
+</div>

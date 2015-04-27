@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahjongBuddy", "MahjongBuddy\MahjongBuddy.csproj", "{6624971D-29E1-45EB-945F-F32029F32E1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahjongBuddy.Tests", "MahjongBuddy.Tests\MahjongBuddy.Tests.csproj", "{E2B06BD3-1AED-4EF4-B149-C388D0F43EBA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6624971D-29E1-45EB-945F-F32029F32E1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6624971D-29E1-45EB-945F-F32029F32E1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6624971D-29E1-45EB-945F-F32029F32E1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6624971D-29E1-45EB-945F-F32029F32E1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2B06BD3-1AED-4EF4-B149-C388D0F43EBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2B06BD3-1AED-4EF4-B149-C388D0F43EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2B06BD3-1AED-4EF4-B149-C388D0F43EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2B06BD3-1AED-4EF4-B149-C388D0F43EBA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
