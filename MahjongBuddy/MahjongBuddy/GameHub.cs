@@ -89,11 +89,13 @@ namespace MahjongBuddy
         {
             var game = GameState.Instance.FindGameByGroupName(group);
             bool isValidCommand = false;
+            bool switchTurn = false;
             string invalidMessage = "shit went wrong...";
             switch (command)
             {
                 case "flower":
                     isValidCommand = CommandFlower(game);
+                    switchTurn = true;
                     invalidMessage = "Dude u got no flower";
                     break;
                 
@@ -109,16 +111,19 @@ namespace MahjongBuddy
                 case "throw":
                     isValidCommand = CommandThrow(game, tileId);
                     invalidMessage = "stop throwing!";
-                    break;
+                    switchTurn = true;
+                   break;
 
                 case "chow":
                     isValidCommand = CommandChow(game);
                     invalidMessage = "nothing to chow --'";
+                    switchTurn = true;
                     break;
 
                 case "pong":
                     isValidCommand = CommandPong(game);
                     invalidMessage = "nothing to pong wth";
+                    switchTurn = true;
                     break;
 
                 case "kong":
@@ -133,8 +138,11 @@ namespace MahjongBuddy
             }
             if (isValidCommand)
             {
-                SetNextPLayerTurn(game);
-                Clients.Group(group).updateGame(game);
+                if (switchTurn)
+                {
+                    SetNextPLayerTurn(game);                
+                }
+                Clients.Group(group).updateGame(game);           
             }
             else
             {
@@ -149,7 +157,8 @@ namespace MahjongBuddy
             var player = GameState.Instance.GetPlayer(userName);
 
             if (player != null)
-            {
+            {                
+                SetPlayerCanPickTile(game, player.ConnectionId, false);
                 var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
                 newTileForPlayer.Owner = player.ConnectionId;
             }
@@ -449,6 +458,26 @@ namespace MahjongBuddy
             }
         }
 
+        private void SetPlayerCanPickTile(Game game, string conId, bool flag)
+        {
+            if (game.Player1.ConnectionId == conId)
+            {
+                game.Player1.CanPickTile = flag;
+            }
+            else if (game.Player2.ConnectionId == conId)
+            {
+                game.Player2.CanPickTile = flag;
+            }
+            else if (game.Player3.ConnectionId == conId)
+            {
+                game.Player3.CanPickTile = flag;
+            }
+            else if (game.Player4.ConnectionId == conId)
+            {
+                game.Player4.CanPickTile = flag;
+            }
+        }
+
         private void SetNextPLayerTurn(Game game)
         {
             if (game != null)
@@ -456,18 +485,22 @@ namespace MahjongBuddy
                 if (game.WhosTurn == game.Player1.ConnectionId)
                 {
                     game.WhosTurn = game.Player2.ConnectionId;
+                    game.Player2.CanPickTile = true;
                 }             
                 else if (game.WhosTurn == game.Player2.ConnectionId)
                 {
                     game.WhosTurn = game.Player3.ConnectionId;
+                    game.Player3.CanPickTile = true;
                 }                
                 else if (game.WhosTurn == game.Player3.ConnectionId)
                 {
                     game.WhosTurn = game.Player4.ConnectionId;
+                    game.Player4.CanPickTile = true;
                 }
                 else if (game.WhosTurn == game.Player4.ConnectionId)
                 {
                     game.WhosTurn = game.Player1.ConnectionId;
+                    game.Player1.CanPickTile = true;
                 }
             }
         }

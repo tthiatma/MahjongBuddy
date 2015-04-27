@@ -30,7 +30,8 @@
                     <div class="row">
                     </div>
                 </div>
-                Current Turn: <label id="isMyTurn">{{isMyturn}}</label><br />
+                Is MyTurn: <label id="isMyTurn">{{isMyturn}}</label><br />
+                Has Picked Tile = 
             </div>
         </div>
 
@@ -45,9 +46,9 @@
             <div class="col-lg-12"></div>
         </div>
        
-        My wind: <label id="playerWind">{{currentPlayerWind}}</label><br />
+        My wind: <label id="playerWind"></label><br />
 
-        <input type="button" id="flower" value="flower" class="btn-primary" ng-click="fnPlayerMove('flower', 0)">
+        <input type="button" id="flower" value="flower" class="btn-primary"  ng-click="fnPlayerMove('flower', 0)">
         <input type="button" id="go" value="go" class="btn-primary" ng-click="fnPlayerMove('go' , 0)">
         <input type="button" id="pick" value="pick" class="btn-primary" ng-click="fnPlayerMove('pick', 0)">
         <input type="button" id="throw" value="throw" class="btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">

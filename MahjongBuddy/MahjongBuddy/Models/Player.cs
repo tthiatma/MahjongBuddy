@@ -22,6 +22,7 @@ namespace MahjongBuddy.Models
         public string Hash { get; set; }
         public string Group { get; set; }
         public bool IsPlaying { get; set; }
+        public bool CanPickTile { get; set; }
         public WindDirection Wind { get; set; }
         public List<int> Matches { get; set; }
         public Point CurrentPoint { get; set; }
