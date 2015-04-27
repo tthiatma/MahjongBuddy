@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 Is MyTurn: <label id="isMyTurn">{{isMyturn}}</label><br />
-                Has Picked Tile = 
+                Can Pick Tile ={{currentPlayer.CanPickTile}} <br/>
             </div>
         </div>
 
@@ -46,20 +46,20 @@
             <div class="col-lg-12"></div>
         </div>
        
-        My wind: <label id="playerWind"></label><br />
+        My wind: <label id="playerWind">{{currentPlayerWind}}</label><br />
 
-        <input type="button" id="flower" value="flower" class="btn-primary"  ng-click="fnPlayerMove('flower', 0)">
-        <input type="button" id="go" value="go" class="btn-primary" ng-click="fnPlayerMove('go' , 0)">
-        <input type="button" id="pick" value="pick" class="btn-primary" ng-click="fnPlayerMove('pick', 0)">
-        <input type="button" id="throw" value="throw" class="btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
-        <input type="button" id="chow" value="chow" class="btn-primary" ng-click="fnPlayerMove('chow', 0)">
-        <input type="button" id="pong" value="pong" class="btn-primary" ng-click="fnPlayerMove('pong', 0)">
-        <input type="button" id="kong" value="kong" class="btn-primary" ng-click="fnPlayerMove('kong', 0)">
-        <input type="button" id="win" value="win" class="btn-primary" ng-click="fnPlayerMove('win', 0)">
+        <input type="button" ng-disabled="!isMyturn" id=" flower" value="flower" class="btn-primary" ng-click="fnPlayerMove('flower', 0)">
+        <input type="button" ng-disabled="!isMyturn" id=" go" value="go" class="btn-primary" ng-click="fnPlayerMove('go' , 0)">
+        <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn-primary" ng-click="fnPlayerMove('pick', 0)">
+        <input type="button" ng-disabled="!isMyturn" id=" throw" value="throw" class="btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
+        <input type="button" ng-disabled="!isMyturn" id=" chow" value="chow" class="btn-primary" ng-click="fnPlayerMove('chow', 0)">
+        <input type="button" ng-disabled="!isMyturn" id=" pong" value="pong" class="btn-primary" ng-click="fnPlayerMove('pong', 0)">
+        <input type="button" ng-disabled="!isMyturn" id=" kong" value="kong" class="btn-primary" ng-click="fnPlayerMove('kong', 0)">
+        <input type="button" ng-disabled="!isMyturn" id=" win" value="win" class="btn-primary" ng-click="fnPlayerMove('win', 0)">
 
         <div id="playerTiles">
 
-            <strong>Active</strong> - {{selectedTileId}}
+            <strong>Active</strong><br/> SelectedTileId = {{selectedTileId}}
             <div id="activeTiles">
                 <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
                     <div ng-click="fnSelectTile(tile.Id)">{{tile.Name}}</div>
@@ -73,15 +73,17 @@
                 </div>
             </div>
             <br />
+
             <strong>Discarded Tiles</strong>
             <div id="discardedTiles">
                 <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true">
                     {{tile.Name}}
                 </div>
             </div>
-            <div id="warningMessage">
-                {{warningMessage}}
-            </div>
+            <br />
+
+            <strong>Message</strong>
+            <div id="warningMessage">{{warningMessage}}</div>
         </div>
     </div><!--end of GameRoom-->
 </div>

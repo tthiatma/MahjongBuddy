@@ -40,6 +40,8 @@
 
         clientPushHubProxy.on('updateGame', function (game) {
             $scope.game = game;
+            $scope.currentPlayer = mjService.getCurrentPlayer($scope.game, $scope.currentUserId);
+            $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
             $scope.isMyturn = ($scope.currentUserId == game.WhosTurn);
         });
 
