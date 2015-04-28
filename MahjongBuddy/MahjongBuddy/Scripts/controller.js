@@ -4,7 +4,6 @@
         $scope.gameIsReady = false;
         $scope.selectedTileId = 0;
         $scope.isMyturn = false;
-
         var startup = function(conId){
             $scope.isDisonnected = !(conId != undefined);
             $scope.currentUserId = conId;
@@ -43,6 +42,7 @@
             $scope.currentPlayer = mjService.getCurrentPlayer($scope.game, $scope.currentUserId);
             $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
             $scope.isMyturn = ($scope.currentUserId == game.WhosTurn);
+            $scope.lastTile = game.LastTile;
         });
 
         clientPushHubProxy.on('alertUser', function (msg) {

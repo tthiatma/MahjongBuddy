@@ -59,7 +59,23 @@
 
         <div id="playerTiles">
 
-            <strong>Active</strong><br/> SelectedTileId = {{selectedTileId}}
+            <strong>Last Tile</strong>
+            <div id="lastTile">
+                {{lastTile.Name}}
+            </div>
+            <br />
+
+
+            <strong>Discarded Tiles</strong>
+            <div id="discardedTiles">
+                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true">
+                    {{tile.Name}}
+                </div>
+            </div>
+            <br />
+
+            SelectedTileId = {{selectedTileId}}<br /> 
+            <strong>Active</strong>
             <div id="activeTiles">
                 <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
                     <div ng-click="fnSelectTile(tile.Id)">{{tile.Name}}</div>
@@ -69,14 +85,6 @@
             <strong>My Discarded Tiles</strong>
             <div id="myGraveyardTiles">
                 <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + currentUserId}: true">
-                    {{tile.Name}}
-                </div>
-            </div>
-            <br />
-
-            <strong>Discarded Tiles</strong>
-            <div id="discardedTiles">
-                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true">
                     {{tile.Name}}
                 </div>
             </div>
