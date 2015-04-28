@@ -63,6 +63,7 @@ namespace MahjongBuddy
                     game = GameState.Instance.CreateGame(player, player2, player3, player4, player.Group);
                     game.WhosTurn = player.ConnectionId;
                     game.GameCount = 1;
+                    game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
                     game.Board.Tiles.Shuffle();
                     DistributeTiles(game.Board.Tiles, player, player2, player3, player4);
@@ -161,6 +162,7 @@ namespace MahjongBuddy
                 SetPlayerCanPickTile(game, player.ConnectionId, false);
                 var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
                 newTileForPlayer.Owner = player.ConnectionId;
+                newTileForPlayer.Status = TileStatus.JustPicked;
             }
             return true;
         }
@@ -174,7 +176,10 @@ namespace MahjongBuddy
             {
                 var tileToThrow = game.Board.Tiles.Where(t => t.Id == tileId).First();
                 tileToThrow.Owner = "graveyard";
+                tileToThrow.Status = TileStatus.BoardGraveyard;
+                tileToThrow.Counter = game.TileCounter;
                 game.LastTile = tileToThrow;
+                game.TileCounter++;
 
                 return true;
             }
@@ -403,11 +408,13 @@ namespace MahjongBuddy
             {
                 var tileToGraveyard = game.Board.Tiles.Where(t => t.Id == f.Id).First();
                 tileToGraveyard.Owner = "graveyard-" + playerConnectionId;
+                tileToGraveyard.Status = TileStatus.UserGraveyard;
 
                 if (replaceTile)
                 {
                     var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
                     newTileForPlayer.Owner = playerConnectionId;
+                    newTileForPlayer.Status = TileStatus.UserActive;
                 }
             }
         }

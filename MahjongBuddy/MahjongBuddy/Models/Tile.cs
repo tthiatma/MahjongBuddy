@@ -7,12 +7,22 @@ namespace MahjongBuddy.Models
 {
     public class Tile
     {
-         public int Id { get; set; }
-         public TileType Type { get; set; }
-         public TileValue Value { get; set; }
-         public string Image { get; set; }
-         public string Name { get; set; }
-         public string Owner { get; set; }
+        public int Id { get; set; }
+        public TileType Type { get; set; }
+        public TileValue Value { get; set; }
+        public TileStatus Status { get; set; }         
+        public string Image { get; set; }
+        public string Name { get; set; }
+        public string Owner { get; set; }
+        public int Counter { get; set; }
+    }
+
+    public enum TileStatus
+    {
+        JustPicked,
+        UserGraveyard,
+        UserActive,
+        BoardGraveyard
     }
 
     public enum TileType

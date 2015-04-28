@@ -70,7 +70,7 @@
 
             <strong>Discarded Tiles</strong>
             <div id="discardedTiles">
-                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true">
+                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true | orderBy: 'Counter'">
                     <img ng-src="{{tile.Image}}" style="float:left" />
                 </div>
             </div>
