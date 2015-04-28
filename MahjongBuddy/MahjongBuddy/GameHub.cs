@@ -98,9 +98,10 @@ namespace MahjongBuddy
                     switchTurn = true;
                     invalidMessage = "Dude u got no flower";
                     break;
-                
-                case "go":
-                    isValidCommand = CommandGo(game);
+
+                case "noflower":
+                    isValidCommand = CommandNoFlower(game);
+                    switchTurn = true;
                     break;
 
                 case "pick":
@@ -110,14 +111,13 @@ namespace MahjongBuddy
 
                 case "throw":
                     isValidCommand = CommandThrow(game, tileId);
-                    invalidMessage = "stop throwing!";
+                    invalidMessage = "pick a tile first dammit!";
                     switchTurn = true;
                    break;
 
                 case "chow":
                     isValidCommand = CommandChow(game);
                     invalidMessage = "nothing to chow --'";
-                    switchTurn = true;
                     break;
 
                 case "pong":
@@ -175,9 +175,6 @@ namespace MahjongBuddy
                 var tileToThrow = game.Board.Tiles.Where(t => t.Id == tileId).First();
                 tileToThrow.Owner = "graveyard";
                 game.LastTile = tileToThrow;
-
-                var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
-                newTileForPlayer.Owner = player.ConnectionId;
 
                 return true;
             }
@@ -386,10 +383,7 @@ namespace MahjongBuddy
 
                 if (playerTilesFlower.Count() > 0)
                 {
-                    CommandTileToPlayerGraveyard(game, playerTilesFlower, player.ConnectionId);
-                    var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
-                    newTileForPlayer.Owner = player.ConnectionId;
-
+                    CommandTileToPlayerGraveyard(game, playerTilesFlower, player.ConnectionId, replaceTile : true);
                     return true;
                 }
                 else
@@ -403,26 +397,24 @@ namespace MahjongBuddy
             }
         }
 
-        private void CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, string playerConnectionId)
+        private void CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, string playerConnectionId, bool replaceTile = false)
         { 
             foreach(var f in tiles)
             {
                 var tileToGraveyard = game.Board.Tiles.Where(t => t.Id == f.Id).First();
                 tileToGraveyard.Owner = "graveyard-" + playerConnectionId;
+
+                if (replaceTile)
+                {
+                    var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
+                    newTileForPlayer.Owner = playerConnectionId;
+                }
             }
         }
 
-        private bool CommandGo(Game game)
+        private bool CommandNoFlower(Game game)
         {
-            //this is just to let go of the turn;
             return true;
-            //var userName = Clients.Caller.name;
-            //var player = GameState.Instance.GetPlayer(userName);
-
-            //if (player != null)
-            //{
-
-            //}
         }
 
         private void SetPlayerWinds(Game game)

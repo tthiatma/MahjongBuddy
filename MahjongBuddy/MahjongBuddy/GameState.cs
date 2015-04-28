@@ -73,15 +73,19 @@ namespace MahjongBuddy
             _games[group] = game;
 
             player1.IsPlaying = true;
+            player1.CanDoNoFlower = true;
             player1.Group = group;
 
             player2.IsPlaying = true;
+            player2.CanDoNoFlower = true;
             player2.Group = group;
 
             player3.IsPlaying = true;
+            player3.CanDoNoFlower = true;
             player3.Group = group;
             
             player4.IsPlaying = true;
+            player4.CanDoNoFlower = true;
             player4.Group = group;
 
             return game;
