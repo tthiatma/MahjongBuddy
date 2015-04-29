@@ -96,7 +96,6 @@ namespace MahjongBuddy
             {
                 case "flower":
                     isValidCommand = CommandFlower(game);
-                    switchTurn = true;
                     invalidMessage = "Dude u got no flower";
                     break;
 
@@ -124,7 +123,6 @@ namespace MahjongBuddy
                 case "pong":
                     isValidCommand = CommandPong(game);
                     invalidMessage = "nothing to pong wth";
-                    switchTurn = true;
                     break;
 
                 case "kong":
