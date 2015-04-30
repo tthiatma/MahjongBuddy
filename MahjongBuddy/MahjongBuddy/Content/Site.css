@@ -68,6 +68,7 @@ textarea {
     -ms-transform: rotate(90deg);
     -o-transform: rotate(90deg);
     transform: rotate(90deg);
+    transform-origin: top left;
 }
 .rotateMinus90 {
     -webkit-transform: rotate(-90deg);
@@ -75,16 +76,20 @@ textarea {
     -ms-transform: rotate(-90deg);
     -o-transform: rotate(-90deg);
     transform: rotate(-90deg);
-}
-.tileHorizontal {
-    margin: 0 -100% 0 -100%;
-    overflow:hidden
+    transform-origin: top right;
 }
 .tileHorizontalContainer {
     width:44px;
     float:left;
 }
-.tileVertical {
+.tileHorizontal {
+    margin: 0 -100% 0 -100%;
+    overflow:hidden
+}
+.tileVerticalContainer {
     height:44px;
+}
+.tileVertical {
     margin: -100% 0 -100% 0;
+    transform-origin: 100% 100%;
 }

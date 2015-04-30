@@ -10,12 +10,16 @@
 }
 <div ng-controller="MahjongController">
     <div id="WaitingRoom" class="container" ng-hide="gameIsReady">
-        <div class="row">            
+        <div class="row">       
+            <div class="col-md-5"></div>     
             <div class="col-md-1"><input type="text" id="usernameTB" class="form-control" /></div>
             <div class="col-md-1"><input type="button" id="join" value="join" ng-disabled="isDisonnected" ng-click="join()" class="btn-primary"></div>
+            <div class="col-md-5"></div>
         </div>
         <div class="row">
+            <div class="col-md-2"></div>
             <div class="col-md-8"><label id="gameStatus"></label></div>
+            <div class="col-md-2"></div>
         </div>
     </div><!--end of Waiting Room-->
 
@@ -23,8 +27,8 @@
 
     <!--start for Top Player-->
         <div id="TopPlayer" class="row">
-            <div class="col-md-3" style="display:inline-block"></div>
-            <div class="col-md-6" style="text-align: center">
+            <div class="col-md-1" style="display:inline-block"></div>
+            <div class="col-md-8" style="text-align: center">
                 <div class="row">
                     Player: {{topPlayer.Name}}
                 </div>
@@ -45,56 +49,56 @@
         </div>
     <!--end of Top Player-->
 
-    <div style="clear:both"></div>
-    
-        <div class="col-md-12">
-    <!--start for Left Player-->
-            <div id="LeftPlayer" class="col-md-3">
+        <div id="MidSection" class="row">
 
-                <div class="col-md-1 rotate90"> Player Name = {{leftPlayer.Name}}</div>
+            <!--start for Left Player-->
+                <div id="LeftPlayer" class="col-md-3">
 
-                <div class="col-md-1">
-                    <div class="tileVertical rotate90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + leftPlayer.ConnectionId}: true">
-                       <img ng-src="{{tile.Image}}" />
+                    <div class="col-md-1 rotate90"> Player Name = {{leftPlayer.Name}}</div>
+
+                    <div class="col-md-1">
+                        <div class=" tileVerticalContainer rotate90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + leftPlayer.ConnectionId}: true">
+                            <img class="tileVertical" ng-src="{{tile.Image}}" />
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="tileVerticalContainer rotate90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : leftPlayer.ConnectionId}: true">
+                            <img class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-1">
-                    <div class="tileVertical rotate90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : leftPlayer.ConnectionId}: true">
-                        <img src="~/Content/images/tiles/64px/face-down-64px.png" />
+            <!--end of LeftPlayer-->
+
+            <!--start for Board-->
+                <div id="TheBoard" class="col-md-6">
+                    <strong>Discarded Tiles</strong>
+                    <div id="discardedTiles">
+                        <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true | orderBy: 'Counter'">
+                            <img class="tileHorizontal" ng-src="{{tile.Image}}" />
+                        </div>
                     </div>
                 </div>
-            </div>
-    <!--end of LeftPlayer-->
+            <!--end of Board-->
 
-    <!--start for Board-->
-            <div id="TheBoard" class="col-md-6">
-                <strong>Discarded Tiles</strong>
-                <div id="discardedTiles">
-                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true | orderBy: 'Counter'">
-                        <img class="tileHorizontal" ng-src="{{tile.Image}}" />
+            <!--start for Right Player-->
+                <div id="RightPlayer" class="col-md-3">
+                    <div class="col-md-1">
+                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : rightPlayer.ConnectionId}: true">
+                            <img class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
+                        </div>
                     </div>
-                </div>
-            </div>
-    <!--end of Board-->
 
-    <!--start for Right Player-->
-            <div id="RightPlayer" class="col-md-3">
-                <div class="col-md-1">
-                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : rightPlayer.ConnectionId}: true">
-                        <div class="tileVertical rotateMinus90"><img src="~/Content/images/tiles/64px/face-down-64px.png" /></div>
+                    <div class="col-md-1">
+                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + rightPlayer.ConnectionId}: true">
+                            <img class="tileVertical" ng-src="{{tile.Image}}" />
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-md-1">
-                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + rightPlayer.ConnectionId}: true">
-                        <div class="tileVertical rotateMinus90"><img ng-src="{{tile.Image}}" /></div>
-                    </div>
+                    <div class="col-md-1 rotateMinus90"> Player Name = {{rightPlayer.Name}}</div>
                 </div>
-
-                <div class="col-md-1 rotateMinus90"> Player Name = {{rightPlayer.Name}}</div>
-            </div>
+            <!--end of Right Player-->
         </div>
-    <!--end of Right Player-->
+
 
     <!--start for Main Player-->
         <div class="col-md-1" style="display:inline-block"></div>
