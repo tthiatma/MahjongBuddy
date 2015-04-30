@@ -212,6 +212,14 @@
     <Content Include="Content\images\tiles\64px\dragon\dragon-green.png" />
     <Content Include="Content\images\tiles\64px\dragon\dragon-haku.png" />
     <Content Include="Content\images\tiles\64px\face-down-64px.png" />
+    <Content Include="Content\images\tiles\64px\flower\flower1.png" />
+    <Content Include="Content\images\tiles\64px\flower\flower1a.png" />
+    <Content Include="Content\images\tiles\64px\flower\flower2.png" />
+    <Content Include="Content\images\tiles\64px\flower\flower2b.png" />
+    <Content Include="Content\images\tiles\64px\flower\flower3.png" />
+    <Content Include="Content\images\tiles\64px\flower\flower3c.png" />
+    <Content Include="Content\images\tiles\64px\flower\flower4.png" />
+    <Content Include="Content\images\tiles\64px\flower\flower4d.png" />
     <Content Include="Content\images\tiles\64px\man\man1.png" />
     <Content Include="Content\images\tiles\64px\man\man2.png" />
     <Content Include="Content\images\tiles\64px\man\man3.png" />
