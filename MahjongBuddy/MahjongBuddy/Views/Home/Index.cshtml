@@ -11,121 +11,138 @@
 <div ng-controller="MahjongController">
     <div id="WaitingRoom" class="container" ng-hide="gameIsReady">
         <div class="row">            
-            <div class="col-lg-3"><input type="text" id="usernameTB" class="form-control" /></div>
-            <div class="col-lg-1"><input type="button" id="join" value="join" ng-disabled="isDisonnected" ng-click="join()" class="btn-primary"></div>
+            <div class="col-md-1"><input type="text" id="usernameTB" class="form-control" /></div>
+            <div class="col-md-1"><input type="button" id="join" value="join" ng-disabled="isDisonnected" ng-click="join()" class="btn-primary"></div>
         </div>
         <div class="row">
-            <div class="col-lg-6"><label id="gameStatus"></label></div>
+            <div class="col-md-8"><label id="gameStatus"></label></div>
         </div>
     </div><!--end of Waiting Room-->
 
     <div id="GameRoom" class="container" ng-show="gameIsReady">
+
+    <!--start for Top Player-->
         <div id="TopPlayer" class="row">
+            <div class="col-md-3" style="display:inline-block"></div>
+            <div class="col-md-6" style="text-align: center">
+                <div class="row">
+                    Player: {{topPlayer.Name}}
+                </div>
 
-            <div class="col-lg-12">
-                <div class="container">
-                    <div class="row">
-                        Player: {{topPlayer.Name}}
+                <div class="row">
+                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + topPlayer.ConnectionId}: true">
+                        <img class="tileHorizontal" ng-src="{{tile.Image}}" />
                     </div>
-                    <div class="row">
-                        <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + topPlayer.ConnectionId}: true">
-                            <div style="float:left"><img ng-src="{{tile.Image}}" style="float:left" /></div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId}: true">
-                            <div style="float:left"><img src="~/Content/images/tiles/64px/face-down-64px.png" /></div>
-                        </div>
+                </div>
+
+                <div class="row">
+                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId}: true">
+                        <img class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
                     </div>
                 </div>
             </div>
-        </div><!--end of TopPlayer-->
+            <div class="col-md-3" style="display:inline-block"></div>
+        </div>
+    <!--end of Top Player-->
 
-        <div class="row">
-            <div id="LeftPlayer" class="col-lg-3">
-                <div class="col-lg-1"> leftPlayerId = {{leftPlayer.Name}}</div>
+    <div style="clear:both"></div>
+    
+        <div class="col-md-12">
+    <!--start for Left Player-->
+            <div id="LeftPlayer" class="col-md-3">
 
-                <div class="col-lg-1">
-                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + leftPlayer.ConnectionId}: true">
-                        <div style="float:left"><img ng-src="{{tile.Image}}" style="float:left" /></div>
+                <div class="col-md-1 rotate90"> Player Name = {{leftPlayer.Name}}</div>
+
+                <div class="col-md-1">
+                    <div class="tileVertical rotate90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + leftPlayer.ConnectionId}: true">
+                       <img ng-src="{{tile.Image}}" />
                     </div>
                 </div>
-                <div class="col-lg-1">
-                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : leftPlayer.ConnectionId}: true">
-                        <div><img src="~/Content/images/tiles/64px/face-down-64px.png" /></div>
+                <div class="col-md-1">
+                    <div class="tileVertical rotate90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : leftPlayer.ConnectionId}: true">
+                        <img src="~/Content/images/tiles/64px/face-down-64px.png" />
                     </div>
                 </div>
             </div>
+    <!--end of LeftPlayer-->
 
-
-            <div id="TheBoard" class="col-lg-3">
+    <!--start for Board-->
+            <div id="TheBoard" class="col-md-6">
                 <strong>Discarded Tiles</strong>
                 <div id="discardedTiles">
-                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true | orderBy: 'Counter'">
-                        <img ng-src="{{tile.Image}}" style="float:left" />
+                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true | orderBy: 'Counter'">
+                        <img class="tileHorizontal" ng-src="{{tile.Image}}" />
                     </div>
                 </div>
-            </div><!--end of TheBoard-->
+            </div>
+    <!--end of Board-->
 
-            <div id="RightPlayer" class="col-lg-3">
-                <div class="col-lg-1"> rightPlayerId = {{rightPlayer.Name}}</div>
-
-                <div class="col-lg-1">
-                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : leftPlayer.ConnectionId}: true">
-                        <div><img src="~/Content/images/tiles/64px/face-down-64px.png" /></div>
-                    </div>
-                </div>
-
-                <div class="col-lg-1">
-                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + leftPlayer.ConnectionId}: true">
-                        <div style="float:left"><img ng-src="{{tile.Image}}" style="float:left" /></div>
+    <!--start for Right Player-->
+            <div id="RightPlayer" class="col-md-3">
+                <div class="col-md-1">
+                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : rightPlayer.ConnectionId}: true">
+                        <div class="tileVertical rotateMinus90"><img src="~/Content/images/tiles/64px/face-down-64px.png" /></div>
                     </div>
                 </div>
 
+                <div class="col-md-1">
+                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + rightPlayer.ConnectionId}: true">
+                        <div class="tileVertical rotateMinus90"><img ng-src="{{tile.Image}}" /></div>
+                    </div>
+                </div>
+
+                <div class="col-md-1 rotateMinus90"> Player Name = {{rightPlayer.Name}}</div>
             </div>
         </div>
+    <!--end of Right Player-->
 
-        <div id="BottomPlayer" class="row">
-            <div class="col-lg-12">
-                My wind: <label id="playerWind">{{currentPlayerWind}}</label><br />
-                Is MyTurn: <label id="isMyTurn">{{isMyturn}}</label><br />
-                Can Pick Tile ={{currentPlayer.CanPickTile}} <br />
-                <input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn-primary" ng-click="fnPlayerMove('flower', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn-primary" ng-click="fnPlayerMove('noflower' , 0)">
-                <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn-primary" ng-click="fnPlayerMove('pick', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="throw" value="throw" class="btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
-                <input type="button" ng-disabled="!isMyturn" id="chow" value="chow" class="btn-primary" ng-click="fnPlayerMove('chow', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="pong" value="pong" class="btn-primary" ng-click="fnPlayerMove('pong', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="kong" value="kong" class="btn-primary" ng-click="fnPlayerMove('kong', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="win" value="win" class="btn-primary" ng-click="fnPlayerMove('win', 0)">
+    <!--start for Main Player-->
+        <div class="col-md-1" style="display:inline-block"></div>
 
-                <div id="PlayerTiles">
+        <div id="BottomPlayer" class="col-md-8" style="text-align: center">
+            My wind: <label id="playerWind">{{currentPlayerWind}}</label><br />
+            Is MyTurn: <label id="isMyTurn">{{isMyturn}}</label><br />
+            Can Pick Tile ={{currentPlayer.CanPickTile}} <br />
+            <input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn-primary" ng-click="fnPlayerMove('flower', 0)">
+            <input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn-primary" ng-click="fnPlayerMove('noflower' , 0)">
+            <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn-primary" ng-click="fnPlayerMove('pick', 0)">
+            <input type="button" ng-disabled="!isMyturn" id="throw" value="throw" class="btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
+            <input type="button" ng-disabled="!isMyturn" id="chow" value="chow" class="btn-primary" ng-click="fnPlayerMove('chow', 0)">
+            <input type="button" ng-disabled="!isMyturn" id="pong" value="pong" class="btn-primary" ng-click="fnPlayerMove('pong', 0)">
+            <input type="button" ng-disabled="!isMyturn" id="kong" value="kong" class="btn-primary" ng-click="fnPlayerMove('kong', 0)">
+            <input type="button" ng-disabled="!isMyturn" id="win" value="win" class="btn-primary" ng-click="fnPlayerMove('win', 0)">
 
-                    SelectedTileId = {{selectedTileId}}<br />
+            <div id="PlayerTiles">
 
-                    <strong>Active</strong>
-                    <div id="activeTiles">
-                        <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
-                            <div ng-click="fnSelectTile(tile.Id)" style="float:left"><img ng-src="{{tile.Image}}" /></div>
-                        </div>
+                SelectedTileId = {{selectedTileId}}<br />
+
+                <strong>Active</strong>
+                <div id="activeTiles">
+                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
+                        <img ng-click="fnSelectTile(tile.Id)" class="tileHorizontal" ng-src="{{tile.Image}}" />
                     </div>
-                    <br />
-                    <div style="clear:both"></div>
+                </div>
 
-                    <strong>My Discarded Tiles</strong>
-                    <div id="myGraveyardTiles">
-                        <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + currentUserId}: true">
-                            <img ng-src="{{tile.Image}}" style="float:left" />
-                        </div>
+                <br />
+                <div style="clear:both"></div>
+
+                <strong>My Discarded Tiles</strong>
+                <div id="myGraveyardTiles">
+                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + currentUserId}: true">
+                        <img class="tileHorizontal" ng-src="{{tile.Image}}" />
                     </div>
-                    <br />
-                    <div style="clear:both"></div>
+                </div>
+                <br />
+                <div style="clear:both"></div>
 
-                    <strong>Message</strong>
-                    <div id="warningMessage">{{warningMessage}}</div>
+                <strong>Message</strong>
+                <div id="warningMessage">{{warningMessage}}</div>
 
-                </div><!--end of PlayerTiles-->
-            </div>
-        </div><!--end of BottomPlayer-->
+            </div><!--end of PlayerTiles-->
+        </div>
+        <div class="col-md-3" style="display:inline-block"></div>
+
+    <!--end of Main Player-->
+    
     </div><!--end of GameRoom-->
 </div>

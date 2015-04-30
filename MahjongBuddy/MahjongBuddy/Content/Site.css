@@ -59,3 +59,32 @@ textarea {
 .validation-summary-valid {
     display: none;
 }
+
+
+/* Styles for Left & Right Player*/
+.rotate90 {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+.rotateMinus90 {
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+.tileHorizontal {
+    margin: 0 -100% 0 -100%;
+    overflow:hidden
+}
+.tileHorizontalContainer {
+    width:44px;
+    float:left;
+}
+.tileVertical {
+    height:44px;
+    margin: -100% 0 -100% 0;
+}
