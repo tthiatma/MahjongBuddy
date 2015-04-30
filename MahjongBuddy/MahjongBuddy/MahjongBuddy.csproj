@@ -151,10 +151,13 @@
     <Compile Include="LoggingPipeLineModule.cs" />
     <Compile Include="Models\Board.cs" />
     <Compile Include="Models\Game.cs" />
+    <Compile Include="Models\OpenTileSet.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Models\Point.cs" />
+    <Compile Include="Models\PointCalculator.cs" />
     <Compile Include="Models\Tile.cs" />
     <Compile Include="Models\WindDirection.cs" />
+    <Compile Include="Models\WinningTileSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

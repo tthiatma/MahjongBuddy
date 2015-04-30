@@ -25,9 +25,9 @@ namespace MahjongBuddy.Models
         public bool CanPickTile { get; set; }
         public bool CanDoNoFlower { get; set; }
         public WindDirection Wind { get; set; }
+        public WinningTileSet WinningTileSet { get; set; }
         public List<int> Matches { get; set; }
         public Point CurrentPoint { get; set; }
         public int Seat { get; set; }
-
     }
 }

@@ -317,6 +317,30 @@ namespace MahjongBuddy
             }
         }
 
+        private Player GetPlayerByConnectionId(Game game, string connectionId)
+        {
+            if (game.Player1.ConnectionId == connectionId)
+            {
+                return game.Player1;
+            }
+            else if (game.Player2.ConnectionId == connectionId)
+            {
+                return game.Player2;
+            }
+            else if (game.Player3.ConnectionId == connectionId)
+            {
+                return game.Player3;
+            }
+            else if (game.Player4.ConnectionId == connectionId)
+            {
+                return game.Player4;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private bool CommandKong(Game game)
         {
             var userName = Clients.Caller.name;
@@ -399,7 +423,19 @@ namespace MahjongBuddy
                 return false;
             }
         }
+        
+        private void AddTilesToPlayerOpenTileSet(Game game, IEnumerable<Tile> tiles, string playerConnectionId, TileSetType type)
+        {
+            var player = GetPlayerByConnectionId(game, playerConnectionId);
+            var temp = new OpenTileSet() 
+            {
+                Tiles = tiles,
+                TileType = type
+            };
 
+            player.WinningTileSet.OpenedTiles.Add(temp);
+        }
+        
         private void CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, string playerConnectionId, bool replaceTile = false)
         { 
             foreach(var f in tiles)
@@ -500,52 +536,6 @@ namespace MahjongBuddy
                     game.Player1.CanPickTile = true;
                 }
             }
-        }
-
-        private IEnumerable<IEnumerable<Tile>> FindAllThreeStraight(IEnumerable<Tile> tiles) 
-        {
-            var straightMoneyTiles = FindStraightByType(TileType.Money, tiles);
-            var straightRoundTiles = FindStraightByType(TileType.Round, tiles);
-            var straightStickTiles = FindStraightByType(TileType.Stick, tiles);
-
-            return straightMoneyTiles.Concat(straightRoundTiles).Concat(straightStickTiles);
-        }
-
-        private IEnumerable<IEnumerable<Tile>> FindStraightByType(TileType type, IEnumerable<Tile> tile)
-        {
-            var ret = new List<IEnumerable<Tile>>();
-
-            var sameTypeTiles = tile.Where(t => t.Type == type);
-            foreach (var t in sameTypeTiles)
-            {
-                if (sameTypeTiles.Any(ti => ti.Value == (t.Value - 2)) && sameTypeTiles.Any(ti => ti.Value == (t.Value - 1)))                                               
-                {
-                    var temp = new List<Tile>();
-                    temp.Add(t);
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value - 2)).First());
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value - 1)).First());
-                    ret.Add(temp);
-                }
-
-                if (sameTypeTiles.Any(ti => ti.Value == (t.Value - 1)) && sameTypeTiles.Any(ti => ti.Value == (t.Value + 1)))
-                {
-                    var temp = new List<Tile>();
-                    temp.Add(t);
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value - 1)).First());
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value + 1)).First());
-                    ret.Add(temp);
-                }
-
-                if (sameTypeTiles.Any(ti => ti.Value == (t.Value + 1)) && sameTypeTiles.Any(ti => ti.Value == (t.Value + 2)))
-                {
-                    var temp = new List<Tile>();
-                    temp.Add(t);
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value + 1)).First());
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value + 2)).First());
-                    ret.Add(temp);
-                }
-            }
-            return ret;
         }
 
         //all of this belong to test section
