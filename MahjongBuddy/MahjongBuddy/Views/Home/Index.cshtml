@@ -18,88 +18,114 @@
             <div class="col-lg-6"><label id="gameStatus"></label></div>
         </div>
     </div><!--end of Waiting Room-->
+
     <div id="GameRoom" class="container" ng-show="gameIsReady">
         <div id="TopPlayer" class="row">
-            topPlayerId = {{topPlayerId}}
+
             <div class="col-lg-12">
                 <div class="container">
                     <div class="row">
+                        Player: {{topPlayer.Name}}
                     </div>
                     <div class="row">
+                        <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + topPlayer.ConnectionId}: true">
+                            <div style="float:left"><img ng-src="{{tile.Image}}" style="float:left" /></div>
+                        </div>
                     </div>
                     <div class="row">
+                        <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId}: true">
+                            <div style="float:left"><img src="~/Content/images/tiles/64px/face-down-64px.png" /></div>
+                        </div>
                     </div>
                 </div>
-                Is MyTurn: <label id="isMyTurn">{{isMyturn}}</label><br />
-                Can Pick Tile ={{currentPlayer.CanPickTile}} <br/>
             </div>
-        </div>
+        </div><!--end of TopPlayer-->
 
         <div class="row">
-            <div id="LeftPlayer" class="col-lg-3">leftPlayerId = {{leftPlayerId}}</div>
-            <div id="TheBoard" class="col-lg-3"></div>
-            <div id="RightPlayer" class="col-lg-3">rightPlayerId = {{rightPlayerId}}</div>
-        </div>
+            <div id="LeftPlayer" class="col-lg-3">
+                <div class="col-lg-1"> leftPlayerId = {{leftPlayer.Name}}</div>
 
+                <div class="col-lg-1">
+                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + leftPlayer.ConnectionId}: true">
+                        <div style="float:left"><img ng-src="{{tile.Image}}" style="float:left" /></div>
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : leftPlayer.ConnectionId}: true">
+                        <div><img src="~/Content/images/tiles/64px/face-down-64px.png" /></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="TheBoard" class="col-lg-3">
+                <strong>Discarded Tiles</strong>
+                <div id="discardedTiles">
+                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true | orderBy: 'Counter'">
+                        <img ng-src="{{tile.Image}}" style="float:left" />
+                    </div>
+                </div>
+            </div><!--end of TheBoard-->
+
+            <div id="RightPlayer" class="col-lg-3">
+                <div class="col-lg-1"> rightPlayerId = {{rightPlayer.Name}}</div>
+
+                <div class="col-lg-1">
+                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : leftPlayer.ConnectionId}: true">
+                        <div><img src="~/Content/images/tiles/64px/face-down-64px.png" /></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-1">
+                    <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + leftPlayer.ConnectionId}: true">
+                        <div style="float:left"><img ng-src="{{tile.Image}}" style="float:left" /></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
         <div id="BottomPlayer" class="row">
-            <div class="col-lg-12"></div>
-        </div>
+            <div class="col-lg-12">
+                My wind: <label id="playerWind">{{currentPlayerWind}}</label><br />
+                Is MyTurn: <label id="isMyTurn">{{isMyturn}}</label><br />
+                Can Pick Tile ={{currentPlayer.CanPickTile}} <br />
+                <input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn-primary" ng-click="fnPlayerMove('flower', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn-primary" ng-click="fnPlayerMove('noflower' , 0)">
+                <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn-primary" ng-click="fnPlayerMove('pick', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="throw" value="throw" class="btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
+                <input type="button" ng-disabled="!isMyturn" id="chow" value="chow" class="btn-primary" ng-click="fnPlayerMove('chow', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="pong" value="pong" class="btn-primary" ng-click="fnPlayerMove('pong', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="kong" value="kong" class="btn-primary" ng-click="fnPlayerMove('kong', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="win" value="win" class="btn-primary" ng-click="fnPlayerMove('win', 0)">
 
-        
-        My wind: <label id="playerWind">{{currentPlayerWind}}</label><br />
+                <div id="PlayerTiles">
 
-        <input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn-primary" ng-click="fnPlayerMove('flower', 0)">
-        <input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn-primary" ng-click="fnPlayerMove('noflower' , 0)">
-        <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn-primary" ng-click="fnPlayerMove('pick', 0)">
-        <input type="button" ng-disabled="!isMyturn" id="throw" value="throw" class="btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
-        <input type="button" ng-disabled="!isMyturn" id="chow" value="chow" class="btn-primary" ng-click="fnPlayerMove('chow', 0)">
-        <input type="button" ng-disabled="!isMyturn" id="pong" value="pong" class="btn-primary" ng-click="fnPlayerMove('pong', 0)">
-        <input type="button" ng-disabled="!isMyturn" id="kong" value="kong" class="btn-primary" ng-click="fnPlayerMove('kong', 0)">
-        <input type="button" ng-disabled="!isMyturn" id="win" value="win" class="btn-primary" ng-click="fnPlayerMove('win', 0)">
+                    SelectedTileId = {{selectedTileId}}<br />
 
-        <div id="playerTiles">
+                    <strong>Active</strong>
+                    <div id="activeTiles">
+                        <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
+                            <div ng-click="fnSelectTile(tile.Id)" style="float:left"><img ng-src="{{tile.Image}}" /></div>
+                        </div>
+                    </div>
+                    <br />
+                    <div style="clear:both"></div>
 
-            <strong>Last Tile</strong>
-            <div id="lastTile">
-                <img ng-src="{{lastTile.Image}}" />
+                    <strong>My Discarded Tiles</strong>
+                    <div id="myGraveyardTiles">
+                        <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + currentUserId}: true">
+                            <img ng-src="{{tile.Image}}" style="float:left" />
+                        </div>
+                    </div>
+                    <br />
+                    <div style="clear:both"></div>
+
+                    <strong>Message</strong>
+                    <div id="warningMessage">{{warningMessage}}</div>
+
+                </div><!--end of PlayerTiles-->
             </div>
-            <br />
-
-            <div style="clear:both"></div>
-
-
-            <strong>Discarded Tiles</strong>
-            <div id="discardedTiles">
-                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard'}: true | orderBy: 'Counter'">
-                    <img ng-src="{{tile.Image}}" style="float:left" />
-                </div>
-            </div>
-            <br />
-
-            <div style="clear:both"></div>
-
-            SelectedTileId = {{selectedTileId}}<br /> 
-            <strong>Active</strong>
-            <div id="activeTiles">
-                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
-                    <div ng-click="fnSelectTile(tile.Id)" style="float:left"><img ng-src="{{tile.Image}}" /></div>
-                </div>
-            </div>            
-            <br />
-            <div style="clear:both"></div>
-
-            <strong>My Discarded Tiles</strong>
-            <div id="myGraveyardTiles">
-                <div ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + currentUserId}: true">
-                    <img ng-src="{{tile.Image}}" style="float:left" />
-                </div>
-            </div>
-            <br />
-            <div style="clear:both"></div>
-
-            <strong>Message</strong>
-            <div id="warningMessage">{{warningMessage}}</div>
-        </div>
+        </div><!--end of BottomPlayer-->
     </div><!--end of GameRoom-->
 </div>

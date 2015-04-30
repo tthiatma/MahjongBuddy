@@ -37,9 +37,9 @@
             $scope.isMyturn = ($scope.currentUserId == game.WhosTurn);
 
             mjService.setPlayer(game, $scope.currentUserId);
-            $scope.topPlayerId = mjService.topPlayer.ConnectionId;
-            $scope.rightPlayerId = mjService.rightPlayer.ConnectionId;
-            $scope.leftPlayerId = mjService.leftPlayer.ConnectionId;
+            $scope.topPlayer = mjService.topPlayer;
+            $scope.rightPlayer = mjService.rightPlayer;
+            $scope.leftPlayer = mjService.leftPlayer;
         });
 
         clientPushHubProxy.on('updateGame', function (game) {
