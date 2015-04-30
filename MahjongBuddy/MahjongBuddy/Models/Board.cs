@@ -16,6 +16,7 @@ namespace MahjongBuddy.Models
             set { _tiles = value; }
         }
         public void CreateTiles(){
+
             for (var i = 1; i < 5; i++)
             {
                 _tiles.Add(new Tile() { Type = TileType.Money, Value = TileValue.One, Owner = "board", Name = i + "MoneyOne", Image = "/Content/images/tiles/64px/man/man1.png" });
@@ -50,16 +51,23 @@ namespace MahjongBuddy.Models
 
                 _tiles.Add(new Tile() { Type = TileType.Dragon, Value = TileValue.DragonGreen, Owner = "board", Name = i + "DragonGreen", Image = "/Content/images/tiles/64px/dragon/dragon-green.png" });
                 _tiles.Add(new Tile() { Type = TileType.Dragon, Value = TileValue.DragonRed, Owner = "board", Name = i + "DragonRed", Image = "/Content/images/tiles/64px/dragon/dragon-chun.png" });
-                _tiles.Add(new Tile() { Type = TileType.Dragon, Value = TileValue.DragonWhite, Owner = "board", Name = i + "DragonWhite", Image = "/Content/images/tiles/64px/dragon/dragon-haku.png" });
+                _tiles.Add(new Tile() { Type = TileType.Dragon, Value = TileValue.DragonWhite, Owner = "board", Name = i + "DragonWhite", Image = "/Content/images/tiles/64px/dragon/dragon-white.png" });
 
                 _tiles.Add(new Tile() { Type = TileType.Wind, Value = TileValue.WindNorth, Owner = "board", Name = i + "WindNorth", Image = "/Content/images/tiles/64px/wind/wind-north.png" });
                 _tiles.Add(new Tile() { Type = TileType.Wind, Value = TileValue.WindEast, Owner = "board", Name = i + "WindEast", Image = "/Content/images/tiles/64px/wind/wind-east.png" });
                 _tiles.Add(new Tile() { Type = TileType.Wind, Value = TileValue.WindSouth, Owner = "board", Name = i + "WindSouth", Image = "/Content/images/tiles/64px/wind/wind-south.png" });
                 _tiles.Add(new Tile() { Type = TileType.Wind, Value = TileValue.WindWest, Owner = "board", Name = i + "WindWest", Image = "/Content/images/tiles/64px/wind/wind-west.png" });
-
-                _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerNumeric, Owner = "board", Name = i + "FlowerNumeric", Image = "/Content/images/tiles/64px/face-down-64px.png" });
-                _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerRoman, Owner = "board", Name = i + "FlowerRoman", Image = "/Content/images/tiles/64px/face-down-64px.png" });
             }
+            _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerNumeric, Owner = "board", Name = "137FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower1.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerRoman, Owner = "board", Name = "138FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower2.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerNumeric, Owner = "board", Name = "139FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower3.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerRoman, Owner = "board", Name = "140FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower4.png" });
+
+            _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerNumeric, Owner = "board", Name = "141FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower1a.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerRoman, Owner = "board", Name = "142FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower2b.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerNumeric, Owner = "board", Name = "143FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower3c.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Value = TileValue.FlowerRoman, Owner = "board", Name = "144FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower4d.png" });
+
 
             int _tileid = 1;
             foreach (var tile in _tiles)
