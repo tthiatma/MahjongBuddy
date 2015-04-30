@@ -20,6 +20,7 @@
     </div><!--end of Waiting Room-->
     <div id="GameRoom" class="container" ng-show="gameIsReady">
         <div id="TopPlayer" class="row">
+            topPlayerId = {{topPlayerId}}
             <div class="col-lg-12">
                 <div class="container">
                     <div class="row">
@@ -35,9 +36,9 @@
         </div>
 
         <div class="row">
-            <div id="LeftPlayer" class="col-lg-3"></div>
+            <div id="LeftPlayer" class="col-lg-3">leftPlayerId = {{leftPlayerId}}</div>
             <div id="TheBoard" class="col-lg-3"></div>
-            <div id="RightPlayer" class="col-lg-3"></div>
+            <div id="RightPlayer" class="col-lg-3">rightPlayerId = {{rightPlayerId}}</div>
         </div>
 
 
