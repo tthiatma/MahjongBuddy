@@ -62,13 +62,20 @@ textarea {
 
 
 /* Styles for Left & Right Player*/
+.rotate90container {
+
+}
+
 .rotate90 {
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     -o-transform: rotate(90deg);
     transform: rotate(90deg);
-    transform-origin: top left;
+    white-space: nowrap;
+    display: inline-block;
+    white-space: nowrap;
+    transform-origin: 0 0;
 }
 .rotateMinus90 {
     -webkit-transform: rotate(-90deg);
@@ -76,7 +83,9 @@ textarea {
     -ms-transform: rotate(-90deg);
     -o-transform: rotate(-90deg);
     transform: rotate(-90deg);
-    transform-origin: top right;
+    display: inline-block;
+    white-space: nowrap;
+    transform-origin: 100% 0;
 }
 .tileHorizontalContainer {
     width:44px;
@@ -88,8 +97,10 @@ textarea {
 }
 .tileVerticalContainer {
     height:44px;
+    display:inline-block
 }
 .tileVertical {
     margin: -100% 0 -100% 0;
     transform-origin: 100% 100%;
+    display:list-item;
 }

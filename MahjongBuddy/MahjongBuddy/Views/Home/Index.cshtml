@@ -52,9 +52,13 @@
         <div id="MidSection" class="row">
 
             <!--start for Left Player-->
-                <div id="LeftPlayer" class="col-md-3">
+                <div id="LeftPlayer">
 
-                    <div class="col-md-1 rotate90"> Player Name = {{leftPlayer.Name}}</div>
+                    <div class="col-md-1">
+                        <span class="rotate90container">
+                            <span class="rotate90">Player Name: {{leftPlayer.Name}}</span>
+                        </span> 
+                    </div>
 
                     <div class="col-md-1">
                         <div class=" tileVerticalContainer rotate90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + leftPlayer.ConnectionId}: true">
@@ -81,7 +85,7 @@
             <!--end of Board-->
 
             <!--start for Right Player-->
-                <div id="RightPlayer" class="col-md-3">
+                <div id="RightPlayer">
                     <div class="col-md-1">
                         <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : rightPlayer.ConnectionId}: true">
                             <img class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
@@ -94,7 +98,11 @@
                         </div>
                     </div>
 
-                    <div class="col-md-1 rotateMinus90"> Player Name = {{rightPlayer.Name}}</div>
+                    <div class="col-md-1"> 
+                        <span class="rotate90container">
+                            <span class="rotateMinus90">Player Name = {{rightPlayer.Name}}</span>
+                        </span>                     
+                    </div>
                 </div>
             <!--end of Right Player-->
         </div>
