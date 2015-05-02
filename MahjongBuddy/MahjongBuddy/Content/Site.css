@@ -100,7 +100,6 @@ textarea {
 
 .tileHorizontalContainer {
     width:44px;
-    float:left;
     height:64px;
     display:inline-block;
 }

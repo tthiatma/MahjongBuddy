@@ -27,7 +27,8 @@
 
     <!--start for Top Player-->
         <div id="TopPlayer" class="row">
-            <div class="col-md-12" style="text-align: center">
+            <div class="col-md-2"></div>
+            <div class="col-md-8" style="text-align: center">
                 <div class="row">
                     Player: {{topPlayer.Name}}
                 </div>
@@ -39,11 +40,12 @@
                 </div>
 
                 <div class="row">
-                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId}: true">
+                    <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId}: true">
                         <img class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
-                    </div>
+                    </span>
                 </div>
             </div>
+            <div class="col-md-2"></div>
         </div>
     <!--end of Top Player-->
 
@@ -107,7 +109,9 @@
 
 
     <!--start for Main Player-->
-        <div id="BottomPlayer" class="col-md-12" style="text-align: center">
+        <div class="col-md-2"></div>
+
+        <div id="BottomPlayer" class="col-md-8" style="text-align: center">
 
             <div id="playerCommand">
                 <input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn-primary" ng-click="fnPlayerMove('flower', 0)">
@@ -121,17 +125,17 @@
             </div>
 
             <div id="activeTiles">
-                <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
+                <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
                     <img ng-click="fnSelectTile(tile.Id)" class="tileHorizontal" ng-src="{{tile.Image}}" />
-                </div>
+                </span>
             </div>
 
             <div style="clear:both"></div>
 
             <div id="myGraveyardTiles" class="HorizontalContainer">
-                <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + currentUserId}: true">
+                <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : 'graveyard-' + currentUserId}: true">
                     <img class="tileHorizontal" ng-src="{{tile.Image}}" />
-                </div>
+                </span>
             </div>
 
             <div style="clear:both"></div>
@@ -144,5 +148,9 @@
             </div>
     <!--end of Main Player-->
     
-    </div><!--end of GameRoom-->
+    </div>
+        
+        <div class="col-md-2"></div>
+
+        <!--end of GameRoom-->
 </div>
