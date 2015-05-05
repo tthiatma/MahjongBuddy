@@ -67,13 +67,20 @@ namespace MahjongBuddy
                     game.CurrentWind = WindDirection.East;
                     game.Board.Tiles.Shuffle();
                     DistributeTiles(game.Board.Tiles, player, player2, player3, player4);
-                    //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);
-                    //DistributeTilesForPong(game.Board.Tiles, player, player2, player3, player4);
-                    //DistributeTilesForKong(game.Board.Tiles, player, player2, player3, player4);
+                    game.GameSetting.SkipInitialFlowerSwapping = true;
 
+                    if (game.GameSetting.SkipInitialFlowerSwapping)
+                    {
+                        RecycleInitialFlower(game);
+
+                    }
                     SetPlayerWinds(game);
 
                     Clients.Group(player.Group).startGame(game);
+
+                    //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);
+                    //DistributeTilesForPong(game.Board.Tiles, player, player2, player3, player4);
+                    //DistributeTilesForKong(game.Board.Tiles, player, player2, player3, player4);
                     return true;
                 }
                 else
@@ -84,6 +91,66 @@ namespace MahjongBuddy
                 }
             }
             return false;
+        }
+
+        private void RecycleInitialFlower(Game game)
+        {
+           var p1 = game.Player1;
+           var p2 = game.Player2;
+           var p3 = game.Player3;
+           var p4 = game.Player4;
+
+            for (var i = 0; i < 8; i++)
+            {
+                var playerTilesFlower = game.Board.Tiles
+                        .Where(
+                            t => t.Owner == p1.ConnectionId &&
+                                (t.Value == TileValue.FlowerNumeric || t.Value == TileValue.FlowerRoman));
+
+                if (playerTilesFlower.Count() > 0)
+                {
+                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p1.ConnectionId, replaceTile: true);
+                }
+           }
+
+            for (var i = 0; i < 8; i++)
+            {
+                var playerTilesFlower = game.Board.Tiles
+                        .Where(
+                            t => t.Owner == p2.ConnectionId &&
+                                (t.Value == TileValue.FlowerNumeric || t.Value == TileValue.FlowerRoman));
+
+                if (playerTilesFlower.Count() > 0)
+                {
+                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p2.ConnectionId, replaceTile: true);
+                }
+            }
+
+            for (var i = 0; i < 8; i++)
+            {
+                var playerTilesFlower = game.Board.Tiles
+                        .Where(
+                            t => t.Owner == p3.ConnectionId &&
+                                (t.Value == TileValue.FlowerNumeric || t.Value == TileValue.FlowerRoman));
+
+                if (playerTilesFlower.Count() > 0)
+                {
+                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p3.ConnectionId, replaceTile: true);
+                }
+            }
+
+            for (var i = 0; i < 8; i++)
+            {
+                var playerTilesFlower = game.Board.Tiles
+                        .Where(
+                            t => t.Owner == p4.ConnectionId &&
+                                (t.Value == TileValue.FlowerNumeric || t.Value == TileValue.FlowerRoman));
+
+                if (playerTilesFlower.Count() > 0)
+                {
+                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p4.ConnectionId, replaceTile: true);
+                }
+            }
         }
 
         public void PlayerMove(string group, string command, int tileId = 0)

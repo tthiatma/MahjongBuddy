@@ -65,7 +65,8 @@ namespace MahjongBuddy
                 Player2 = player2,
                 Player3 = player3,
                 Player4 = player4,
-                Board = new Board()
+                Board = new Board(),
+                GameSetting = new GameSetting()
             };
             game.Board.CreateTiles();
 

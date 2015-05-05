@@ -19,5 +19,6 @@ namespace MahjongBuddy.Models
         public int TileCounter { get; set; }
         public WindDirection CurrentWind { get; set; }
         public string WhoStart { get; set; }
+        public GameSetting GameSetting { get; set; }
     }
 }
