@@ -125,9 +125,13 @@
             </div>
 
             <div id="activeTiles">
-                <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
-                    <img ng-click="fnSelectTile(tile.Id)" class="tileHorizontal" ng-src="{{tile.Image}}" />
+                <span ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileActive(tile.Id)}" class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
+                    <img class="tileHorizontal" ng-src="{{tile.Image}}" />
                 </span>
+                <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId, Status: 1}: true">
+                    <img ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileActive(tile.Id)}" class="tileHorizontal" ng-src="{{tile.Image}}" />
+                </span>
+
             </div>
 
             <div style="clear:both"></div>

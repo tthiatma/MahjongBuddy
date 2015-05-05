@@ -116,3 +116,11 @@ textarea {
     transform-origin: 100% 100%;
     display:list-item;
 }
+.activeTile {
+    background:rgba(85,55,188,.75);
+    -webkit-transition: opacity .25s ease;
+    -moz-transition: opacity .25s ease;
+}
+.activeTile img{
+    opacity:0.4;
+}

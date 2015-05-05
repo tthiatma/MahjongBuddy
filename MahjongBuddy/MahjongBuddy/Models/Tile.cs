@@ -19,10 +19,10 @@ namespace MahjongBuddy.Models
 
     public enum TileStatus
     {
-        JustPicked,
-        UserGraveyard,
-        UserActive,
-        BoardGraveyard
+        JustPicked = 1,
+        UserActive = 2,
+        UserGraveyard = 3,
+        BoardGraveyard = 4
     }
 
     public enum TileType

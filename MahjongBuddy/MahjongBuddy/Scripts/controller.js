@@ -2,7 +2,7 @@
     function ($scope, signalRHubProxy, mjService) {
         $scope.isDisonnected = true;
         $scope.gameIsReady = false;
-        $scope.selectedTileId = 0;
+        $scope.selectedTiles = [];
         $scope.isMyturn = false;
         var startup = function(conId){
             $scope.isDisonnected = !(conId != undefined);
@@ -59,8 +59,23 @@
             clientPushHubProxy.invoke2('Join', un, 'mjbuddy', function () {
             });
         };
-        $scope.fnSelectTile = function (tileId) {
-            $scope.selectedTileId = tileId;
+
+        $scope.fnIsTileActive = function (tileId){
+            return $.inArray(tileId, $scope.selectedTiles) > -1;
+        }
+
+        $scope.fnSelectTile = function (tileId, evt) {
+
+            var isActive = evt.currentTarget.className.indexOf("activeTile") > -1
+
+            if (isActive) {
+                //remove tile
+                $scope.selectedTiles = $.grep($scope.selectedTiles, function (e) {
+                    return e !== tileId;
+                });
+            } else {
+                $scope.selectedTiles.push(tileId)
+            }
         };
 
         $scope.fnPlayerMove = function (move, tileId) {
