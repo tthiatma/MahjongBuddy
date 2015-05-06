@@ -153,7 +153,7 @@ namespace MahjongBuddy
             }
         }
 
-        public void PlayerMove(string group, string command, int tileId = 0)
+        public void PlayerMove(string group, string command, IEnumerable<int> tiles)
         {
             var game = GameState.Instance.FindGameByGroupName(group);
             bool isValidCommand = false;
@@ -177,13 +177,13 @@ namespace MahjongBuddy
                     break;
 
                 case "throw":
-                    isValidCommand = CommandThrow(game, tileId);
+                    isValidCommand = CommandThrow(game, tiles);
                     invalidMessage = "pick a tile first dammit!";
                     switchTurn = true;
                    break;
 
                 case "chow":
-                    isValidCommand = CommandChow(game);
+                    isValidCommand = CommandChow(game, tiles);
                     invalidMessage = "nothing to chow --'";
                     break;
 
@@ -232,14 +232,14 @@ namespace MahjongBuddy
             return true;
         }
 
-        private bool CommandThrow(Game game, int tileId)
+        private bool CommandThrow(Game game, IEnumerable<int> tiles)
         {
             var userName = Clients.Caller.name;
             var player = GameState.Instance.GetPlayer(userName);
 
-            if (player != null && tileId > 0)
+            if (player != null && tiles.Count() > 0 && tiles.Count() < 2)
             {
-                var tileToThrow = game.Board.Tiles.Where(t => t.Id == tileId).First();
+                var tileToThrow = game.Board.Tiles.Where(t => t.Id == tiles.First()).First();
                 tileToThrow.Owner = "graveyard";
                 tileToThrow.Status = TileStatus.BoardGraveyard;
                 tileToThrow.Counter = game.TileCounter;
@@ -254,14 +254,14 @@ namespace MahjongBuddy
             }
         }
 
-        private bool CommandChow(Game game)
+        private bool CommandChow(Game game, IEnumerable<int> tiles)
         {
             var userName = Clients.Caller.name;
             var player = GameState.Instance.GetPlayer(userName);
 
             if (player != null)
             {
-                if (CanChow(game, player.ConnectionId))
+                if (CanChow(game, tiles, player.ConnectionId))
                 {
                     return true;
                 }
@@ -276,14 +276,14 @@ namespace MahjongBuddy
             }
         }
 
-        private bool CanChow(Game game, string userConnectionId)
+        private bool CanChow(Game game, IEnumerable<int> tiles, string userConnectionId)
         {
-            var tiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId);
+            var playerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId);
             var thrownTile = game.LastTile;
 
             if (thrownTile.Type == TileType.Money || thrownTile.Type == TileType.Round || thrownTile.Type == TileType.Stick)
             {
-                var matchedTileType = tiles.Where(t => t.Type == thrownTile.Type);
+                var matchedTileType = playerTiles.Where(t => t.Type == thrownTile.Type);
                 if (matchedTileType.Count() >= 2)
                 {
                     var listTiles = matchedTileType.ToList();

@@ -79,7 +79,7 @@
         };
 
         $scope.fnPlayerMove = function (move, tileId) {
-            clientPushHubProxy.invoke3('PlayerMove', 'mjbuddy', move, tileId, function (game) {
+            clientPushHubProxy.invoke3('PlayerMove', 'mjbuddy', move, tiles, function (game) {
                 $scope.$apply(function () {
                     $scope.game = game;
                 })
