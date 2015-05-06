@@ -13,7 +13,7 @@
         <div class="row">       
             <div class="col-md-5"></div>     
             <div class="col-md-1"><input type="text" id="usernameTB" class="form-control" /></div>
-            <div class="col-md-1"><input type="button" id="join" value="join" ng-disabled="isDisonnected" ng-click="join()" class="btn-primary"></div>
+            <div class="col-md-1"><input type="button" id="join" value="join" ng-disabled="isDisonnected" ng-click="join()" class="btn btn-primary"></div>
             <div class="col-md-5"></div>
         </div>
         <div class="row">
@@ -114,14 +114,14 @@
         <div id="BottomPlayer" class="col-md-8" style="text-align: center">
 
             <div id="playerCommand">
-                <input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn-primary" ng-click="fnPlayerMove('flower', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn-primary" ng-click="fnPlayerMove('noflower' , 0)">
-                <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn-primary" ng-click="fnPlayerMove('pick', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="throw" value="throw" class="btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
-                <input type="button" ng-disabled="!isMyturn" id="chow" value="chow" class="btn-primary" ng-click="fnPlayerMove('chow', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="pong" value="pong" class="btn-primary" ng-click="fnPlayerMove('pong', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="kong" value="kong" class="btn-primary" ng-click="fnPlayerMove('kong', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="win" value="win" class="btn-primary" ng-click="fnPlayerMove('win', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn btn-primary" ng-click="fnPlayerMove('flower', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn btn-primary" ng-click="fnPlayerMove('noflower' , 0)">
+                <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
+                <input type="button" ng-disabled="!isMyturn" id="chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', 0)">
+                <input type="button" ng-disabled="!isMyturn" id="win" value="win" class="btn btn-primary" ng-click="fnPlayerMove('win', 0)">
             </div>
 
             <div id="activeTiles">
