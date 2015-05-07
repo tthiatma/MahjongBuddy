@@ -66,7 +66,6 @@ namespace MahjongBuddy
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
                     game.Board.Tiles.Shuffle();
-                    //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);
                     DistributeTiles(game.Board.Tiles, player, player2, player3, player4);
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 
@@ -103,10 +102,7 @@ namespace MahjongBuddy
 
             for (var i = 0; i < 8; i++)
             {
-                var playerTilesFlower = game.Board.Tiles
-                        .Where(
-                            t => t.Owner == p1.ConnectionId &&
-                                (t.Value == TileValue.FlowerNumeric || t.Value == TileValue.FlowerRoman));
+                var playerTilesFlower = game.Board.Tiles.Where(t => t.Owner == p1.ConnectionId && t.Type == TileType.Flower && t.Status == TileStatus.UserActive);
 
                 if (playerTilesFlower.Count() > 0)
                 {
@@ -116,10 +112,7 @@ namespace MahjongBuddy
 
             for (var i = 0; i < 8; i++)
             {
-                var playerTilesFlower = game.Board.Tiles
-                        .Where(
-                            t => t.Owner == p2.ConnectionId &&
-                                (t.Value == TileValue.FlowerNumeric || t.Value == TileValue.FlowerRoman));
+                var playerTilesFlower = game.Board.Tiles.Where(t => t.Owner == p2.ConnectionId && t.Type == TileType.Flower && t.Status == TileStatus.UserActive);
 
                 if (playerTilesFlower.Count() > 0)
                 {
@@ -129,10 +122,7 @@ namespace MahjongBuddy
 
             for (var i = 0; i < 8; i++)
             {
-                var playerTilesFlower = game.Board.Tiles
-                        .Where(
-                            t => t.Owner == p3.ConnectionId &&
-                                (t.Value == TileValue.FlowerNumeric || t.Value == TileValue.FlowerRoman));
+                var playerTilesFlower = game.Board.Tiles.Where(t => t.Owner == p3.ConnectionId && t.Type == TileType.Flower && t.Status == TileStatus.UserActive);
 
                 if (playerTilesFlower.Count() > 0)
                 {
@@ -142,10 +132,7 @@ namespace MahjongBuddy
 
             for (var i = 0; i < 8; i++)
             {
-                var playerTilesFlower = game.Board.Tiles
-                        .Where(
-                            t => t.Owner == p4.ConnectionId &&
-                                (t.Value == TileValue.FlowerNumeric || t.Value == TileValue.FlowerRoman));
+                var playerTilesFlower = game.Board.Tiles.Where(t => t.Owner == p4.ConnectionId && t.Type == TileType.Flower && t.Status == TileStatus.UserActive);
 
                 if (playerTilesFlower.Count() > 0)
                 {
@@ -258,11 +245,17 @@ namespace MahjongBuddy
             if (player != null && tiles.Count() > 0 && tiles.Count() < 2)
             {
                 var tileToThrow = game.Board.Tiles.Where(t => t.Id == tiles.First()).First();
-                tileToThrow.Owner = "graveyard";
                 tileToThrow.Status = TileStatus.BoardGraveyard;
                 tileToThrow.Counter = game.TileCounter;
                 game.LastTile = tileToThrow;
                 game.TileCounter++;
+
+                var justPickedTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked).FirstOrDefault();
+                if (justPickedTile != null)
+                {
+                    justPickedTile.Status = TileStatus.UserActive;
+                }
+                
 
                 return true;
             }
@@ -308,7 +301,7 @@ namespace MahjongBuddy
             }
             else
             {
-                var playerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId);
+                var playerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId && t.Status == TileStatus.UserActive);
                 var thrownTile = game.LastTile;
 
                 if (thrownTile.Type == TileType.Money || thrownTile.Type == TileType.Round || thrownTile.Type == TileType.Stick)
@@ -435,9 +428,9 @@ namespace MahjongBuddy
 
         private bool CanPong(Game game, string userConnectionId)
         {
-            var tiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId);
+            var activePlayerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId && t.Status == TileStatus.UserActive);
             var thrownTile = game.LastTile;
-            var matchedTileTypeAndValue = tiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
+            var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
             if (matchedTileTypeAndValue.Count() >= 2)
             {
                 var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
@@ -503,9 +496,9 @@ namespace MahjongBuddy
 
         private bool CanKong(Game game, string userConnectionId)
         {
-            var tiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId);
+            var activePlayerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId && t.Status == TileStatus.UserActive);
             var thrownTile = game.LastTile;
-            var matchedTileTypeAndValue = tiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
+            var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
             if (matchedTileTypeAndValue.Count() == 3)
             {
                 var playerTilesKong = matchedTileTypeAndValue.Take(3).ToList();
@@ -578,7 +571,6 @@ namespace MahjongBuddy
             foreach(var f in tiles)
             {
                 var tileToGraveyard = game.Board.Tiles.Where(t => t.Id == f.Id).First();
-                tileToGraveyard.Owner = "graveyard-" + playerConnectionId;
                 tileToGraveyard.Status = TileStatus.UserGraveyard;
 
                 if (replaceTile)
@@ -763,18 +755,22 @@ namespace MahjongBuddy
             for (var i = 0; i < 14; i++)
             {                
                 tiles[i].Owner = p1.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
             }
             for (var i = 14; i < 27; i++)
             {
                 tiles[i].Owner = p2.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
             }
             for (var i = 27; i < 40; i++)
             {
                 tiles[i].Owner = p3.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
             }
             for (var i = 40; i < 53; i++)
             {
                 tiles[i].Owner = p4.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
             }        
         }
 

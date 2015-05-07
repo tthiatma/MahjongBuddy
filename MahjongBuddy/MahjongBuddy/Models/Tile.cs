@@ -19,6 +19,7 @@ namespace MahjongBuddy.Models
 
     public enum TileStatus
     {
+        Unrevealed = 0,
         JustPicked = 1,
         UserActive = 2,
         UserGraveyard = 3,
