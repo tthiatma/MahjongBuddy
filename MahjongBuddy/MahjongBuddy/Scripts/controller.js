@@ -78,12 +78,16 @@
             }
         };
 
-        $scope.fnPlayerMove = function (move, tileId) {
+        $scope.fnPlayerMove = function (move, tiles) {
             clientPushHubProxy.invoke3('PlayerMove', 'mjbuddy', move, tiles, function (game) {
                 $scope.$apply(function () {
                     $scope.game = game;
                 })
             });
+            //remove selected tiles if its chow
+            if (move == 'chow') {
+                $scope.selectedTiles = [];
+            }
         };
     }
 ]);

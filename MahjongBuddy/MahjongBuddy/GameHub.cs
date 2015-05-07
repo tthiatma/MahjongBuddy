@@ -66,6 +66,7 @@ namespace MahjongBuddy
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
                     game.Board.Tiles.Shuffle();
+                    //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);
                     DistributeTiles(game.Board.Tiles, player, player2, player3, player4);
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 
@@ -183,7 +184,7 @@ namespace MahjongBuddy
                    break;
 
                 case "chow":
-                    isValidCommand = CommandChow(game, tiles);
+                   isValidCommand = CommandChow(game, tiles, out invalidMessage);
                     invalidMessage = "nothing to chow --'";
                     break;
 
@@ -223,11 +224,28 @@ namespace MahjongBuddy
             var player = GameState.Instance.GetPlayer(userName);
 
             if (player != null)
-            {                
+            {                 
+                for (var i = 0; i < 8; i++)
+                {
+                    var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").FirstOrDefault();
+
+                    if (newTileForPlayer != null)
+                    {
+                        if (newTileForPlayer.Type == TileType.Flower)
+                        {
+                            List<Tile> ft = new List<Tile>();
+                            ft.Add(newTileForPlayer);
+                            CommandTileToPlayerGraveyard(game, ft, player.ConnectionId, replaceTile: false);
+                        }
+                        else
+                        {
+                            newTileForPlayer.Owner = player.ConnectionId;
+                            newTileForPlayer.Status = TileStatus.JustPicked;
+                            break;
+                        }
+                    }
+                }
                 SetPlayerCanPickTile(game, player.ConnectionId, false);
-                var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
-                newTileForPlayer.Owner = player.ConnectionId;
-                newTileForPlayer.Status = TileStatus.JustPicked;
             }
             return true;
         }
@@ -254,15 +272,19 @@ namespace MahjongBuddy
             }
         }
 
-        private bool CommandChow(Game game, IEnumerable<int> tiles)
+        private bool CommandChow(Game game, IEnumerable<int> tiles, out string invalidMessage)
         {
             var userName = Clients.Caller.name;
             var player = GameState.Instance.GetPlayer(userName);
 
             if (player != null)
             {
-                if (CanChow(game, tiles, player.ConnectionId))
+                if (CanChow(game, tiles, player.ConnectionId, out invalidMessage))
                 {
+                    game.WhosTurn = player.ConnectionId;
+                    var pp = GetPlayerByConnectionId(game, player.ConnectionId);
+                    pp.CanPickTile = false;
+                    pp.CanOnlyThrowTile = true;
                     return true;
                 }
                 else
@@ -272,75 +294,117 @@ namespace MahjongBuddy
             }
             else
             {
+                invalidMessage = "mistake happened";
                 return false;
             }
         }
 
-        private bool CanChow(Game game, IEnumerable<int> tiles, string userConnectionId)
+        private bool CanChow(Game game, IEnumerable<int> inputTiles, string userConnectionId, out string invalidMessage)
         {
-            var playerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId);
-            var thrownTile = game.LastTile;
-
-            if (thrownTile.Type == TileType.Money || thrownTile.Type == TileType.Round || thrownTile.Type == TileType.Stick)
+            if (inputTiles == null || inputTiles.Count() < 2 || inputTiles.Count() > 2)
             {
-                var matchedTileType = playerTiles.Where(t => t.Type == thrownTile.Type);
-                if (matchedTileType.Count() >= 2)
-                {
-                    var listTiles = matchedTileType.ToList();
-                    int possiblePairs = 0;
-                    Tile pairTile1 = new Tile();
-                    Tile pairTile2 = new Tile();
-                    
-                    if (listTiles.Any(t => t.Value == (thrownTile.Value - 2)) && listTiles.Any(t => t.Value == (thrownTile.Value - 1)))                                               
-                    {
-                        pairTile1 = listTiles.Where(t => t.Value == (thrownTile.Value - 2)).First();
-                        pairTile2 = listTiles.Where(t => t.Value == (thrownTile.Value - 1)).First();
-                        possiblePairs++;
-                    }
-                    
-                    if(listTiles.Any(t => t.Value == (thrownTile.Value - 1)) && listTiles.Any(t => t.Value == (thrownTile.Value + 1)))
-                    {
-                        pairTile1 = listTiles.Where(t => t.Value == (thrownTile.Value - 1)).First();
-                        pairTile2 = listTiles.Where(t => t.Value == (thrownTile.Value + 1)).First();
-                        possiblePairs++;
-                    }
-                    
-                    if (listTiles.Any(t => t.Value == (thrownTile.Value + 1)) && listTiles.Any(t => t.Value == (thrownTile.Value + 2)))
-                    {
-                        pairTile1 = listTiles.Where(t => t.Value == (thrownTile.Value + 1)).First();
-                        pairTile2 = listTiles.Where(t => t.Value == (thrownTile.Value + 2)).First();
-                        possiblePairs++;
-                    }
+                invalidMessage = "Select 2 tiles to chow";
+                return false;
+            }
+            else
+            {
+                var playerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId);
+                var thrownTile = game.LastTile;
 
-                    if(possiblePairs == 1)
+                if (thrownTile.Type == TileType.Money || thrownTile.Type == TileType.Round || thrownTile.Type == TileType.Stick)
+                {
+                    var matchedTileType = playerTiles.Where(t => t.Type == thrownTile.Type);                                       
+                    if (matchedTileType.Count() >= 2)
                     {
-                        var playerTilesChow = new List<Tile>();
-                        playerTilesChow.Add(pairTile1);
-                        playerTilesChow.Add(pairTile2);
-                        playerTilesChow.Add(game.LastTile);
-                        CommandTileToPlayerGraveyard(game, playerTilesChow, userConnectionId);
-                        game.WhosTurn = userConnectionId;                 
-                        return true;    
-                    }
-                    else if (possiblePairs > 1)
-                    {
-                        //ask user to pick 2 tiles to chow
-                        return true;
+                        List<Tile> possiblePair = new List<Tile>();
+                        foreach (var t in inputTiles)
+                        {
+                            var tempTile = game.Board.Tiles.Where(tt => tt.Id == t).First();
+                            if (tempTile != null)
+                            {
+                                possiblePair.Add(tempTile);
+                            }
+                        }
+                        possiblePair.Add(thrownTile);
+
+                        var sortedList = possiblePair.OrderBy(o => o.Value).ToArray();
+ 
+                        //check if its straight
+                        if (sortedList[0].Value + 1 == sortedList[1].Value && sortedList[1].Value + 1 == sortedList[2].Value)
+                        {
+                            CommandTileToPlayerGraveyard(game, sortedList, userConnectionId);                            
+                            invalidMessage = "";
+                            return true;
+                        }
+                        else
+                        {
+                            invalidMessage = "not a valid chow";
+                            return false;
+                        }
+
+
+                        //var listTiles = matchedTileType.ToList();
+                        //int possiblePairs = 0;
+                        //Tile pairTile1 = new Tile();
+                        //Tile pairTile2 = new Tile();
+
+                        //if (listTiles.Any(t => t.Value == (thrownTile.Value - 2)) && listTiles.Any(t => t.Value == (thrownTile.Value - 1)))
+                        //{
+                        //    pairTile1 = listTiles.Where(t => t.Value == (thrownTile.Value - 2)).First();
+                        //    pairTile2 = listTiles.Where(t => t.Value == (thrownTile.Value - 1)).First();
+                        //    possiblePairs++;
+                        //}
+
+                        //if (listTiles.Any(t => t.Value == (thrownTile.Value - 1)) && listTiles.Any(t => t.Value == (thrownTile.Value + 1)))
+                        //{
+                        //    pairTile1 = listTiles.Where(t => t.Value == (thrownTile.Value - 1)).First();
+                        //    pairTile2 = listTiles.Where(t => t.Value == (thrownTile.Value + 1)).First();
+                        //    possiblePairs++;
+                        //}
+
+                        //if (listTiles.Any(t => t.Value == (thrownTile.Value + 1)) && listTiles.Any(t => t.Value == (thrownTile.Value + 2)))
+                        //{
+                        //    pairTile1 = listTiles.Where(t => t.Value == (thrownTile.Value + 1)).First();
+                        //    pairTile2 = listTiles.Where(t => t.Value == (thrownTile.Value + 2)).First();
+                        //    possiblePairs++;
+                        //}
+
+                        //if (possiblePairs == 1)
+                        //{
+                        //    var playerTilesChow = new List<Tile>();
+                        //    playerTilesChow.Add(pairTile1);
+                        //    playerTilesChow.Add(pairTile2);
+                        //    playerTilesChow.Add(game.LastTile);
+                        //    CommandTileToPlayerGraveyard(game, playerTilesChow, userConnectionId);
+                        //    game.WhosTurn = userConnectionId;
+                        //    invalidMessage = ""; 
+                        //    return true;
+                        //}
+                        //else if (possiblePairs > 1)
+                        //{
+                        //    //ask user to pick 2 tiles to chow
+                        //    invalidMessage = "pick 2 tiles dude";
+                        //    return true;
+                        //}
+                        //else
+                        //{
+                        //    invalidMessage = "shit went wrong...";
+                        //    return false;
+                        //}
                     }
                     else
                     {
+                        invalidMessage = "invalid tile selection";
                         return false;
                     }
                 }
                 else
                 {
+                    invalidMessage = "invalid tile selection";
                     return false;
                 }
             }
-            else
-            {
-                return false;
-            }
+            
         }
 
         private bool CommandPong(Game game)
@@ -352,6 +416,10 @@ namespace MahjongBuddy
             {
                 if (CanPong(game, player.ConnectionId))
                 {
+                    game.WhosTurn = player.ConnectionId;
+                    var pp = GetPlayerByConnectionId(game, player.ConnectionId);
+                    pp.CanPickTile = false;
+                    pp.CanOnlyThrowTile = true;
                     return true;
                 }
                 else
@@ -375,7 +443,6 @@ namespace MahjongBuddy
                 var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
                 playerTilesPong.Add(thrownTile);
                 CommandTileToPlayerGraveyard(game, playerTilesPong, userConnectionId);
-                game.WhosTurn = userConnectionId;
                 return true;
             }
             else
@@ -417,6 +484,10 @@ namespace MahjongBuddy
             {
                 if (CanKong(game, player.ConnectionId))
                 {
+                    game.WhosTurn = player.ConnectionId;
+                    var pp = GetPlayerByConnectionId(game, player.ConnectionId);
+                    pp.CanPickTile = false;
+                    pp.CanOnlyThrowTile = true;
                     return true;
                 }
                 else
@@ -440,7 +511,6 @@ namespace MahjongBuddy
                 var playerTilesKong = matchedTileTypeAndValue.Take(3).ToList();
                 playerTilesKong.Add(thrownTile);
                 CommandTileToPlayerGraveyard(game, playerTilesKong, userConnectionId);
-                game.WhosTurn = userConnectionId;
                 return true;
             }
             else

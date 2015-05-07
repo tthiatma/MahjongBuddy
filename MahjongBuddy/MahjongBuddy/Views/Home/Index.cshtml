@@ -114,23 +114,24 @@
         <div id="BottomPlayer" class="col-md-8" style="text-align: center">
 
             <div id="playerCommand">
-                <input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn btn-primary" ng-click="fnPlayerMove('flower', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn btn-primary" ng-click="fnPlayerMove('noflower' , 0)">
-                <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTileId)">
-                <input type="button" ng-disabled="!isMyturn" id="chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', 0)">
-                <input type="button" ng-disabled="!isMyturn" id="win" value="win" class="btn btn-primary" ng-click="fnPlayerMove('win', 0)">
+                @*<input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn btn-primary" ng-click="fnPlayerMove('flower', 0)">*@
+                @*<input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn btn-primary" ng-click="fnPlayerMove('noflower' , 0)">*@
+
+                <input type="button" id="win" value="win" class="btn btn-primary" ng-click="fnPlayerMove('win', selectedTiles)">
+                <input type="button" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', selectedTiles)">
+                <input type="button" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', selectedTiles)">
+                <input type="button" ng-disabled="!isMyturn" id=" chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', selectedTiles)">
+                <input type="button" ng-disabled="!isMyturn || currentPlayer.CanPickTile" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTiles)">
+                <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', selectedTiles)">
             </div>
 
             <div id="activeTiles">
                 <span ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileActive(tile.Id)}" class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId}: true | orderBy: ['Type', 'Value']">
                     <img class="tileHorizontal" ng-src="{{tile.Image}}" />
                 </span>
-                <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId, Status: 1}: true">
+                @*<span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId, Status: 1}: true">
                     <img ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileActive(tile.Id)}" class="tileHorizontal" ng-src="{{tile.Image}}" />
-                </span>
+                </span>*@
 
             </div>
 
