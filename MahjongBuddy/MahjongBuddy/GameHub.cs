@@ -200,7 +200,7 @@ namespace MahjongBuddy
             }
             else
             {
-                Clients.Group(group).alertUser(invalidMessage);                
+                Clients.Caller.alertUser(invalidMessage);                
             }
             
         }
@@ -430,13 +430,20 @@ namespace MahjongBuddy
         {
             var activePlayerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId && t.Status == TileStatus.UserActive);
             var thrownTile = game.LastTile;
-            var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
-            if (matchedTileTypeAndValue.Count() >= 2)
+            if (thrownTile != null && thrownTile.Owner != userConnectionId)
             {
-                var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
-                playerTilesPong.Add(thrownTile);
-                CommandTileToPlayerGraveyard(game, playerTilesPong, userConnectionId);
-                return true;
+                var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
+                if (matchedTileTypeAndValue.Count() >= 2)
+                {
+                    var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
+                    playerTilesPong.Add(thrownTile);
+                    CommandTileToPlayerGraveyard(game, playerTilesPong, userConnectionId);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -498,13 +505,20 @@ namespace MahjongBuddy
         {
             var activePlayerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId && t.Status == TileStatus.UserActive);
             var thrownTile = game.LastTile;
-            var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
-            if (matchedTileTypeAndValue.Count() == 3)
+            if (thrownTile != null && thrownTile.Owner != userConnectionId)
             {
-                var playerTilesKong = matchedTileTypeAndValue.Take(3).ToList();
-                playerTilesKong.Add(thrownTile);
-                CommandTileToPlayerGraveyard(game, playerTilesKong, userConnectionId);
-                return true;
+                var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
+                if (matchedTileTypeAndValue.Count() == 3)
+                {
+                    var playerTilesKong = matchedTileTypeAndValue.Take(3).ToList();
+                    playerTilesKong.Add(thrownTile);
+                    CommandTileToPlayerGraveyard(game, playerTilesKong, userConnectionId);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
