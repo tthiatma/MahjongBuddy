@@ -14,6 +14,7 @@ namespace MahjongBuddy.Models
             Id = Guid.NewGuid().ToString("d");
             Matches = new List<int>();
             Group = group;
+            WinningTileSet = new WinningTileSet();
         }
 
         public string ConnectionId { get; set; }

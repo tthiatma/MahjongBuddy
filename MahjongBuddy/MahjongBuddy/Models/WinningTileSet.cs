@@ -9,5 +9,9 @@ namespace MahjongBuddy.Models
     {
         public List<OpenTileSet> OpenedTiles { get; set; }
         public IEnumerable<Tile> ClosedTiles { get; set; }
+        public WinningTileSet() 
+        {
+            OpenedTiles = new List<OpenTileSet>();
+        }
     }
 }

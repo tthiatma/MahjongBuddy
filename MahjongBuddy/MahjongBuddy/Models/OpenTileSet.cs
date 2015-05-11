@@ -13,7 +13,7 @@ namespace MahjongBuddy.Models
 
     public enum TileSetType
     { 
-        Straight,
+        Chow,
         Pong,
         Kong,
     }

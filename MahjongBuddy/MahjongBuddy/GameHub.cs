@@ -176,12 +176,12 @@ namespace MahjongBuddy
                     break;
 
                 case "pong":
-                    isValidCommand = CommandPong(game);
+                    isValidCommand = CommandPong(game, tiles);
                     invalidMessage = "nothing to pong wth";
                     break;
 
                 case "kong":
-                    isValidCommand = CommandKong(game);
+                    isValidCommand = CommandKong(game, tiles);
                     invalidMessage = "nothing to kong dude";
                     break;
 
@@ -325,7 +325,9 @@ namespace MahjongBuddy
                         //check if its straight
                         if (sortedList[0].Value + 1 == sortedList[1].Value && sortedList[1].Value + 1 == sortedList[2].Value)
                         {
-                            CommandTileToPlayerGraveyard(game, sortedList, userConnectionId);                            
+                            CommandTileToPlayerGraveyard(game, sortedList, userConnectionId);
+                            AddTilesToPlayerOpenTileSet(game, sortedList, userConnectionId, TileSetType.Chow);
+                            
                             invalidMessage = "";
                             return true;
                         }
@@ -400,8 +402,9 @@ namespace MahjongBuddy
             
         }
 
-        private bool CommandPong(Game game)
+        private bool CommandPong(Game game, IEnumerable<int> tiles)
         {
+
             var userName = Clients.Caller.name;
             var player = GameState.Instance.GetPlayer(userName);
 
@@ -409,6 +412,13 @@ namespace MahjongBuddy
             {
                 if (CanPong(game, player.ConnectionId))
                 {
+                    List<Tile> actualTiles = new List<Tile>();
+                    foreach (var t in tiles)
+                    {
+                        actualTiles.Add(game.Board.Tiles.Where(ti => ti.Id == t).FirstOrDefault());
+                    }
+                    AddTilesToPlayerOpenTileSet(game, actualTiles, player.ConnectionId, TileSetType.Pong);
+
                     game.WhosTurn = player.ConnectionId;
                     var pp = GetPlayerByConnectionId(game, player.ConnectionId);
                     pp.CanPickTile = false;
@@ -475,7 +485,7 @@ namespace MahjongBuddy
             }
         }
 
-        private bool CommandKong(Game game)
+        private bool CommandKong(Game game, IEnumerable<int> tiles)
         {
             var userName = Clients.Caller.name;
             var player = GameState.Instance.GetPlayer(userName);
@@ -484,6 +494,13 @@ namespace MahjongBuddy
             {
                 if (CanKong(game, player.ConnectionId))
                 {
+                    List<Tile> actualTiles = new List<Tile>();
+                    foreach (var t in tiles)
+                    {
+                        actualTiles.Add(game.Board.Tiles.Where(ti => ti.Id == t).FirstOrDefault());
+                    }
+                    AddTilesToPlayerOpenTileSet(game, actualTiles, player.ConnectionId, TileSetType.Kong);
+
                     game.WhosTurn = player.ConnectionId;
                     var pp = GetPlayerByConnectionId(game, player.ConnectionId);
                     pp.CanPickTile = false;
@@ -505,7 +522,7 @@ namespace MahjongBuddy
         {
             var activePlayerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId && t.Status == TileStatus.UserActive);
             var thrownTile = game.LastTile;
-            if (thrownTile != null && thrownTile.Owner != userConnectionId)
+            if (thrownTile != null)
             {
                 var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
                 if (matchedTileTypeAndValue.Count() == 3)
@@ -586,6 +603,7 @@ namespace MahjongBuddy
             {
                 var tileToGraveyard = game.Board.Tiles.Where(t => t.Id == f.Id).First();
                 tileToGraveyard.Status = TileStatus.UserGraveyard;
+                tileToGraveyard.Owner = playerConnectionId;
 
                 if (replaceTile)
                 {
