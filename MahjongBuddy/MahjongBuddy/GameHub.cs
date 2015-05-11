@@ -246,9 +246,7 @@ namespace MahjongBuddy
             {
                 var tileToThrow = game.Board.Tiles.Where(t => t.Id == tiles.First()).First();
                 tileToThrow.Status = TileStatus.BoardGraveyard;
-                tileToThrow.Counter = game.TileCounter;
                 game.LastTile = tileToThrow;
-                game.TileCounter++;
 
                 var justPickedTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked).FirstOrDefault();
                 if (justPickedTile != null)
