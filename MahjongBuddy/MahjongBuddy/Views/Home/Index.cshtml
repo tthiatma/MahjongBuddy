@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="row HorizontalContainer">
-                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId, Status: 3}: true">
+                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId, Status: 3}: true | orderBy: ['OpenTileCounter']">
                         <img class="tileHorizontal rotate180" ng-src="{{tile.Image}}" />
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="col-md-1">
-                        <div class=" tileVerticalContainer rotate90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : leftPlayer.ConnectionId, Status: 3}: true">
+                        <div class=" tileVerticalContainer rotate90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : leftPlayer.ConnectionId, Status: 3}: true | orderBy: ['OpenTileCounter']">
                             <img class="tileVertical" ng-src="{{tile.Image}}" />
                         </div>
                     </div>
@@ -93,7 +93,7 @@
                     </div>
 
                     <div class="col-md-1">
-                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : rightPlayer.ConnectionId, Status: 3}: true">
+                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in game.Board.Tiles | filter: {Owner : rightPlayer.ConnectionId, Status: 3}: true | orderBy: ['OpenTileCounter']">
                             <img class="tileVertical" ng-src="{{tile.Image}}" />
                         </div>
                     </div>
@@ -138,7 +138,7 @@
             <div style="clear:both"></div>
 
             <div id="myGraveyardTiles" class="HorizontalContainer">
-                <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId, Status: 3}: true | orderBy: ['Counter']">
+                <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId, Status: 3}: true | orderBy: ['OpenTileCounter']">
                     <img class="tileHorizontal" ng-src="{{tile.Image}}" />
                 </span>
             </div>

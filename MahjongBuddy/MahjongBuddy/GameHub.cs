@@ -602,6 +602,8 @@ namespace MahjongBuddy
                 var tileToGraveyard = game.Board.Tiles.Where(t => t.Id == f.Id).First();
                 tileToGraveyard.Status = TileStatus.UserGraveyard;
                 tileToGraveyard.Owner = playerConnectionId;
+                f.OpenTileCounter = game.TileCounter;
+                game.TileCounter++;
 
                 if (replaceTile)
                 {
