@@ -7,10 +7,14 @@ using MahjongBuddy.Models;
 using System.Threading.Tasks;
 using MahjongBuddy.Extensions;
 using System.Collections;
+using System.ComponentModel.Composition;
 namespace MahjongBuddy
 {
     public class GameHub : Hub
     {
+        [Import]
+        public GameLogic GameLogic { get; set; }
+
         public async void Join(string userName, string groupName)
         {
             
@@ -402,13 +406,12 @@ namespace MahjongBuddy
 
         private bool CommandPong(Game game, IEnumerable<int> tiles)
         {
-
             var userName = Clients.Caller.name;
             var player = GameState.Instance.GetPlayer(userName);
 
             if (player != null)
             {
-                if (CanPong(game, player.ConnectionId))
+                if (GameLogic.DoPong(game, player.ConnectionId))
                 {
                     List<Tile> actualTiles = new List<Tile>();
                     foreach (var t in tiles)
@@ -434,30 +437,30 @@ namespace MahjongBuddy
             }           
         }
 
-        private bool CanPong(Game game, string userConnectionId)
-        {
-            var activePlayerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId && t.Status == TileStatus.UserActive);
-            var thrownTile = game.LastTile;
-            if (thrownTile != null && thrownTile.Owner != userConnectionId)
-            {
-                var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
-                if (matchedTileTypeAndValue.Count() >= 2)
-                {
-                    var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
-                    playerTilesPong.Add(thrownTile);
-                    CommandTileToPlayerGraveyard(game, playerTilesPong, userConnectionId);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
+        //private bool CanPong(Game game, string userConnectionId)
+        //{
+        //    var activePlayerTiles = game.Board.Tiles.Where(t => t.Owner == userConnectionId && t.Status == TileStatus.UserActive);
+        //    var thrownTile = game.LastTile;
+        //    if (thrownTile != null && thrownTile.Owner != userConnectionId)
+        //    {
+        //        var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
+        //        if (matchedTileTypeAndValue.Count() >= 2)
+        //        {
+        //            var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
+        //            playerTilesPong.Add(thrownTile);
+        //            CommandTileToPlayerGraveyard(game, playerTilesPong, userConnectionId);
+        //            return true;
+        //        }
+        //        else
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
 
         private Player GetPlayerByConnectionId(Game game, string connectionId)
         {
