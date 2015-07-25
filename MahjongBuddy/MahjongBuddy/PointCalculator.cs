@@ -5,37 +5,140 @@ using System.Web;
 
 namespace MahjongBuddy.Models
 {
-    public static class PointCalculator
+    public class PointCalculator
     {
-        static int GetTotalPoints(IEnumerable<Tile> tiles) 
-        {
-            int ret = 0;
+        private int _totalPoints;
 
-            if (IsStraight(tiles))
+        public int GetTotalPoints(IEnumerable<Tile> tiles, Player player) 
+        {
+            _totalPoints = 0;
+            Action<IEnumerable<Tile>, Player> Calculate;            
+            Calculate = CalculateAllTilesNeverRevealed;
+            Calculate += CalculateStraight;
+            Calculate += CalculatePong;
+            Calculate += CalculateFlower;
+
+            Calculate(tiles, player);
+
+            //TODO obey game setting for points limit
+            if (_totalPoints >= 10)
             {
-                ret++;
+                return 10;
+            }
+            else
+            {
+                return _totalPoints;            
+            }
+        }
+
+        private void CalculateWind(IEnumerable<Tile> tiles, Player player)
+        {
+            TileValue windVal = TileValue.WindEast;
+            if(player.Wind == WindDirection.East){windVal = TileValue.WindEast;}
+            if(player.Wind == WindDirection.South){windVal = TileValue.WindSouth;}
+            if(player.Wind == WindDirection.West){windVal = TileValue.WindWest;}
+            if(player.Wind == WindDirection.North){windVal = TileValue.WindNorth;}
+
+            var MatchedUserWindTile = tiles.Where(t => t.Type == TileType.Wind && t.Value == windVal);
+
+            if (MatchedUserWindTile != null && MatchedUserWindTile.Count() >= 3) 
+            {
+                _totalPoints += 1;
+            }
+        }
+
+        private void CalculateTileSameTypeWithWildCard(IEnumerable<Tile> tiles, Player player)
+        {
+            var openedTiles = tiles.Where(t => t.Status == TileStatus.UserGraveyard && t.Type != TileType.Flower);
+
+            if (openedTiles != null && openedTiles.Count() > 0)
+            {
+                //this means user revealed card
+            }
+            else 
+            {
+                _totalPoints += 1;
+            }
+            
+        }
+
+        private void CalculateTileAllSameType(IEnumerable<Tile> tiles, Player player)
+        { 
+        
+        }
+
+        private void CalculateKong(IEnumerable<Tile> tiles, Player player)
+        {
+            _totalPoints += 1;
+
+        }
+        
+        private void CalculateFlower(IEnumerable<Tile> tiles, Player player)
+        {
+            IEnumerable<Tile> matchedUserFlowerTile = null;
+
+            if (player.Wind == WindDirection.East) 
+            {
+                matchedUserFlowerTile = tiles.Where(t => t.Type == TileType.Flower && (t.Value == TileValue.FlowerNumericOne || t.Value == TileValue.FlowerRomanOne));            
+            }
+            if (player.Wind == WindDirection.South)
+            {
+                matchedUserFlowerTile = tiles.Where(t => t.Type == TileType.Flower && (t.Value == TileValue.FlowerNumericTwo || t.Value == TileValue.FlowerRomanTwo));
+            }
+            if (player.Wind == WindDirection.West)
+            {
+                matchedUserFlowerTile = tiles.Where(t => t.Type == TileType.Flower && (t.Value == TileValue.FlowerNumericThree || t.Value == TileValue.FlowerRomanThree));
+            }
+            if (player.Wind == WindDirection.North)
+            {
+                matchedUserFlowerTile = tiles.Where(t => t.Type == TileType.Flower && (t.Value == TileValue.FlowerNumericFour || t.Value == TileValue.FlowerRomanFour));
             }
 
-            if (IsPongPong(tiles))
+            if (matchedUserFlowerTile != null) 
             {
-                ret++;
+                foreach (var t in matchedUserFlowerTile)
+                {
+                    _totalPoints += 1;
+                }
             }
 
-            return ret;
+            var FlowerTiles = tiles.Where(t => t.Type == TileType.Flower);
+            if (FlowerTiles != null && FlowerTiles.Count() >= 4)
+            {
+                var numericFlower = FlowerTiles.Where(t => t.Value == TileValue.FlowerNumericOne || t.Value == TileValue.FlowerNumericTwo || t.Value == TileValue.FlowerNumericThree || t.Value == TileValue.FlowerNumericFour);
 
+                if (numericFlower != null && numericFlower.Count() == 4) 
+                {
+                    _totalPoints += 1;
+                }
+
+                var romanFlower = FlowerTiles.Where(t => t.Value == TileValue.FlowerRomanOne || t.Value == TileValue.FlowerRomanTwo || t.Value == TileValue.FlowerRomanThree || t.Value == TileValue.FlowerRomanFour);
+
+                if (romanFlower != null && romanFlower.Count() == 4)
+                {
+                    _totalPoints += 1;
+                }
+            }
+           
         }
 
-        static bool IsStraight(IEnumerable<Tile> tiles) 
-        {         
-            return false;
-        }
-
-        static bool IsPongPong(IEnumerable<Tile> tiles)
+        private void CalculateAllTilesNeverRevealed(IEnumerable<Tile> tiles, Player player)
         {
-            return false;
+            _totalPoints += 1;
+
         }
 
-        static private IEnumerable<IEnumerable<Tile>> FindAllThreeStraight(IEnumerable<Tile> tiles)
+        private void CalculateStraight(IEnumerable<Tile> tiles, Player player) 
+        {
+            _totalPoints += 1;
+        }
+
+        private void CalculatePong(IEnumerable<Tile> tiles, Player player)
+        {
+            _totalPoints += 1;
+        }
+
+        private IEnumerable<IEnumerable<Tile>> FindAllThreeStraight(IEnumerable<Tile> tiles)
         {
             var straightMoneyTiles = FindStraightByType(TileType.Money, tiles);
             var straightRoundTiles = FindStraightByType(TileType.Round, tiles);
@@ -44,7 +147,7 @@ namespace MahjongBuddy.Models
             return straightMoneyTiles.Concat(straightRoundTiles).Concat(straightStickTiles);
         }
 
-        static private IEnumerable<IEnumerable<Tile>> FindStraightByType(TileType type, IEnumerable<Tile> tile)
+        private IEnumerable<IEnumerable<Tile>> FindStraightByType(TileType type, IEnumerable<Tile> tile)
         {
             var ret = new List<IEnumerable<Tile>>();
 

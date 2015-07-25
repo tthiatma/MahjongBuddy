@@ -11,6 +11,8 @@ namespace MahjongBuddy
     {
         public Dictionary<CommandResult, string> CommandResultDictionary { get; set; }
 
+        public PointCalculator PointCalculator { get; set; }
+
         public GameLogic() {
 
             CommandResultDictionary = new Dictionary<CommandResult, string>();
@@ -23,6 +25,10 @@ namespace MahjongBuddy
             CommandResultDictionary.Add(CommandResult.InvalidChowTileType, "Please select a valid tile");
             CommandResultDictionary.Add(CommandResult.InvalidChowNeedTwoTiles, "Select 2 tiles to chow");
             CommandResultDictionary.Add(CommandResult.InvalidPlayer, "Lost information about player");
+            CommandResultDictionary.Add(CommandResult.PlayerWin, "You won!!!!");
+            CommandResultDictionary.Add(CommandResult.PlayerWinFailed, "No penalty this time");
+
+            PointCalculator = new PointCalculator();
         }
 
         public CommandResult DoPong(Game game, IEnumerable<int> tiles, Player player)
@@ -163,7 +169,6 @@ namespace MahjongBuddy
             {
                 return CommandResult.InvalidPlayer;
             }
-            
         }
 
         public CommandResult DoThrowTile(Game game, IEnumerable<int> tiles, Player player) 
@@ -238,7 +243,30 @@ namespace MahjongBuddy
                 return CommandResult.InvalidPlayer;
             }
         }
-        
+
+        public CommandResult DoWin(Game game, Player player)
+        {
+            if (player != null)
+            {
+                var playerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId);
+
+                var totalPoints = PointCalculator.GetTotalPoints(playerTiles, player);
+
+                if (totalPoints >= 3)
+                {
+                    return CommandResult.PlayerWin;
+                }
+                else
+                {
+                    return CommandResult.PlayerWinFailed;
+                }
+            }
+            else
+            {
+                return CommandResult.InvalidPlayer;
+            }
+        }
+
         public void CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, string playerConnectionId, bool replaceTile = false)
         {
             foreach (var f in tiles)
@@ -255,26 +283,6 @@ namespace MahjongBuddy
                     newTileForPlayer.Owner = playerConnectionId;
                     newTileForPlayer.Status = TileStatus.UserActive;
                 }
-            }
-        }
-
-        private void SetPlayerCanPickTile(Game game, string conId, bool flag)
-        {
-            if (game.Player1.ConnectionId == conId)
-            {
-                game.Player1.CanPickTile = flag;
-            }
-            else if (game.Player2.ConnectionId == conId)
-            {
-                game.Player2.CanPickTile = flag;
-            }
-            else if (game.Player3.ConnectionId == conId)
-            {
-                game.Player3.CanPickTile = flag;
-            }
-            else if (game.Player4.ConnectionId == conId)
-            {
-                game.Player4.CanPickTile = flag;
             }
         }
 
@@ -421,18 +429,25 @@ namespace MahjongBuddy
                 return null;
             }
         }
-    }
 
-    public enum CommandResult
-    {
-        ValidCommand,
-        InvalidPong,
-        InvalidKong,
-        InvalidChow,
-        InvalidPick,
-        InvalidThrow,
-        InvalidChowTileType,
-        InvalidChowNeedTwoTiles,
-        InvalidPlayer
+        private void SetPlayerCanPickTile(Game game, string conId, bool flag)
+        {
+            if (game.Player1.ConnectionId == conId)
+            {
+                game.Player1.CanPickTile = flag;
+            }
+            else if (game.Player2.ConnectionId == conId)
+            {
+                game.Player2.CanPickTile = flag;
+            }
+            else if (game.Player3.ConnectionId == conId)
+            {
+                game.Player3.CanPickTile = flag;
+            }
+            else if (game.Player4.ConnectionId == conId)
+            {
+                game.Player4.CanPickTile = flag;
+            }
+        }
     }
 }

@@ -152,11 +152,11 @@
     </Compile>
     <Compile Include="LoggingPipeLineModule.cs" />
     <Compile Include="Models\Board.cs" />
+    <Compile Include="Models\CommandResult.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\GameSetting.cs" />
     <Compile Include="Models\OpenTileSet.cs" />
     <Compile Include="Models\Player.cs" />
-    <Compile Include="Models\Point.cs" />
     <Compile Include="PointCalculator.cs" />
     <Compile Include="Models\Tile.cs" />
     <Compile Include="Models\WindDirection.cs" />

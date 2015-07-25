@@ -148,11 +148,9 @@ namespace MahjongBuddy
                     cr = GameLogic.DoKong(game, tiles, player);
                     break;
 
-                //TODO
-                //case "win":
-                //    cr = CommandWin(game);
-                //    invalidMessage = "I let you go this time";
-                //    break;
+                case "win":
+                    cr = GameLogic.DoWin(game, player);
+                    break;
             }
             invalidMessage = GameLogic.CommandResultDictionary[cr];
             if (cr == CommandResult.ValidCommand)

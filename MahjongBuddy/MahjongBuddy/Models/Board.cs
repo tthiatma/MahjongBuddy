@@ -58,15 +58,15 @@ namespace MahjongBuddy.Models
                 _tiles.Add(new Tile() { Type = TileType.Wind, Status = TileStatus.Unrevealed, Value = TileValue.WindSouth, Owner = "board", Name = i + "WindSouth", Image = "/Content/images/tiles/64px/wind/wind-south.png" });
                 _tiles.Add(new Tile() { Type = TileType.Wind, Status = TileStatus.Unrevealed, Value = TileValue.WindWest, Owner = "board", Name = i + "WindWest", Image = "/Content/images/tiles/64px/wind/wind-west.png" });
             }
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumeric, Owner = "board", Name = "137FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower1.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRoman, Owner = "board", Name = "138FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower2.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumeric, Owner = "board", Name = "139FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower3.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRoman, Owner = "board", Name = "140FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower4.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumericOne, Owner = "board", Name = "137FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower1.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumericTwo, Owner = "board", Name = "138FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower2.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumericThree, Owner = "board", Name = "139FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower3.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumericFour, Owner = "board", Name = "140FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower4.png" });
 
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumeric, Owner = "board", Name = "141FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower1a.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRoman, Owner = "board", Name = "142FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower2b.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumeric, Owner = "board", Name = "143FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower3c.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRoman, Owner = "board", Name = "144FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower4d.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRomanOne, Owner = "board", Name = "141FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower1a.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRomanTwo, Owner = "board", Name = "142FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower2b.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRomanThree, Owner = "board", Name = "143FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower3c.png" });
+            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRomanFour, Owner = "board", Name = "144FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower4d.png" });
 
 
             int _tileid = 1;

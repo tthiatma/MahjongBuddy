@@ -19,10 +19,15 @@ namespace MahjongBuddy.Models
 
     public enum TileStatus
     {
+        //Tile belongs to the board
         Unrevealed = 0,
+        //Tile just picked from the board
         JustPicked = 1,
+        //Tile just picked by player
         UserActive = 2,
+        //Tile is kept by player
         UserGraveyard = 3,
+        //Tile is open and thrown to the board
         BoardGraveyard = 4
     }
 
@@ -54,7 +59,13 @@ namespace MahjongBuddy.Models
         WindSouth = 14,
         WindEast = 15,
         WindWest = 16,
-        FlowerRoman = 17,
-        FlowerNumeric = 18,
+        FlowerRomanOne = 17,
+        FlowerRomanTwo = 18,
+        FlowerRomanThree = 19,
+        FlowerRomanFour = 20,
+        FlowerNumericOne = 21,
+        FlowerNumericTwo = 22,
+        FlowerNumericThree = 23,
+        FlowerNumericFour = 24,
     }
 }
