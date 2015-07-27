@@ -250,7 +250,7 @@ namespace MahjongBuddy
             {
                 var playerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId);
 
-                var totalPoints = PointCalculator.GetTotalPoints(playerTiles, player);
+                var totalPoints = PointCalculator.GetTotalPoints(game, playerTiles, player);
 
                 if (totalPoints >= 3)
                 {

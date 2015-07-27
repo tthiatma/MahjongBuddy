@@ -9,16 +9,20 @@ namespace MahjongBuddy.Models
     {
         private int _totalPoints;
 
-        public int GetTotalPoints(IEnumerable<Tile> tiles, Player player) 
+        public int GetTotalPoints(Game game, IEnumerable<Tile> tiles, Player player) 
         {
             _totalPoints = 0;
-            Action<IEnumerable<Tile>, Player> Calculate;            
+            Func<Game, IEnumerable<Tile>, Player, int> Calculate;            
             Calculate = CalculateAllTilesNeverRevealed;
+            Calculate += CalculateWind;
+            Calculate += CalculateTileSameTypeWithWildCard;
+            Calculate += CalculateTileAllSameType;
+            Calculate += CalculateKong;
+            Calculate += CalculateFlower;
             Calculate += CalculateStraight;
             Calculate += CalculatePong;
-            Calculate += CalculateFlower;
 
-            Calculate(tiles, player);
+            Calculate(game, tiles, player);
 
             //TODO obey game setting for points limit
             if (_totalPoints >= 10)
@@ -31,24 +35,67 @@ namespace MahjongBuddy.Models
             }
         }
 
-        private void CalculateWind(IEnumerable<Tile> tiles, Player player)
+        public int CalculateAllTilesNeverRevealed(Game game, IEnumerable<Tile> tiles, Player player)
         {
+            int pts = 0;
+
+            bool foundRevealed = false;
+
+            foreach (var t in tiles)
+            {
+                if (t.Status == TileStatus.UserGraveyard && t.Type != TileType.Flower)
+                {
+                    foundRevealed = true;
+                }
+            }
+
+            if (!foundRevealed)
+            {
+                pts += 1;
+            }
+
+            _totalPoints += pts;
+
+            return pts;
+        }
+
+        public int CalculateWind(Game game, IEnumerable<Tile> tiles, Player player)
+        {
+            int pts = 0;
+
             TileValue windVal = TileValue.WindEast;
             if(player.Wind == WindDirection.East){windVal = TileValue.WindEast;}
             if(player.Wind == WindDirection.South){windVal = TileValue.WindSouth;}
             if(player.Wind == WindDirection.West){windVal = TileValue.WindWest;}
             if(player.Wind == WindDirection.North){windVal = TileValue.WindNorth;}
 
-            var MatchedUserWindTile = tiles.Where(t => t.Type == TileType.Wind && t.Value == windVal);
+            var matchedUserWindTile = tiles.Where(t => t.Value == windVal);
 
-            if (MatchedUserWindTile != null && MatchedUserWindTile.Count() >= 3) 
+            if (matchedUserWindTile != null && matchedUserWindTile.Count() >= 3) 
             {
-                _totalPoints += 1;
+                pts += 1;
             }
+
+            if (game.CurrentWind == WindDirection.East) { windVal = TileValue.WindEast; }
+            if (game.CurrentWind == WindDirection.South) { windVal = TileValue.WindSouth; }
+            if (game.CurrentWind == WindDirection.West) { windVal = TileValue.WindWest; }
+            if (game.CurrentWind == WindDirection.North) { windVal = TileValue.WindNorth; }
+
+            var gameWindTile = tiles.Where(t => t.Value == windVal);
+
+            if (gameWindTile != null && gameWindTile.Count() >= 3)
+            {
+                pts += 1;
+            }
+            _totalPoints += pts;
+
+            return pts;
         }
 
-        private void CalculateTileSameTypeWithWildCard(IEnumerable<Tile> tiles, Player player)
+        public int CalculateTileSameTypeWithWildCard(Game game, IEnumerable<Tile> tiles, Player player)
         {
+            int pts = 0;
+
             var openedTiles = tiles.Where(t => t.Status == TileStatus.UserGraveyard && t.Type != TileType.Flower);
 
             if (openedTiles != null && openedTiles.Count() > 0)
@@ -59,22 +106,39 @@ namespace MahjongBuddy.Models
             {
                 _totalPoints += 1;
             }
-            
+
+            return pts;
         }
 
-        private void CalculateTileAllSameType(IEnumerable<Tile> tiles, Player player)
-        { 
-        
-        }
-
-        private void CalculateKong(IEnumerable<Tile> tiles, Player player)
+        public int CalculateTileAllSameType(Game game, IEnumerable<Tile> tiles, Player player)
         {
+            int pts = 0;
+
+            var firstTileType = tiles.FirstOrDefault();
+            bool foundDifferentType = false;
+            foreach (var t in tiles)
+            {
+                if (t.Type != firstTileType.Type) { foundDifferentType = true; }
+            }
+
+            if (!foundDifferentType) { _totalPoints += 7; }
+
+            return pts;
+        }
+
+        public int CalculateKong(Game game, IEnumerable<Tile> tiles, Player player)
+        {
+            int pts = 0;
+
             _totalPoints += 1;
 
+            return pts;
         }
-        
-        private void CalculateFlower(IEnumerable<Tile> tiles, Player player)
+
+        public int CalculateFlower(Game game, IEnumerable<Tile> tiles, Player player)
         {
+            int pts = 0;
+
             IEnumerable<Tile> matchedUserFlowerTile = null;
 
             if (player.Wind == WindDirection.East) 
@@ -98,7 +162,7 @@ namespace MahjongBuddy.Models
             {
                 foreach (var t in matchedUserFlowerTile)
                 {
-                    _totalPoints += 1;
+                    pts += 1;
                 }
             }
 
@@ -109,33 +173,38 @@ namespace MahjongBuddy.Models
 
                 if (numericFlower != null && numericFlower.Count() == 4) 
                 {
-                    _totalPoints += 1;
+                    pts += 1;
                 }
 
                 var romanFlower = FlowerTiles.Where(t => t.Value == TileValue.FlowerRomanOne || t.Value == TileValue.FlowerRomanTwo || t.Value == TileValue.FlowerRomanThree || t.Value == TileValue.FlowerRomanFour);
 
                 if (romanFlower != null && romanFlower.Count() == 4)
                 {
-                    _totalPoints += 1;
+                    pts += 1;
                 }
             }
-           
+            _totalPoints += pts;
+            return pts;
         }
 
-        private void CalculateAllTilesNeverRevealed(IEnumerable<Tile> tiles, Player player)
+        public int CalculateStraight(Game game, IEnumerable<Tile> tiles, Player player) 
         {
-            _totalPoints += 1;
+            int pts = 0;
 
+
+
+            _totalPoints += pts;
+
+            return pts;
         }
 
-        private void CalculateStraight(IEnumerable<Tile> tiles, Player player) 
+        public int CalculatePong(Game game, IEnumerable<Tile> tiles, Player player)
         {
-            _totalPoints += 1;
-        }
+            int pts = 0;
 
-        private void CalculatePong(IEnumerable<Tile> tiles, Player player)
-        {
             _totalPoints += 1;
+
+            return pts;
         }
 
         private IEnumerable<IEnumerable<Tile>> FindAllThreeStraight(IEnumerable<Tile> tiles)
@@ -183,6 +252,5 @@ namespace MahjongBuddy.Models
             }
             return ret;
         }
-
     }
 }
