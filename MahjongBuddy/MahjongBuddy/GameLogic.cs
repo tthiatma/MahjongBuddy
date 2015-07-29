@@ -459,10 +459,10 @@ namespace MahjongBuddy
             var temp = new TileSet()
             {
                 Tiles = tiles,
-                Type = type
+                TileType = type
             };
 
-            player.WinningTileSet.OpenedTiles.Add(temp);
+            //player.WinningTileSet.OpenedTiles.Add(temp);
         }
 
         private Player GetPlayerByConnectionId(Game game, string connectionId)
