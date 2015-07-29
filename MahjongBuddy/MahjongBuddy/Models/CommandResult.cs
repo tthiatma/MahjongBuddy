@@ -17,6 +17,7 @@ namespace MahjongBuddy.Models
         InvalidChowNeedTwoTiles,
         InvalidPlayer,
         PlayerWin,
-        PlayerWinFailed
+        PlayerWinFailed,
+        SomethingWentWrong
     }
 }

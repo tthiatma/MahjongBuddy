@@ -5,7 +5,7 @@ using System.Web;
 
 namespace MahjongBuddy.Models
 {
-    public class OpenTileSet
+    public class TileSet
     {
         public IEnumerable<Tile> Tiles { get; set; }
         public TileSetType TileType { get; set; }
@@ -16,5 +16,6 @@ namespace MahjongBuddy.Models
         Chow,
         Pong,
         Kong,
+        Eye
     }
 }

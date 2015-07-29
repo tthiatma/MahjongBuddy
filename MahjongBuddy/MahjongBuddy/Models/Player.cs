@@ -14,7 +14,6 @@ namespace MahjongBuddy.Models
             Id = Guid.NewGuid().ToString("d");
             Matches = new List<int>();
             Group = group;
-            WinningTileSet = new WinningTileSet();
         }
 
         public string ConnectionId { get; set; }
@@ -27,7 +26,6 @@ namespace MahjongBuddy.Models
         public bool CanOnlyThrowTile { get; set; }
         public bool CanDoNoFlower { get; set; }
         public WindDirection Wind { get; set; }
-        public WinningTileSet WinningTileSet { get; set; }
         public List<int> Matches { get; set; }
         public int CurrentPoint { get; set; }
         public int Seat { get; set; }

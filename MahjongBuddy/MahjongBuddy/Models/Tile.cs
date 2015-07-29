@@ -23,7 +23,7 @@ namespace MahjongBuddy.Models
         Unrevealed = 0,
         //Tile just picked from the board
         JustPicked = 1,
-        //Tile just picked by player
+        //Tile that is on player's hand
         UserActive = 2,
         //Tile is kept by player
         UserGraveyard = 3,

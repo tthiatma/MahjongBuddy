@@ -27,6 +27,7 @@ namespace MahjongBuddy
             CommandResultDictionary.Add(CommandResult.InvalidPlayer, "Lost information about player");
             CommandResultDictionary.Add(CommandResult.PlayerWin, "You won!!!!");
             CommandResultDictionary.Add(CommandResult.PlayerWinFailed, "No penalty this time");
+            CommandResultDictionary.Add(CommandResult.SomethingWentWrong, "Something went wrong!");
 
             PointCalculator = new PointCalculator();
         }
@@ -177,16 +178,28 @@ namespace MahjongBuddy
             {
                 if (tiles.Count() > 0 && tiles.Count() < 2)
                 {
-                    var tileToThrow = game.Board.Tiles.Where(t => t.Id == tiles.First()).First();
-                    tileToThrow.Status = TileStatus.BoardGraveyard;
-                    game.LastTile = tileToThrow;
-
-                    var justPickedTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked).FirstOrDefault();
-                    if (justPickedTile != null)
+                    var tileToThrow = game.Board.Tiles.Where(t => t.Id == tiles.First()).FirstOrDefault();
+                    if (tileToThrow != null)
                     {
-                        justPickedTile.Status = TileStatus.UserActive;
+                        //tile that player just picked and about to get thrown
+                        if (tileToThrow.Status == TileStatus.JustPicked)
+                        { 
+                        
+                        }
+                        tileToThrow.Status = TileStatus.BoardGraveyard;
+                        game.LastTile = tileToThrow;
+
+                        var justPickedTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked).FirstOrDefault();
+                        if (justPickedTile != null)
+                        {
+                            justPickedTile.Status = TileStatus.UserActive;
+                        }
+                        return CommandResult.ValidCommand;
                     }
-                    return CommandResult.ValidCommand;
+                    else
+                    {
+                        return CommandResult.InvalidThrow;                    
+                    }
                 }
                 else
                 {
@@ -394,13 +407,59 @@ namespace MahjongBuddy
             }
         }
 
+        private WinningTileSet BuildWinningTiles(IEnumerable<Tile> tiles) 
+        {
+            WinningTileSet ret = new WinningTileSet();
+            
+            //get list of possible eyes
+            List<IEnumerable<Tile>> eyeCollection = new List<IEnumerable<Tile>>();
+            foreach (var t in tiles)
+            {
+                var sameTiles = tiles.Where(ti => ti.Value == t.Value && ti.Type == t.Type);
+                if (sameTiles != null && tiles.Count() > 1)
+                {
+                    foreach (var e in eyeCollection)
+                    {
+                        var noob = e.FirstOrDefault();
+                        if (noob != null && noob.Type != t.Type && noob.Value != t.Value)
+                        {
+                            eyeCollection.Add(sameTiles.Take(2));                            
+                        }
+                    }
+                }            
+            }
+
+            //take out the eyes from the tiles and try to build winning collection
+            foreach (var eyes in eyeCollection)
+            {
+                var tilesWithoutEyes = tiles.ToList();
+                foreach (var t in eyes) 
+                {
+                    tilesWithoutEyes.Remove(t);
+                }
+
+                for (var i = 0; i < ret.Sets.Length; i++)
+                {
+                    var remainingTileSet = tilesWithoutEyes;
+
+                    foreach (var t in tilesWithoutEyes)
+                    {
+                        
+                    }
+                    ret.Sets[i] = new TileSet();
+                }
+            }
+
+            return ret;
+        }
+        
         private void AddTilesToPlayerOpenTileSet(Game game, IEnumerable<Tile> tiles, string playerConnectionId, TileSetType type)
         {
             var player = GetPlayerByConnectionId(game, playerConnectionId);
-            var temp = new OpenTileSet()
+            var temp = new TileSet()
             {
                 Tiles = tiles,
-                TileType = type
+                Type = type
             };
 
             player.WinningTileSet.OpenedTiles.Add(temp);

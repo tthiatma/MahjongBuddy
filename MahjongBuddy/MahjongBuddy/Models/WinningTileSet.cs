@@ -7,11 +7,14 @@ namespace MahjongBuddy.Models
 {
     public class WinningTileSet
     {
-        public List<OpenTileSet> OpenedTiles { get; set; }
-        public IEnumerable<Tile> ClosedTiles { get; set; }
+        public TileSet Eye { get; set; }
+        public TileSet[] Sets { get; set; }
+
         public WinningTileSet() 
         {
-            OpenedTiles = new List<OpenTileSet>();
+            Sets = new TileSet[4];
+            Eye = new TileSet();
+            Eye.TileType = TileSetType.Eye;
         }
     }
 }

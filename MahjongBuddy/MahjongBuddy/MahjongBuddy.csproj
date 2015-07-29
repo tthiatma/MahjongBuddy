@@ -155,7 +155,7 @@
     <Compile Include="Models\CommandResult.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\GameSetting.cs" />
-    <Compile Include="Models\OpenTileSet.cs" />
+    <Compile Include="Models\TileSet.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="PointCalculator.cs" />
     <Compile Include="Models\Tile.cs" />

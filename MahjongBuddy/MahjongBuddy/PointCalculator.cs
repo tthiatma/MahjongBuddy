@@ -96,17 +96,8 @@ namespace MahjongBuddy.Models
         {
             int pts = 0;
 
-            var openedTiles = tiles.Where(t => t.Status == TileStatus.UserGraveyard && t.Type != TileType.Flower);
-
-            if (openedTiles != null && openedTiles.Count() > 0)
-            {
-                //this means user revealed card
-            }
-            else 
-            {
-                _totalPoints += 1;
-            }
-
+            
+           
             return pts;
         }
 
@@ -114,14 +105,20 @@ namespace MahjongBuddy.Models
         {
             int pts = 0;
 
-            var firstTileType = tiles.FirstOrDefault();
-            bool foundDifferentType = false;
-            foreach (var t in tiles)
-            {
-                if (t.Type != firstTileType.Type) { foundDifferentType = true; }
-            }
+            var firstTileType = tiles.Where(t => t.Type != TileType.Dragon && t.Type != TileType.Wind && t.Type != TileType.Flower).FirstOrDefault();
 
-            if (!foundDifferentType) { _totalPoints += 7; }
+            if (firstTileType != null)
+            {
+                bool foundDifferentType = false;
+                foreach (var t in tiles)
+                {
+                    if (t.Type != firstTileType.Type) { foundDifferentType = true; }
+                }
+
+                if (!foundDifferentType) { pts += 7; }            
+            }
+            
+            _totalPoints += pts;
 
             return pts;
         }
