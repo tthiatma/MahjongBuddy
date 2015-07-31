@@ -99,6 +99,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PointCountUnitTest.cs" />
+    <Compile Include="WinningTileSetUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />

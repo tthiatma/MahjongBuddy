@@ -203,51 +203,5 @@ namespace MahjongBuddy.Models
 
             return pts;
         }
-
-        private IEnumerable<IEnumerable<Tile>> FindAllThreeStraight(IEnumerable<Tile> tiles)
-        {
-            var straightMoneyTiles = FindStraightByType(TileType.Money, tiles);
-            var straightRoundTiles = FindStraightByType(TileType.Round, tiles);
-            var straightStickTiles = FindStraightByType(TileType.Stick, tiles);
-
-            return straightMoneyTiles.Concat(straightRoundTiles).Concat(straightStickTiles);
-        }
-
-        private IEnumerable<IEnumerable<Tile>> FindStraightByType(TileType type, IEnumerable<Tile> tile)
-        {
-            var ret = new List<IEnumerable<Tile>>();
-
-            var sameTypeTiles = tile.Where(t => t.Type == type);
-            foreach (var t in sameTypeTiles)
-            {
-                if (sameTypeTiles.Any(ti => ti.Value == (t.Value - 2)) && sameTypeTiles.Any(ti => ti.Value == (t.Value - 1)))
-                {
-                    var temp = new List<Tile>();
-                    temp.Add(t);
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value - 2)).First());
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value - 1)).First());
-                    ret.Add(temp);
-                }
-
-                if (sameTypeTiles.Any(ti => ti.Value == (t.Value - 1)) && sameTypeTiles.Any(ti => ti.Value == (t.Value + 1)))
-                {
-                    var temp = new List<Tile>();
-                    temp.Add(t);
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value - 1)).First());
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value + 1)).First());
-                    ret.Add(temp);
-                }
-
-                if (sameTypeTiles.Any(ti => ti.Value == (t.Value + 1)) && sameTypeTiles.Any(ti => ti.Value == (t.Value + 2)))
-                {
-                    var temp = new List<Tile>();
-                    temp.Add(t);
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value + 1)).First());
-                    temp.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value + 2)).First());
-                    ret.Add(temp);
-                }
-            }
-            return ret;
-        }
     }
 }

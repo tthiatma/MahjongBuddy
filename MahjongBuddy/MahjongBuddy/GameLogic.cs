@@ -407,52 +407,121 @@ namespace MahjongBuddy
             }
         }
 
-        private WinningTileSet BuildWinningTiles(IEnumerable<Tile> tiles) 
+        public WinningTileSet BuildWinningTiles(IEnumerable<Tile> tiles) 
         {
             WinningTileSet ret = new WinningTileSet();
+            bool tileSetIsLegit = false;
             
             //get list of possible eyes
             List<IEnumerable<Tile>> eyeCollection = new List<IEnumerable<Tile>>();
             foreach (var t in tiles)
             {
                 var sameTiles = tiles.Where(ti => ti.Value == t.Value && ti.Type == t.Type);
-                if (sameTiles != null && tiles.Count() > 1)
+                if (sameTiles != null && sameTiles.Count() > 1)
                 {
-                    foreach (var e in eyeCollection)
-                    {
-                        var noob = e.FirstOrDefault();
-                        if (noob != null && noob.Type != t.Type && noob.Value != t.Value)
-                        {
-                            eyeCollection.Add(sameTiles.Take(2));                            
-                        }
-                    }
+                    eyeCollection.Add(sameTiles.Take(2));                            
                 }            
             }
 
             //take out the eyes from the tiles and try to build winning collection
             foreach (var eyes in eyeCollection)
             {
+                //remove possible eyes from tiles
                 var tilesWithoutEyes = tiles.ToList();
                 foreach (var t in eyes) 
                 {
                     tilesWithoutEyes.Remove(t);
                 }
 
-                for (var i = 0; i < ret.Sets.Length; i++)
-                {
-                    var remainingTileSet = tilesWithoutEyes;
+                var tilesWithoutFirstSet = tilesWithoutEyes.ToList();
+                var firstSetWinningTileSet = GetOneWinningTileSet(tilesWithoutEyes);
 
-                    foreach (var t in tilesWithoutEyes)
+                if (firstSetWinningTileSet != null && firstSetWinningTileSet.Tiles.Count() == 3)
+                {
+                    foreach (var t in firstSetWinningTileSet.Tiles)
                     {
-                        
-                    }
-                    ret.Sets[i] = new TileSet();
+                        tilesWithoutFirstSet.Remove(t);
+                    }                
                 }
+
+                var tilesWithoutSecondSet = tilesWithoutFirstSet.ToList();
+                var secondSetWinningTileSet = GetOneWinningTileSet(tilesWithoutFirstSet);
+
+                if (secondSetWinningTileSet != null && secondSetWinningTileSet.Tiles.Count() == 3)
+                {
+                    foreach (var t in secondSetWinningTileSet.Tiles)
+                    {
+                        tilesWithoutSecondSet.Remove(t);
+                    }                
+                }
+
+                var tilesWithoutThirdSet = tilesWithoutSecondSet.ToList();
+                var thirdSetWinningTileSet = GetOneWinningTileSet(tilesWithoutSecondSet);
+
+                if (thirdSetWinningTileSet != null && thirdSetWinningTileSet.Tiles.Count() == 3)
+                {
+                    foreach (var t in thirdSetWinningTileSet.Tiles)
+                    {
+                        tilesWithoutThirdSet.Remove(t);
+                    }
+                }
+
+                var fourthSetWinningTileSet = GetOneWinningTileSet(tilesWithoutThirdSet);
+
+                if (fourthSetWinningTileSet != null && fourthSetWinningTileSet.Tiles.Count() == 3)
+                {
+                    tileSetIsLegit = true;
+                }
+
+                if (tileSetIsLegit)
+                {
+                    ret.Eye.Tiles = eyes;
+                    ret.Sets[0] = firstSetWinningTileSet;
+                    ret.Sets[1] = secondSetWinningTileSet;
+                    ret.Sets[2] = thirdSetWinningTileSet;
+                    ret.Sets[3] = fourthSetWinningTileSet;
+                    break;
+                }
+            }
+            if (!tileSetIsLegit)
+            {
+                ret = null;
             }
 
             return ret;
         }
-        
+
+        private TileSet GetOneWinningTileSet(IEnumerable<Tile> tiles)
+        {
+            TileSet ret = new TileSet();
+
+            //try get straight tile
+            foreach (var t in tiles)
+            {
+                var temp = FindStraightTiles(t, tiles);
+                if (temp != null && temp.Count() == 3)
+                {
+                    ret.Tiles = temp;
+                    ret.TileType = TileSetType.Chow;
+                    return ret;
+                }
+            }
+
+            //if no straight tile, try get pong tile
+            foreach (var t in tiles)
+            {
+                var temp = FindPongTiles(t, tiles);
+                if (temp != null && temp.Count() == 3)
+                {
+                    ret.Tiles = temp;
+                    ret.TileType = TileSetType.Pong;
+                    return ret;
+                }
+            }
+            
+            return ret;
+        }
+
         private void AddTilesToPlayerOpenTileSet(Game game, IEnumerable<Tile> tiles, string playerConnectionId, TileSetType type)
         {
             var player = GetPlayerByConnectionId(game, playerConnectionId);
@@ -463,6 +532,55 @@ namespace MahjongBuddy
             };
 
             //player.WinningTileSet.OpenedTiles.Add(temp);
+        }
+
+        private List<Tile> FindPongTiles(Tile theTile, IEnumerable<Tile> tiles)
+        {
+            var ret = new List<Tile>();
+            var sameTiles = tiles.Where(t => t.Type == theTile.Type && t.Value == theTile.Value);
+            if (sameTiles != null && sameTiles.Count() == 3)
+            {
+                foreach (var t in sameTiles)
+                {
+                    ret.Add(t);
+                }
+            }
+
+            return ret;
+        }
+
+        private List<Tile> FindStraightTiles(Tile theTile, IEnumerable<Tile> tiles)
+        {
+            var ret = new List<Tile>();
+
+            var sameTypeTiles = tiles.Where(t => t.Type == theTile.Type);
+            foreach (var t in sameTypeTiles)
+            {
+                if (sameTypeTiles.Any(ti => ti.Value == (t.Value - 2)) && sameTypeTiles.Any(ti => ti.Value == (t.Value - 1)))
+                {
+                    ret.Add(t);
+                    ret.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value - 2)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value - 1)).First());
+                    break;
+                }
+
+                if (sameTypeTiles.Any(ti => ti.Value == (t.Value - 1)) && sameTypeTiles.Any(ti => ti.Value == (t.Value + 1)))
+                {
+                    ret.Add(t);
+                    ret.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value - 1)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value + 1)).First());
+                    break;
+                }
+
+                if (sameTypeTiles.Any(ti => ti.Value == (t.Value + 1)) && sameTypeTiles.Any(ti => ti.Value == (t.Value + 2)))
+                {
+                    ret.Add(t);
+                    ret.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value + 1)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Value == (t.Value + 2)).First());
+                    break;
+                }
+            }
+            return ret;
         }
 
         private Player GetPlayerByConnectionId(Game game, string connectionId)
