@@ -18,6 +18,7 @@ namespace MahjongBuddy.Models
         InvalidPlayer,
         PlayerWin,
         PlayerWinFailed,
+        InvalidWin,
         SomethingWentWrong
     }
 }

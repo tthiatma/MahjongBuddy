@@ -28,6 +28,8 @@ namespace MahjongBuddy
             CommandResultDictionary.Add(CommandResult.PlayerWin, "You won!!!!");
             CommandResultDictionary.Add(CommandResult.PlayerWinFailed, "No penalty this time");
             CommandResultDictionary.Add(CommandResult.SomethingWentWrong, "Something went wrong!");
+            CommandResultDictionary.Add(CommandResult.InvalidWin, "Can't win with this");
+            
 
             PointCalculator = new PointCalculator();
         }
@@ -261,17 +263,29 @@ namespace MahjongBuddy
         {
             if (player != null)
             {
-                var playerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId);
+                var playerTiles = game.Board.Tiles
+                    .Where(t => 
+                        t.Owner == player.ConnectionId 
+                        && t.Status == TileStatus.UserActive 
+                        && t.Type != TileType.Flower);
 
-                var totalPoints = PointCalculator.GetTotalPoints(game, playerTiles, player);
-
-                if (totalPoints >= 3)
+                var winningSet = BuildWinningTiles(playerTiles, player.TileSets);
+                if (winningSet != null)
                 {
-                    return CommandResult.PlayerWin;
+                    var totalPoints = PointCalculator.GetTotalPoints(game, playerTiles, player);
+
+                    if (totalPoints >= 3)
+                    {
+                        return CommandResult.PlayerWin;
+                    }
+                    else
+                    {
+                        return CommandResult.PlayerWinFailed;
+                    }
                 }
                 else
                 {
-                    return CommandResult.PlayerWinFailed;
+                    return CommandResult.InvalidWin;
                 }
             }
             else
