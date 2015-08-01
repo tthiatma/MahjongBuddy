@@ -407,11 +407,19 @@ namespace MahjongBuddy
             }
         }
 
-        public WinningTileSet BuildWinningTiles(IEnumerable<Tile> tiles) 
+        public WinningTileSet BuildWinningTiles(IEnumerable<Tile> tiles, List<TileSet> tilesets) 
         {
             WinningTileSet ret = new WinningTileSet();
             bool tileSetIsLegit = false;
-            
+
+            if (tilesets != null && tilesets.Count > 0)
+            {
+                for (int i = 0; i < tilesets.Count(); i++)
+                {
+                    ret.Sets[i] = tilesets[i];
+                }            
+            }
+
             //get list of possible eyes
             List<IEnumerable<Tile>> eyeCollection = new List<IEnumerable<Tile>>();
             foreach (var t in tiles)
@@ -433,10 +441,18 @@ namespace MahjongBuddy
                     tilesWithoutEyes.Remove(t);
                 }
 
+                TileSet firstSetWinningTileSet;
+                if (ret.Sets[0] != null)
+                {
+                    firstSetWinningTileSet = ret.Sets[0];
+                }
+                else 
+                {
+                    firstSetWinningTileSet = GetOneWinningTileSet(tilesWithoutEyes);
+                }
                 var tilesWithoutFirstSet = tilesWithoutEyes.ToList();
-                var firstSetWinningTileSet = GetOneWinningTileSet(tilesWithoutEyes);
 
-                if (firstSetWinningTileSet != null && firstSetWinningTileSet.Tiles.Count() == 3)
+                if (firstSetWinningTileSet.Tiles != null && firstSetWinningTileSet.Tiles.Count() == 3)
                 {
                     foreach (var t in firstSetWinningTileSet.Tiles)
                     {
@@ -444,10 +460,19 @@ namespace MahjongBuddy
                     }                
                 }
 
-                var tilesWithoutSecondSet = tilesWithoutFirstSet.ToList();
-                var secondSetWinningTileSet = GetOneWinningTileSet(tilesWithoutFirstSet);
+                TileSet secondSetWinningTileSet;
+                if (ret.Sets[1] != null)
+                {
+                    secondSetWinningTileSet = ret.Sets[1];
+                }
+                else
+                {
+                    secondSetWinningTileSet = GetOneWinningTileSet(tilesWithoutFirstSet);
+                }
 
-                if (secondSetWinningTileSet != null && secondSetWinningTileSet.Tiles.Count() == 3)
+                var tilesWithoutSecondSet = tilesWithoutFirstSet.ToList();
+
+                if (secondSetWinningTileSet.Tiles != null && secondSetWinningTileSet.Tiles.Count() == 3)
                 {
                     foreach (var t in secondSetWinningTileSet.Tiles)
                     {
@@ -455,10 +480,19 @@ namespace MahjongBuddy
                     }                
                 }
 
-                var tilesWithoutThirdSet = tilesWithoutSecondSet.ToList();
-                var thirdSetWinningTileSet = GetOneWinningTileSet(tilesWithoutSecondSet);
+                TileSet thirdSetWinningTileSet;
+                if (ret.Sets[2] != null)
+                {
+                    thirdSetWinningTileSet = ret.Sets[2];
+                }
+                else
+                {
+                    thirdSetWinningTileSet = GetOneWinningTileSet(tilesWithoutSecondSet);
+                }
 
-                if (thirdSetWinningTileSet != null && thirdSetWinningTileSet.Tiles.Count() == 3)
+                var tilesWithoutThirdSet = tilesWithoutSecondSet.ToList();
+
+                if (thirdSetWinningTileSet.Tiles != null && thirdSetWinningTileSet.Tiles.Count() == 3)
                 {
                     foreach (var t in thirdSetWinningTileSet.Tiles)
                     {
@@ -466,9 +500,18 @@ namespace MahjongBuddy
                     }
                 }
 
-                var fourthSetWinningTileSet = GetOneWinningTileSet(tilesWithoutThirdSet);
+                TileSet fourthSetWinningTileSet;
+                if (ret.Sets[3] != null)
+                {
+                    fourthSetWinningTileSet = ret.Sets[3];
+                }
+                else
+                {
+                    fourthSetWinningTileSet = GetOneWinningTileSet(tilesWithoutThirdSet);
+                }
 
-                if (fourthSetWinningTileSet != null && fourthSetWinningTileSet.Tiles.Count() == 3)
+
+                if (fourthSetWinningTileSet.Tiles != null && fourthSetWinningTileSet.Tiles.Count() == 3)
                 {
                     tileSetIsLegit = true;
                 }
@@ -531,7 +574,7 @@ namespace MahjongBuddy
                 TileType = type
             };
 
-            //player.WinningTileSet.OpenedTiles.Add(temp);
+            player.TileSets.Add(temp);
         }
 
         private List<Tile> FindPongTiles(Tile theTile, IEnumerable<Tile> tiles)

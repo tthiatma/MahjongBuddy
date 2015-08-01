@@ -14,6 +14,7 @@ namespace MahjongBuddy.Models
             Id = Guid.NewGuid().ToString("d");
             Matches = new List<int>();
             Group = group;
+            TileSets = new List<TileSet>();
         }
 
         public string ConnectionId { get; set; }
@@ -29,5 +30,6 @@ namespace MahjongBuddy.Models
         public List<int> Matches { get; set; }
         public int CurrentPoint { get; set; }
         public int Seat { get; set; }
+        public List<TileSet> TileSets { get; set; }
     }
 }

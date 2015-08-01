@@ -13,7 +13,7 @@ namespace MahjongBuddy.Tests
         {
             GameLogic gl = new GameLogic();
             var tiles = TileBuilder.BuildAllPongTiles();
-            var wt = gl.BuildWinningTiles(tiles);
+            var wt = gl.BuildWinningTiles(tiles, null);
             Assert.IsNotNull(wt);
         }
         [TestMethod]
@@ -21,7 +21,7 @@ namespace MahjongBuddy.Tests
         {
             GameLogic gl = new GameLogic();
             var tiles = TileBuilder.BuildNotAllPongTiles();
-            var wt = gl.BuildWinningTiles(tiles);
+            var wt = gl.BuildWinningTiles(tiles, null);
             Assert.IsNull(wt);
         }
 
@@ -30,7 +30,7 @@ namespace MahjongBuddy.Tests
         {
             GameLogic gl = new GameLogic();
             var tiles = TileBuilder.BuildAllStraightTiles();
-            var wt = gl.BuildWinningTiles(tiles);
+            var wt = gl.BuildWinningTiles(tiles, null);
             Assert.IsNotNull(wt);
         }
 
@@ -39,7 +39,7 @@ namespace MahjongBuddy.Tests
         {
             GameLogic gl = new GameLogic();
             var tiles = TileBuilder.BuildNotAllStraightTiles();
-            var wt = gl.BuildWinningTiles(tiles);
+            var wt = gl.BuildWinningTiles(tiles, null);
             Assert.IsNull(wt);
         }
     }
