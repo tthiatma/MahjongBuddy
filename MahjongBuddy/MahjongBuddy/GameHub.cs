@@ -164,9 +164,14 @@ namespace MahjongBuddy
                 }
                 Clients.Group(group).updateGame(game);           
             }
+            else if (cr == CommandResult.PlayerWin)
+            {
+                //TODO logic when user win
+                //Clients.Group(group).updateGame(game);
+            }
             else
             {
-                Clients.Caller.alertUser(invalidMessage);                
+                Clients.Caller.alertUser(invalidMessage);
             }
         }
 

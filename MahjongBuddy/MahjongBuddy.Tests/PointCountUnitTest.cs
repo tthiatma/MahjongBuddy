@@ -79,6 +79,78 @@ namespace MahjongBuddy.Tests
 
             Assert.AreEqual(CommandResult.PlayerWin, cs);
         }
- 
+
+        [TestMethod]
+        public void TestWin13Wonders()
+        {
+            game.Board = new Board();
+            game.Board.CreateTiles();
+            game.CurrentWind = WindDirection.East;
+            player.Wind = WindDirection.East;
+            player.ConnectionId = "p1";
+
+            var dTiles = game.Board.Tiles.Where(
+                t => t.Id == 1
+                || t.Id == 9
+                || t.Id == 10
+                || t.Id == 18
+                || t.Id == 19
+                || t.Id == 27
+                || t.Id == 28
+                || t.Id == 29
+                || t.Id == 30
+                || t.Id == 31
+                || t.Id == 32
+                || t.Id == 33
+                || t.Id == 34
+                || t.Id == 35
+                );
+
+            foreach (var t in dTiles)
+            {
+                t.Owner = "p1";
+                t.Status = TileStatus.UserActive;
+            }
+
+            var cs = gl.DoWin(game, player);
+
+            Assert.AreEqual(CommandResult.PlayerWin, cs);
+        }
+        [TestMethod]
+        public void TestWinAllPairs()
+        {
+            game.Board = new Board();
+            game.Board.CreateTiles();
+            game.CurrentWind = WindDirection.East;
+            player.Wind = WindDirection.East;
+            player.ConnectionId = "p1";
+
+            var dTiles = game.Board.Tiles.Where(
+                t => t.Id == 1
+                || t.Id == 35
+                || t.Id == 10
+                || t.Id == 44
+                || t.Id == 19
+                || t.Id == 53
+                || t.Id == 28
+                || t.Id == 62
+                || t.Id == 31
+                || t.Id == 65
+                || t.Id == 2
+                || t.Id == 36
+                || t.Id == 69
+                || t.Id == 103
+                );
+
+            foreach (var t in dTiles)
+            {
+                t.Owner = "p1";
+                t.Status = TileStatus.UserActive;
+            }
+
+            var cs = gl.DoWin(game, player);
+
+            Assert.AreEqual(CommandResult.PlayerWin, cs);
+        }
     }
 }

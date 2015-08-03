@@ -20,6 +20,7 @@ namespace MahjongBuddy.Models
 
             for (var i = 1; i < 5; i++)
             {
+                //1 - 35 - 69 - 103
                 _tiles.Add(new Money1() {Name = i + "MoneyOne"});
                 _tiles.Add(new Money2() {Name = i + "MoneyTwo"});
                 _tiles.Add(new Money3() {Name = i + "MoneyThree"});
@@ -30,6 +31,7 @@ namespace MahjongBuddy.Models
                 _tiles.Add(new Money8() {Name = i + "MoneyEight"});
                 _tiles.Add(new Money9() {Name = i + "MoneyNine"});
 
+                //10 - 44 - 78 - 112
                 _tiles.Add(new Round1() {Name = i + "RoundOne"});
                 _tiles.Add(new Round2() {Name = i + "RoundTwo"});
                 _tiles.Add(new Round3() {Name = i + "RoundThree"});
@@ -40,6 +42,7 @@ namespace MahjongBuddy.Models
                 _tiles.Add(new Round8() {Name = i + "RoundEight"});
                 _tiles.Add(new Round9() {Name = i + "RoundNine"});
 
+                //19 - 53 - 87 - 121
                 _tiles.Add(new Stick1() {Name = i + "StickOne"});
                 _tiles.Add(new Stick2() {Name = i + "StickTwo"});
                 _tiles.Add(new Stick3() {Name = i + "StickThree"});
@@ -50,14 +53,17 @@ namespace MahjongBuddy.Models
                 _tiles.Add(new Stick8() {Name = i + "StickEight"});
                 _tiles.Add(new Stick9() {Name = i + "StickNine"});
 
+                //28 - 62 - 96 - 130
                 _tiles.Add(new DragonGreen() {Name = i + "DragonGreen"});
                 _tiles.Add(new DragonRed() {Name = i + "DragonRed"});
                 _tiles.Add(new DragonWhite() {Name = i + "DragonWhite"});
 
+                //31 - 65 - 99 - 133
                 _tiles.Add(new WindNorth() { Name = i + "WindNorth" });
                 _tiles.Add(new WindEast() { Name = i + "WindEast" });
                 _tiles.Add(new WindSouth() { Name = i + "WindSouth" });
                 _tiles.Add(new WindWest() { Name = i + "WindWest" });
+                
             }
             _tiles.Add(new FlowerNumeric1() { Name = "137FlowerNumeric" });
             _tiles.Add(new FlowerNumeric2() { Name = "138FlowerNumeric" });

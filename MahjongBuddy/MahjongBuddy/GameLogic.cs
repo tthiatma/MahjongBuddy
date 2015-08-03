@@ -286,33 +286,82 @@ namespace MahjongBuddy
                     //check 13 wonder
                     var thirteenWonderTiles = TileBuilder.BuildThirteenWonder();
                     List<Tile> tempTilesToCheck13Wonders = new List<Tile>();
+                    bool foundEyesFor13Wonders = false;
+                    bool is13Wonders = true;
                     foreach (var t in thirteenWonderTiles)
                     {
                         var dTile = tilesToTestForwin.Where(dt => dt.Type == t.Type && dt.Value == t.Value);
 
-                        if (dTile != null && dTile.Count() <= 2)
+                        if (dTile != null)
                         {
+                            if (foundEyesFor13Wonders)
+                            {
+                                if (dTile.Count() != 1)
+                                {
+                                    is13Wonders = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (dTile.Count() == 2)
+                                {
+                                    foundEyesFor13Wonders = true;
+                                }
+                                else if (dTile.Count() > 2)
+                                {
+                                    is13Wonders = false;
+                                    break;
+                                }
+                            }
+
                             foreach (var tt in dTile)
                             {
                                 tempTilesToCheck13Wonders.Add(tt);
-                            }                                                    
+                            }
+                        }
+                        else
+                        {
+                            is13Wonders = false;
+                            break;
                         }
                     }
-
-                    if (tempTilesToCheck13Wonders.Count() == 14)
+                    if (is13Wonders && tempTilesToCheck13Wonders.Count() == 14)
                     {
                         //it's 13 wonder set!
+                        totalPoints += 10;
+                        return CommandResult.PlayerWin;
                     }
+                    else
+                    {
+                        //check al pairs      
+                        bool isAllPair = true;
+                        foreach (var t in tilesToTestForwin)
+                        {
+                            var pairTiles = tilesToTestForwin.Where(tt => tt.Type == t.Type && tt.Value == t.Value);
+                            if (pairTiles != null)
+                            {
+                                if (pairTiles.Count() == 1 || pairTiles.Count() == 3)
+                                {
+                                    isAllPair = false;
+                                }
+                            }
+                        }
+                        if (isAllPair)
+                        {
+                            //TODO need to check flower
+                            var playerFlowerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Type == TileType.Flower);
 
-                    //check al pairs
+                            if (playerFlowerTiles != null)
+                            {
+                                totalPoints += PointCalculator.CalculateFlower(game, playerFlowerTiles, player);
+                            }
+                            totalPoints += 7;
+                            return CommandResult.PlayerWin;
+                        }
+                    }
                 }
-                else
-                { 
-                
-                }
-                
-
-
+ 
                 var winningSet = BuildWinningTiles(tilesToTestForwin, player.TileSets);
                 if (winningSet != null)
                 {
