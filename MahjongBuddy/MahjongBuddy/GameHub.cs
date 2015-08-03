@@ -76,8 +76,10 @@ namespace MahjongBuddy
                     game.GameCount = 1;
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
-                    game.Board.Tiles.Shuffle();
-                    DistributeTiles(game.Board.Tiles, player, player2, player3, player4);
+                    //game.Board.Tiles.Shuffle();
+                    DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
+
+                    //DistributeTiles(game.Board.Tiles, player, player2, player3, player4);
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 
                     if (game.GameSetting.SkipInitialFlowerSwapping)
@@ -89,6 +91,7 @@ namespace MahjongBuddy
 
                     Clients.Group(player.Group).startGame(game);
 
+                    //DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
                     //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);
                     //DistributeTilesForPong(game.Board.Tiles, player, player2, player3, player4);
                     //DistributeTilesForKong(game.Board.Tiles, player, player2, player3, player4);
@@ -169,6 +172,34 @@ namespace MahjongBuddy
 
         //all of this belong to test section
         //TODO : move this to test
+        private void DistributeTilesForWin(List<Tile> tiles, Player p1, Player p2, Player p3, Player p4) 
+        {
+            for (var i = 0; i < 13; i++)
+            {
+                tiles[i].Owner = p1.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+            tiles[46].Owner = p1.ConnectionId;
+            tiles[46].Status = TileStatus.UserActive;
+
+
+            for (var i = 14; i < 27; i++)
+            {
+                tiles[i].Owner = p2.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+            for (var i = 27; i < 40; i++)
+            {
+                tiles[i].Owner = p3.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+            for (var i = 53; i < 66; i++)
+            {
+                tiles[i].Owner = p4.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+        }
+
         private void DistributeTilesForKong(List<Tile> tiles, Player p1, Player p2, Player p3, Player p4)
         {
             for (var i = 0; i < 14; i++)

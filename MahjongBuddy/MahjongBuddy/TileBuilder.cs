@@ -1,4 +1,5 @@
 ﻿using MahjongBuddy.Models;
+using MahjongBuddy.Models.Tiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,27 @@ namespace MahjongBuddy
 {
     public static class TileBuilder
     {
+
+        public static List<Tile> BuildThirteenWonder()
+        {
+            List<Tile> tiles = new List<Tile>();
+            tiles.Add(new Money1());
+            tiles.Add(new Money9());
+            tiles.Add(new Round1());
+            tiles.Add(new Round9());
+            tiles.Add(new Stick1());
+            tiles.Add(new Stick9());
+            tiles.Add(new WindEast());
+            tiles.Add(new WindSouth());
+            tiles.Add(new WindWest());
+            tiles.Add(new WindNorth());
+            tiles.Add(new DragonGreen());
+            tiles.Add(new DragonRed());
+            tiles.Add(new DragonWhite());
+            return tiles;
+        }
+
+
         public static List<Tile> BuildWinningAllStraightTilesWithOneFlower()
         {
             List<Tile> tiles = new List<Tile>();

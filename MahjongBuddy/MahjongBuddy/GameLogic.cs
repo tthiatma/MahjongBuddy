@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.ComponentModel.Composition;
 using MahjongBuddy.Models;
 
 namespace MahjongBuddy
@@ -183,11 +182,6 @@ namespace MahjongBuddy
                     var tileToThrow = game.Board.Tiles.Where(t => t.Id == tiles.First()).FirstOrDefault();
                     if (tileToThrow != null)
                     {
-                        //tile that player just picked and about to get thrown
-                        if (tileToThrow.Status == TileStatus.JustPicked)
-                        { 
-                        
-                        }
                         tileToThrow.Status = TileStatus.BoardGraveyard;
                         game.LastTile = tileToThrow;
 
@@ -263,16 +257,66 @@ namespace MahjongBuddy
         {
             if (player != null)
             {
+                int totalPoints = 0;
                 var playerTiles = game.Board.Tiles
                     .Where(t => 
                         t.Owner == player.ConnectionId 
-                        && t.Status == TileStatus.UserActive 
+                        && (t.Status == TileStatus.UserActive || t.Status == TileStatus.JustPicked)
                         && t.Type != TileType.Flower);
 
-                var winningSet = BuildWinningTiles(playerTiles, player.TileSets);
+                var tilesToTestForwin = playerTiles.ToList();
+                bool isPossibleToGetWeirdWinningSet = false;
+
+                if (playerTiles.Count() == 14)
+                {
+                    isPossibleToGetWeirdWinningSet = true;
+                }
+                else if (playerTiles.Count() == 13)
+                {
+                    isPossibleToGetWeirdWinningSet = true;
+                    tilesToTestForwin.Add(game.LastTile);
+                }
+                else 
+                {
+                    isPossibleToGetWeirdWinningSet = false;                
+                }
+
+                if (isPossibleToGetWeirdWinningSet)
+                {
+                    //check 13 wonder
+                    var thirteenWonderTiles = TileBuilder.BuildThirteenWonder();
+                    List<Tile> tempTilesToCheck13Wonders = new List<Tile>();
+                    foreach (var t in thirteenWonderTiles)
+                    {
+                        var dTile = tilesToTestForwin.Where(dt => dt.Type == t.Type && dt.Value == t.Value);
+
+                        if (dTile != null && dTile.Count() <= 2)
+                        {
+                            foreach (var tt in dTile)
+                            {
+                                tempTilesToCheck13Wonders.Add(tt);
+                            }                                                    
+                        }
+                    }
+
+                    if (tempTilesToCheck13Wonders.Count() == 14)
+                    {
+                        //it's 13 wonder set!
+                    }
+
+                    //check al pairs
+                }
+                else
+                { 
+                
+                }
+                
+
+
+                var winningSet = BuildWinningTiles(tilesToTestForwin, player.TileSets);
                 if (winningSet != null)
                 {
-                    var totalPoints = PointCalculator.GetTotalPoints(game, playerTiles, player);
+                    totalPoints = PointCalculator.GetTotalPoints(game, playerTiles, player);
 
                     if (totalPoints >= 3)
                     {
@@ -560,6 +604,7 @@ namespace MahjongBuddy
                 {
                     ret.Tiles = temp;
                     ret.TileType = TileSetType.Chow;
+                    ret.isOpen = false;
                     return ret;
                 }
             }
@@ -572,6 +617,7 @@ namespace MahjongBuddy
                 {
                     ret.Tiles = temp;
                     ret.TileType = TileSetType.Pong;
+                    ret.isOpen = false;
                     return ret;
                 }
             }
@@ -585,7 +631,8 @@ namespace MahjongBuddy
             var temp = new TileSet()
             {
                 Tiles = tiles,
-                TileType = type
+                TileType = type,
+                isOpen = true
             };
 
             player.TileSets.Add(temp);

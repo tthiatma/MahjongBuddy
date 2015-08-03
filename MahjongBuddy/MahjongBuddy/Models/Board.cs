@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahjongBuddy.Models.Tiles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -19,54 +20,54 @@ namespace MahjongBuddy.Models
 
             for (var i = 1; i < 5; i++)
             {
-                _tiles.Add(new Tile() { Type = TileType.Money, Status= TileStatus.Unrevealed, Value = TileValue.One, Owner = "board", Name = i + "MoneyOne", Image = "/Content/images/tiles/64px/man/man1.png" });
-                _tiles.Add(new Tile() { Type = TileType.Money, Status = TileStatus.Unrevealed, Value = TileValue.Two, Owner = "board", Name = i + "MoneyTwo", Image = "/Content/images/tiles/64px/man/man2.png" });
-                _tiles.Add(new Tile() { Type = TileType.Money, Status = TileStatus.Unrevealed, Value = TileValue.Three, Owner = "board", Name = i + "MoneyThree", Image = "/Content/images/tiles/64px/man/man3.png" });
-                _tiles.Add(new Tile() { Type = TileType.Money, Status = TileStatus.Unrevealed, Value = TileValue.Four, Owner = "board", Name = i + "MoneyFour", Image = "/Content/images/tiles/64px/man/man4.png" });
-                _tiles.Add(new Tile() { Type = TileType.Money, Status = TileStatus.Unrevealed, Value = TileValue.Five, Owner = "board", Name = i + "MoneyFive", Image = "/Content/images/tiles/64px/man/man5.png" });
-                _tiles.Add(new Tile() { Type = TileType.Money, Status = TileStatus.Unrevealed, Value = TileValue.Six, Owner = "board", Name = i + "MoneySix", Image = "/Content/images/tiles/64px/man/man6.png" });
-                _tiles.Add(new Tile() { Type = TileType.Money, Status = TileStatus.Unrevealed, Value = TileValue.Seven, Owner = "board", Name = i + "MoneySeven", Image = "/Content/images/tiles/64px/man/man7.png" });
-                _tiles.Add(new Tile() { Type = TileType.Money, Status = TileStatus.Unrevealed, Value = TileValue.Eight, Owner = "board", Name = i + "MoneyEight", Image = "/Content/images/tiles/64px/man/man8.png" });
-                _tiles.Add(new Tile() { Type = TileType.Money, Status = TileStatus.Unrevealed, Value = TileValue.Nine, Owner = "board", Name = i + "MoneyNine", Image = "/Content/images/tiles/64px/man/man9.png" });
+                _tiles.Add(new Money1() {Name = i + "MoneyOne"});
+                _tiles.Add(new Money2() {Name = i + "MoneyTwo"});
+                _tiles.Add(new Money3() {Name = i + "MoneyThree"});
+                _tiles.Add(new Money4() {Name = i + "MoneyFour"});
+                _tiles.Add(new Money5() {Name = i + "MoneyFive"});
+                _tiles.Add(new Money6() {Name = i + "MoneySix"});
+                _tiles.Add(new Money7() {Name = i + "MoneySeven"});
+                _tiles.Add(new Money8() {Name = i + "MoneyEight"});
+                _tiles.Add(new Money9() {Name = i + "MoneyNine"});
 
-                _tiles.Add(new Tile() { Type = TileType.Round, Status = TileStatus.Unrevealed, Value = TileValue.One, Owner = "board", Name = i + "RoundOne", Image = "/Content/images/tiles/64px/pin/pin1.png" });
-                _tiles.Add(new Tile() { Type = TileType.Round, Status = TileStatus.Unrevealed, Value = TileValue.Two, Owner = "board", Name = i + "RoundTwo", Image = "/Content/images/tiles/64px/pin/pin2.png" });
-                _tiles.Add(new Tile() { Type = TileType.Round, Status = TileStatus.Unrevealed, Value = TileValue.Three, Owner = "board", Name = i + "RoundThree", Image = "/Content/images/tiles/64px/pin/pin3.png" });
-                _tiles.Add(new Tile() { Type = TileType.Round, Status = TileStatus.Unrevealed, Value = TileValue.Four, Owner = "board", Name = i + "RoundFour", Image = "/Content/images/tiles/64px/pin/pin4.png" });
-                _tiles.Add(new Tile() { Type = TileType.Round, Status = TileStatus.Unrevealed, Value = TileValue.Five, Owner = "board", Name = i + "RoundFive", Image = "/Content/images/tiles/64px/pin/pin5.png" });
-                _tiles.Add(new Tile() { Type = TileType.Round, Status = TileStatus.Unrevealed, Value = TileValue.Six, Owner = "board", Name = i + "RoundSix", Image = "/Content/images/tiles/64px/pin/pin6.png" });
-                _tiles.Add(new Tile() { Type = TileType.Round, Status = TileStatus.Unrevealed, Value = TileValue.Seven, Owner = "board", Name = i + "RoundSeven", Image = "/Content/images/tiles/64px/pin/pin7.png" });
-                _tiles.Add(new Tile() { Type = TileType.Round, Status = TileStatus.Unrevealed, Value = TileValue.Eight, Owner = "board", Name = i + "RoundEight", Image = "/Content/images/tiles/64px/pin/pin8.png" });
-                _tiles.Add(new Tile() { Type = TileType.Round, Status = TileStatus.Unrevealed, Value = TileValue.Nine, Owner = "board", Name = i + "RoundNine", Image = "/Content/images/tiles/64px/pin/pin9.png" });
+                _tiles.Add(new Round1() {Name = i + "RoundOne"});
+                _tiles.Add(new Round2() {Name = i + "RoundTwo"});
+                _tiles.Add(new Round3() {Name = i + "RoundThree"});
+                _tiles.Add(new Round4() {Name = i + "RoundFour"});
+                _tiles.Add(new Round5() {Name = i + "RoundFive"});
+                _tiles.Add(new Round6() {Name = i + "RoundSix"});
+                _tiles.Add(new Round7() {Name = i + "RoundSeven"});
+                _tiles.Add(new Round8() {Name = i + "RoundEight"});
+                _tiles.Add(new Round9() {Name = i + "RoundNine"});
 
-                _tiles.Add(new Tile() { Type = TileType.Stick, Status = TileStatus.Unrevealed, Value = TileValue.One, Owner = "board", Name = i + "StickOne", Image = "/Content/images/tiles/64px/bamboo/bamboo1.png" });
-                _tiles.Add(new Tile() { Type = TileType.Stick, Status = TileStatus.Unrevealed, Value = TileValue.Two, Owner = "board", Name = i + "StickTwo", Image = "/Content/images/tiles/64px/bamboo/bamboo2.png" });
-                _tiles.Add(new Tile() { Type = TileType.Stick, Status = TileStatus.Unrevealed, Value = TileValue.Three, Owner = "board", Name = i + "StickThree", Image = "/Content/images/tiles/64px/bamboo/bamboo3.png" });
-                _tiles.Add(new Tile() { Type = TileType.Stick, Status = TileStatus.Unrevealed, Value = TileValue.Four, Owner = "board", Name = i + "StickFour", Image = "/Content/images/tiles/64px/bamboo/bamboo4.png" });
-                _tiles.Add(new Tile() { Type = TileType.Stick, Status = TileStatus.Unrevealed, Value = TileValue.Five, Owner = "board", Name = i + "StickFive", Image = "/Content/images/tiles/64px/bamboo/bamboo5.png" });
-                _tiles.Add(new Tile() { Type = TileType.Stick, Status = TileStatus.Unrevealed, Value = TileValue.Six, Owner = "board", Name = i + "StickSix", Image = "/Content/images/tiles/64px/bamboo/bamboo6.png" });
-                _tiles.Add(new Tile() { Type = TileType.Stick, Status = TileStatus.Unrevealed, Value = TileValue.Seven, Owner = "board", Name = i + "StickSeven", Image = "/Content/images/tiles/64px/bamboo/bamboo7.png" });
-                _tiles.Add(new Tile() { Type = TileType.Stick, Status = TileStatus.Unrevealed, Value = TileValue.Eight, Owner = "board", Name = i + "StickEight", Image = "/Content/images/tiles/64px/bamboo/bamboo8.png" });
-                _tiles.Add(new Tile() { Type = TileType.Stick, Status = TileStatus.Unrevealed, Value = TileValue.Nine, Owner = "board", Name = i + "StickNine", Image = "/Content/images/tiles/64px/bamboo/bamboo9.png" });
+                _tiles.Add(new Stick1() {Name = i + "StickOne"});
+                _tiles.Add(new Stick2() {Name = i + "StickTwo"});
+                _tiles.Add(new Stick3() {Name = i + "StickThree"});
+                _tiles.Add(new Stick4() {Name = i + "StickFour"});
+                _tiles.Add(new Stick5() {Name = i + "StickFive"});
+                _tiles.Add(new Stick6() {Name = i + "StickSix"});
+                _tiles.Add(new Stick7() {Name = i + "StickSeven"});
+                _tiles.Add(new Stick8() {Name = i + "StickEight"});
+                _tiles.Add(new Stick9() {Name = i + "StickNine"});
 
-                _tiles.Add(new Tile() { Type = TileType.Dragon, Status = TileStatus.Unrevealed, Value = TileValue.DragonGreen, Owner = "board", Name = i + "DragonGreen", Image = "/Content/images/tiles/64px/dragon/dragon-green.png" });
-                _tiles.Add(new Tile() { Type = TileType.Dragon, Status = TileStatus.Unrevealed, Value = TileValue.DragonRed, Owner = "board", Name = i + "DragonRed", Image = "/Content/images/tiles/64px/dragon/dragon-chun.png" });
-                _tiles.Add(new Tile() { Type = TileType.Dragon, Status = TileStatus.Unrevealed, Value = TileValue.DragonWhite, Owner = "board", Name = i + "DragonWhite", Image = "/Content/images/tiles/64px/dragon/dragon-white.png" });
+                _tiles.Add(new DragonGreen() {Name = i + "DragonGreen"});
+                _tiles.Add(new DragonRed() {Name = i + "DragonRed"});
+                _tiles.Add(new DragonWhite() {Name = i + "DragonWhite"});
 
-                _tiles.Add(new Tile() { Type = TileType.Wind, Status = TileStatus.Unrevealed, Value = TileValue.WindNorth, Owner = "board", Name = i + "WindNorth", Image = "/Content/images/tiles/64px/wind/wind-north.png" });
-                _tiles.Add(new Tile() { Type = TileType.Wind, Status = TileStatus.Unrevealed, Value = TileValue.WindEast, Owner = "board", Name = i + "WindEast", Image = "/Content/images/tiles/64px/wind/wind-east.png" });
-                _tiles.Add(new Tile() { Type = TileType.Wind, Status = TileStatus.Unrevealed, Value = TileValue.WindSouth, Owner = "board", Name = i + "WindSouth", Image = "/Content/images/tiles/64px/wind/wind-south.png" });
-                _tiles.Add(new Tile() { Type = TileType.Wind, Status = TileStatus.Unrevealed, Value = TileValue.WindWest, Owner = "board", Name = i + "WindWest", Image = "/Content/images/tiles/64px/wind/wind-west.png" });
+                _tiles.Add(new WindNorth() { Name = i + "WindNorth" });
+                _tiles.Add(new WindEast() { Name = i + "WindEast" });
+                _tiles.Add(new WindSouth() { Name = i + "WindSouth" });
+                _tiles.Add(new WindWest() { Name = i + "WindWest" });
             }
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumericOne, Owner = "board", Name = "137FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower1.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumericTwo, Owner = "board", Name = "138FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower2.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumericThree, Owner = "board", Name = "139FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower3.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerNumericFour, Owner = "board", Name = "140FlowerNumeric", Image = "/Content/images/tiles/64px/flower/flower4.png" });
+            _tiles.Add(new FlowerNumeric1() { Name = "137FlowerNumeric" });
+            _tiles.Add(new FlowerNumeric2() { Name = "138FlowerNumeric" });
+            _tiles.Add(new FlowerNumeric3() { Name = "139FlowerNumeric" });
+            _tiles.Add(new FlowerNumeric4() { Name = "140FlowerNumeric" });
 
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRomanOne, Owner = "board", Name = "141FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower1a.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRomanTwo, Owner = "board", Name = "142FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower2b.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRomanThree, Owner = "board", Name = "143FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower3c.png" });
-            _tiles.Add(new Tile() { Type = TileType.Flower, Status = TileStatus.Unrevealed, Value = TileValue.FlowerRomanFour, Owner = "board", Name = "144FlowerRoman", Image = "/Content/images/tiles/64px/flower/flower4d.png" });
+            _tiles.Add(new FlowerRoman1() { Name = "141FlowerRoman" });
+            _tiles.Add(new FlowerRoman2() { Name = "142FlowerRoman" });
+            _tiles.Add(new FlowerRoman3() { Name = "143FlowerRoman" });
+            _tiles.Add(new FlowerRoman4() { Name = "144FlowerRoman" });
 
 
             int _tileid = 1;
