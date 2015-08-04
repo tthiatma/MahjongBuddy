@@ -256,7 +256,7 @@ namespace MahjongBuddy
         public CommandResult DoWin(Game game, Player player)
         {
             if (player != null)
-            {
+            { 
                 int totalPoints = 0;
                 var playerTiles = game.Board.Tiles
                     .Where(t => 
@@ -476,29 +476,29 @@ namespace MahjongBuddy
         
         public void SetPlayerWinds(Game game)
         {
-            var gameNo = game.GameCount;
-            if (gameNo == 1 || gameNo == 5 || gameNo == 9 || gameNo == 13)
+            var diceMovedCount = game.DiceMovedCount;
+            if (diceMovedCount == 1 || diceMovedCount == 5 || diceMovedCount == 9 || diceMovedCount == 13)
             {
                 game.Player1.Wind = WindDirection.East;
                 game.Player2.Wind = WindDirection.South;
                 game.Player3.Wind = WindDirection.West;
                 game.Player4.Wind = WindDirection.North;
             }
-            else if (gameNo == 2 || gameNo == 6 || gameNo == 10 || gameNo == 14)
+            else if (diceMovedCount == 2 || diceMovedCount == 6 || diceMovedCount == 10 || diceMovedCount == 14)
             {
                 game.Player1.Wind = WindDirection.North;
                 game.Player2.Wind = WindDirection.East;
                 game.Player3.Wind = WindDirection.South;
                 game.Player4.Wind = WindDirection.West;
             }
-            else if (gameNo == 3 || gameNo == 7 || gameNo == 11 || gameNo == 15)
+            else if (diceMovedCount == 3 || diceMovedCount == 7 || diceMovedCount == 11 || diceMovedCount == 15)
             {
                 game.Player1.Wind = WindDirection.West;
                 game.Player2.Wind = WindDirection.North;
                 game.Player3.Wind = WindDirection.East;
                 game.Player4.Wind = WindDirection.South;
             }
-            else if (gameNo == 4 || gameNo == 8 || gameNo == 12 || gameNo == 16)
+            else if (diceMovedCount == 4 || diceMovedCount == 8 || diceMovedCount == 12 || diceMovedCount == 16)
             {
                 game.Player1.Wind = WindDirection.South;
                 game.Player2.Wind = WindDirection.West;

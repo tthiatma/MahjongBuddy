@@ -12,6 +12,7 @@ namespace MahjongBuddy
     public class GameHub : Hub
     {
         private GameLogic _gameLogic;
+
         public GameLogic GameLogic {
             get 
             {
@@ -50,11 +51,11 @@ namespace MahjongBuddy
             if (game != null)
             {               
                 GameLogic.SetGameNextWind(game);
-                game.GameCount++;
+                game.DiceMovedCount++;
                 GameLogic.SetPlayerWinds(game);
                 game.WhosTurn = player.ConnectionId;
                 GameState.Instance.ResetForNextGame(game);
-                DistributeTiles(game.Board.Tiles, game.Player1, game.Player2, game.Player3, game.Player4);
+                DistributeTiles(game);
                 if (game.GameSetting.SkipInitialFlowerSwapping)
                 {
                     GameLogic.RecycleInitialFlower(game);
@@ -69,6 +70,7 @@ namespace MahjongBuddy
         {
             if (player != null)
             {
+                Player player1;
                 Player player2;
                 Player player3;
                 Player player4;
@@ -78,11 +80,45 @@ namespace MahjongBuddy
                 if (pepInGroup.Count() == 3)
                 {
                     Clients.Group(player.Group).gameStarted();
-
                     var arrayOfPep = pepInGroup.ToArray();
-                    player2 = arrayOfPep[0].Value;
-                    player3 = arrayOfPep[1].Value;
-                    player4 = arrayOfPep[2].Value;
+                    Random random = new Random();
+                    int randomPlayerToStart = random.Next(1, 4);
+                    
+                    switch (randomPlayerToStart)
+                    { 
+                        case 1:
+                            player1 = player;
+                            player2 = arrayOfPep[0].Value;
+                            player3 = arrayOfPep[1].Value;
+                            player4 = arrayOfPep[2].Value;
+                            break;
+                        case 2:
+                            player1 = arrayOfPep[0].Value;
+                            player2 = arrayOfPep[1].Value;
+                            player3 = arrayOfPep[2].Value;
+                            player4 = player;
+                            break;
+                        case 3:
+                            player1 = arrayOfPep[1].Value;
+                            player2 = arrayOfPep[2].Value;
+                            player3 = player;
+                            player4 = arrayOfPep[0].Value;
+                            break;
+
+                        case 4:
+                            player1 = arrayOfPep[2].Value;
+                            player2 = player;
+                            player3 = arrayOfPep[0].Value;
+                            player4 = arrayOfPep[1].Value;
+                            break;
+
+                        default:
+                            player1 = player;
+                            player2 = arrayOfPep[0].Value;
+                            player3 = arrayOfPep[1].Value;
+                            player4 = arrayOfPep[2].Value;
+                            break;
+                    }
 
                     var game = GameState.Instance.FindGameByGroupName(player.Group);
 
@@ -92,15 +128,16 @@ namespace MahjongBuddy
                         return true;
                     }
 
-                    game = GameState.Instance.CreateGame(player, player2, player3, player4, player.Group);
-                    game.WhosTurn = player.ConnectionId;
-                    game.GameCount = 1;
+                    game = GameState.Instance.CreateGame(player1, player2, player3, player4, player.Group);
+                    game.WhosTurn = player1.ConnectionId;
+                    game.WhoRollTheDice = player1.ConnectionId;
+                    game.DiceMovedCount = 1;
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
-                    //game.Board.Tiles.Shuffle();
-                    DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
+                    game.Board.Tiles.Shuffle();
+                    //DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
 
-                    //DistributeTiles(game.Board.Tiles, player, player2, player3, player4);
+                    DistributeTiles(game);
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 
                     if (game.GameSetting.SkipInitialFlowerSwapping)
@@ -306,8 +343,40 @@ namespace MahjongBuddy
             }
         }
 
-        private void DistributeTiles(List<Tile> tiles, Player p1, Player p2, Player p3, Player p4)       
+        private void DistributeTiles(Game game)       
         {
+            List<Tile> tiles = game.Board.Tiles;
+            Player p1, p2, p3, p4;
+
+            if (game.WhoRollTheDice == game.Player1.ConnectionId)
+            {
+                p1 = game.Player1;
+                p2 = game.Player2;
+                p3 = game.Player3;
+                p4 = game.Player4;
+            }
+            else if (game.WhoRollTheDice == game.Player2.ConnectionId)
+            {
+                p1 = game.Player2;
+                p2 = game.Player3;
+                p3 = game.Player4;
+                p4 = game.Player1;            
+            }
+            else if (game.WhoRollTheDice == game.Player3.ConnectionId)
+            {
+                p1 = game.Player3;
+                p2 = game.Player4;
+                p3 = game.Player1;
+                p4 = game.Player2;
+            }
+            else
+            {
+                p1 = game.Player4;
+                p2 = game.Player1;
+                p3 = game.Player2;
+                p4 = game.Player3;
+            }
+                        
             for (var i = 0; i < 14; i++)
             {                
                 tiles[i].Owner = p1.ConnectionId;
@@ -329,6 +398,5 @@ namespace MahjongBuddy
                 tiles[i].Status = TileStatus.UserActive;
             }        
         }
-
     }
 }

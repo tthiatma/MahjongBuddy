@@ -30,7 +30,7 @@
             <div class="col-md-2"></div>
             <div class="col-md-8" style="text-align: center">
                 <div class="row">
-                    Player: {{topPlayer.Name}}
+                    {{topPlayer.Name}} - {{topPlayer.CurrentPoint}} pts
                 </div>
 
                 <div class="row HorizontalContainer">
@@ -56,7 +56,7 @@
 
                     <div class="col-md-1">
                         <span class="rotate90container">
-                            <span class="rotate90">Player Name: {{leftPlayer.Name}}</span>
+                            <span class="rotate90">{{leftPlayer.Name}} - {{leftPlayer.CurrentPoint}} pts</span>
                         </span> 
                     </div>
 
@@ -100,7 +100,7 @@
 
                     <div class="col-md-1"> 
                         <span class="rotate90container">
-                            <span class="rotateMinus90">Player Name = {{rightPlayer.Name}}</span>
+                            <span class="rotateMinus90">{{rightPlayer.Name}} - {{rightPlayer.CurrentPoint}} pts </span>
                         </span>                     
                     </div>
                 </div>
@@ -146,9 +146,11 @@
             <div style="clear:both"></div>
 
             <div>
+                <label>{{currentPlayer.Name}} - {{currentPlayer.CurrentPoint}} pts </label>
+                <br/>
                 <label id="playerWind">{{currentPlayerWind}}</label>
                 <br />
-                <label id="warningMessage">p: {{warningMessage}}</label>
+                <label id="warningMessage">{{warningMessage}}</label>
             </div>
     <!--end of Main Player-->
     
