@@ -159,6 +159,7 @@
     <Compile Include="Models\CommandResult.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\GameSetting.cs" />
+    <Compile Include="Models\Record.cs" />
     <Compile Include="Models\TileSet.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Models\Tiles\DragonGreen.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="Models\Tiles\WindNorth.cs" />
     <Compile Include="Models\Tiles\WindSouth.cs" />
     <Compile Include="Models\Tiles\WindWest.cs" />
+    <Compile Include="Models\WinningType.cs" />
     <Compile Include="PointCalculator.cs" />
     <Compile Include="Models\Tile.cs" />
     <Compile Include="Models\WindDirection.cs" />

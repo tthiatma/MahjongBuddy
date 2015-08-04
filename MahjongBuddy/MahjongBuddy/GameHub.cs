@@ -343,40 +343,15 @@ namespace MahjongBuddy
             }
         }
 
-        private void DistributeTiles(Game game)       
+        private void DistributeTiles(Game game)
         {
             List<Tile> tiles = game.Board.Tiles;
             Player p1, p2, p3, p4;
-
-            if (game.WhoRollTheDice == game.Player1.ConnectionId)
-            {
-                p1 = game.Player1;
-                p2 = game.Player2;
-                p3 = game.Player3;
-                p4 = game.Player4;
-            }
-            else if (game.WhoRollTheDice == game.Player2.ConnectionId)
-            {
-                p1 = game.Player2;
-                p2 = game.Player3;
-                p3 = game.Player4;
-                p4 = game.Player1;            
-            }
-            else if (game.WhoRollTheDice == game.Player3.ConnectionId)
-            {
-                p1 = game.Player3;
-                p2 = game.Player4;
-                p3 = game.Player1;
-                p4 = game.Player2;
-            }
-            else
-            {
-                p1 = game.Player4;
-                p2 = game.Player1;
-                p3 = game.Player2;
-                p4 = game.Player3;
-            }
-                        
+            p1 = game.Player1;
+            p2 = game.Player2;
+            p3 = game.Player3;
+            p4 = game.Player4;
+        
             for (var i = 0; i < 14; i++)
             {                
                 tiles[i].Owner = p1.ConnectionId;
