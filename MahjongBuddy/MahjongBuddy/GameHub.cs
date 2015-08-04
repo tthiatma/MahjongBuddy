@@ -44,6 +44,27 @@ namespace MahjongBuddy
             StartGame(player);
         }
 
+        private bool StartNextGame(Player player)
+        {
+            var game = GameState.Instance.FindGameByGroupName(player.Group);
+            if (game != null)
+            {               
+                GameLogic.SetGameNextWind(game);
+                game.GameCount++;
+                GameLogic.SetPlayerWinds(game);
+                game.WhosTurn = player.ConnectionId;
+                GameState.Instance.ResetForNextGame(game);
+                DistributeTiles(game.Board.Tiles, game.Player1, game.Player2, game.Player3, game.Player4);
+                if (game.GameSetting.SkipInitialFlowerSwapping)
+                {
+                    GameLogic.RecycleInitialFlower(game);
+
+                }
+                Clients.Group(player.Group).startGame(game);
+            }
+            return true;
+        }
+
         private bool StartGame(Player player)
         {
             if (player != null)
@@ -166,8 +187,7 @@ namespace MahjongBuddy
             }
             else if (cr == CommandResult.PlayerWin)
             {
-                //TODO logic when user win
-                //Clients.Group(group).updateGame(game);
+                StartNextGame(player);
             }
             else
             {

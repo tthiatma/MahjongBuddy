@@ -454,6 +454,26 @@ namespace MahjongBuddy
             }
         }
 
+        public void SetGameNextWind(Game game)
+        {
+            if (game.CurrentWind == WindDirection.East)
+            {
+                game.CurrentWind = WindDirection.South;
+            }
+            else if (game.CurrentWind == WindDirection.South)
+            {
+                game.CurrentWind = WindDirection.West;
+            }
+            else if (game.CurrentWind == WindDirection.West)
+            {
+                game.CurrentWind = WindDirection.North;
+            }
+            else
+            {
+                game.CurrentWind = WindDirection.East;
+            }
+        }
+        
         public void SetPlayerWinds(Game game)
         {
             var gameNo = game.GameCount;

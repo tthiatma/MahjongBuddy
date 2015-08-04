@@ -8,6 +8,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System.Security.Cryptography;
 using System.Text;
+using MahjongBuddy.Extensions;
 
 
 namespace MahjongBuddy
@@ -126,6 +127,13 @@ namespace MahjongBuddy
                 return game;
             }
             return null;
+        }
+
+        public void ResetForNextGame(Game game)
+        {
+            game.Board.Tiles = new List<Tile>();
+            game.Board.CreateTiles();
+            game.Board.Tiles.Shuffle();
         }
 
         public void ResetGame(Game game)
