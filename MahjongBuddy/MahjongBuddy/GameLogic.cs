@@ -261,8 +261,7 @@ namespace MahjongBuddy
                 var playerTiles = game.Board.Tiles
                     .Where(t => 
                         t.Owner == player.ConnectionId 
-                        && (t.Status == TileStatus.UserActive || t.Status == TileStatus.JustPicked)
-                        && t.Type != TileType.Flower);
+                        && (t.Status == TileStatus.UserActive || t.Status == TileStatus.JustPicked));
 
                 var tilesToTestForwin = playerTiles.ToList();
                 bool isPossibleToGetWeirdWinningSet = false;
@@ -365,10 +364,22 @@ namespace MahjongBuddy
                 var winningSet = BuildWinningTiles(tilesToTestForwin, player.TileSets);
                 if (winningSet != null)
                 {
+                    var winningTypes = PointCalculator.GetWinningType(game, playerTiles, player);
+                    int tempPts = 0;
+
+                    if (winningTypes.Count() > 0)
+                    {
+                        foreach (var item in winningTypes)
+                        {
+                            tempPts += game.PointSystem[item];
+                        }
+                    }
+
                     totalPoints = PointCalculator.GetTotalPoints(game, playerTiles, player);
 
-                    if (totalPoints >= 3)
+                    if (tempPts >= 3)
                     {
+                        //TODO = add the winning types to the game record
                         return CommandResult.PlayerWin;
                     }
                     else
@@ -534,10 +545,11 @@ namespace MahjongBuddy
             }
         }
 
-        public WinningTileSet BuildWinningTiles(IEnumerable<Tile> tiles, List<TileSet> tilesets) 
+        public WinningTileSet BuildWinningTiles(IEnumerable<Tile> playerTiles, List<TileSet> tilesets) 
         {
             WinningTileSet ret = new WinningTileSet();
             bool tileSetIsLegit = false;
+            var tiles = playerTiles.Where(t => t.Type != TileType.Flower);
 
             if (tilesets != null && tilesets.Count > 0)
             {
@@ -673,7 +685,7 @@ namespace MahjongBuddy
                 {
                     ret.Tiles = temp;
                     ret.TileType = TileSetType.Chow;
-                    ret.isOpen = false;
+                    ret.isRevealed = false;
                     return ret;
                 }
             }
@@ -686,7 +698,7 @@ namespace MahjongBuddy
                 {
                     ret.Tiles = temp;
                     ret.TileType = TileSetType.Pong;
-                    ret.isOpen = false;
+                    ret.isRevealed = false;
                     return ret;
                 }
             }
@@ -701,7 +713,7 @@ namespace MahjongBuddy
             {
                 Tiles = tiles,
                 TileType = type,
-                isOpen = true
+                isRevealed = true
             };
 
             player.TileSets.Add(temp);

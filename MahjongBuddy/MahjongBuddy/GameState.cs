@@ -58,6 +58,30 @@ namespace MahjongBuddy
             return _players.Values.FirstOrDefault(u => u.Name == userName);
         }
 
+        private void PopulatePoint(Game game)
+        {
+            game.PointSystem.Add(WinningType.Straight, 1);
+            game.PointSystem.Add(WinningType.Pong, 3);
+            game.PointSystem.Add(WinningType.MixPureHand, 3);
+            game.PointSystem.Add(WinningType.PureHand, 7);
+            game.PointSystem.Add(WinningType.PureHonorHand, 10);
+            game.PointSystem.Add(WinningType.SevenPairs, 7);
+            game.PointSystem.Add(WinningType.LittleDragon, 10);
+            game.PointSystem.Add(WinningType.BigDragon, 10);
+            game.PointSystem.Add(WinningType.LittleFourWind, 10);
+            game.PointSystem.Add(WinningType.BigFourWind, 10);
+            game.PointSystem.Add(WinningType.AllKong, 10);
+            game.PointSystem.Add(WinningType.AllHiddenPongAndSelfPick, 10);
+            game.PointSystem.Add(WinningType.AllTerminal, 10);
+            game.PointSystem.Add(WinningType.SelfDraw, 1);
+            game.PointSystem.Add(WinningType.ConcealedHand, 1);
+            game.PointSystem.Add(WinningType.WinOnLastTile, 1);
+            game.PointSystem.Add(WinningType.OneGoodFlower, 1);
+            game.PointSystem.Add(WinningType.TwoGoodFlower, 2);
+            game.PointSystem.Add(WinningType.OneGoodWind, 1);
+            game.PointSystem.Add(WinningType.TwoGoodWind, 2);
+        }
+
         public Game CreateGame(Player player1, Player player2, Player player3, Player player4, string groupName)
         {
             var game = new Game()
@@ -67,8 +91,10 @@ namespace MahjongBuddy
                 Player3 = player3,
                 Player4 = player4,
                 Board = new Board(),
-                GameSetting = new GameSetting()
+                GameSetting = new GameSetting(),
+                PointSystem = new Dictionary<WinningType,int>()
             };
+            PopulatePoint(game);
             game.Board.CreateTiles();
 
             var group = groupName;

@@ -27,6 +27,7 @@ namespace MahjongBuddy.Models
         WinOnLastTile,
         OneGoodFlower,
         TwoGoodFlower,
+        AllFourFlowerSameType,
         OneGoodWind,
         TwoGoodWind
     }

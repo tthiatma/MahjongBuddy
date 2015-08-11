@@ -9,7 +9,7 @@ namespace MahjongBuddy.Models
     {
         public IEnumerable<Tile> Tiles { get; set; }
         public TileSetType TileType { get; set; }
-        public bool isOpen { get; set; }
+        public bool isRevealed { get; set; }
     }
 
     public enum TileSetType

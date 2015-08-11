@@ -9,11 +9,13 @@ namespace MahjongBuddy.Models
     {
         public TileSet Eye { get; set; }
         public TileSet[] Sets { get; set; }
+        public List<Tile> Flowers { get; set; }
         public List<WinningType> WinningTypes { get; set; }
 
         public WinningTileSet() 
         {
             Sets = new TileSet[4];
+            Flowers = new List<Tile>();
             Eye = new TileSet();
             Eye.TileType = TileSetType.Eye;
             WinningTypes = new List<WinningType>();
