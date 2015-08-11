@@ -32,6 +32,8 @@ namespace MahjongBuddy.Tests
             game.Board = new Board();
             game.Board.CreateTiles();
             game.CurrentWind = WindDirection.East;
+            game.PointSystem = new Dictionary<WinningType, int>();
+            gl.PopulatePoint(game);
             player.Wind = WindDirection.East;
             player.ConnectionId = "p1";
 
@@ -50,6 +52,8 @@ namespace MahjongBuddy.Tests
                 || t.Id == 12
                 || t.Id == 13
                 || t.Id == 47
+                || t.Id == 137
+                || t.Id == 141
                 );
 
             foreach (var t in dTiles)
@@ -61,6 +65,10 @@ namespace MahjongBuddy.Tests
                 {
                     t.Status = TileStatus.BoardGraveyard;                
                 }
+                if (t.Id == 137 || t.Id == 141)
+                {
+                    t.Status = TileStatus.UserGraveyard;
+                }
             }
 
             List<Tile> temp = new List<Tile>();
@@ -71,7 +79,9 @@ namespace MahjongBuddy.Tests
             var tempTs = new TileSet()
             {
                 Tiles = temp,
-                TileType = TileSetType.Chow
+                TileSetType = TileSetType.Chow,
+                TileType = TileType.Round,
+                isRevealed = true
             };
             player.TileSets.Add(tempTs);
             

@@ -8,7 +8,8 @@ namespace MahjongBuddy.Models
     public class TileSet
     {
         public IEnumerable<Tile> Tiles { get; set; }
-        public TileSetType TileType { get; set; }
+        public TileSetType TileSetType { get; set; }
+        public TileType TileType { get; set; }
         public bool isRevealed { get; set; }
     }
 
