@@ -9,6 +9,13 @@ namespace MahjongBuddy.Models
     {
         public int GameNo { get; set; }
         public string WinnerUserID { get; set; }
-        public IEnumerable<Tile> WinningTiles { get; set; }
+        public string FeederUserID { get; set; }
+        public WinningTileSet WinningTileSet { get; set; }
+
+        public Record()
+        {
+            WinningTileSet = new WinningTileSet();
+        }
+
     }
 }

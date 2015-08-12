@@ -69,6 +69,7 @@ namespace MahjongBuddy
                 Player3 = player3,
                 Player4 = player4,
                 Board = new Board(),
+                Records = new List<Record>(),
                 GameSetting = new GameSetting(),
                 PointSystem = new Dictionary<WinningType,int>()
             };

@@ -280,6 +280,7 @@ namespace MahjongBuddy
                     isPossibleToGetWeirdWinningSet = false;                
                 }
 
+                //TODO add to the winningtype
                 if (isPossibleToGetWeirdWinningSet)
                 {
                     //check 13 wonder
@@ -348,7 +349,6 @@ namespace MahjongBuddy
                         }
                         if (isAllPair)
                         {
-                            //TODO need to check flower
                             var playerFlowerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Type == TileType.Flower);
 
                             if (playerFlowerTiles != null)
@@ -375,18 +375,65 @@ namespace MahjongBuddy
                 {
                     var winningTypes = PointCalculator.GetWinningType(game, winningSet, player);
                     int tempPts = 0;
-
+                    
                     if (winningTypes.Count() > 0)
                     {
                         foreach (var item in winningTypes)
                         {
+                            winningSet.WinningTypes.Add(item);
                             tempPts += game.PointSystem[item];
                         }
                     }
 
                     if (tempPts >= 3)
                     {
-                        //TODO = add the winning types to the game record
+                        int playerPoints = tempPts;
+
+                        game.Count++;
+                        Record record = new Record();
+                        record.WinningTileSet = winningSet;
+                        record.WinnerUserID = player.ConnectionId;
+                        record.GameNo = game.Count;
+
+
+                        if (winningTypes.Contains(WinningType.SelfDraw))
+                        {
+                            playerPoints = tempPts * 3;
+                            player.CurrentPoint += playerPoints;
+
+                            if (game.Player1.ConnectionId == player.ConnectionId)
+                            {
+                                game.Player2.CurrentPoint -= tempPts;
+                                game.Player3.CurrentPoint -= tempPts;
+                                game.Player4.CurrentPoint -= tempPts;
+                            }
+                            else if (game.Player2.ConnectionId == player.ConnectionId)
+                            {
+                                game.Player1.CurrentPoint -= tempPts;
+                                game.Player3.CurrentPoint -= tempPts;
+                                game.Player4.CurrentPoint -= tempPts;                                
+                            }
+                            else if (game.Player3.ConnectionId == player.ConnectionId)
+                            {
+                                game.Player1.CurrentPoint -= tempPts;
+                                game.Player2.CurrentPoint -= tempPts;
+                                game.Player4.CurrentPoint -= tempPts;
+                            }
+                            else if (game.Player4.ConnectionId == player.ConnectionId)
+                            {
+                                game.Player1.CurrentPoint -= tempPts;
+                                game.Player2.CurrentPoint -= tempPts;
+                                game.Player3.CurrentPoint -= tempPts;
+                            }                            
+                        }
+                        else
+                        {
+                            player.CurrentPoint += playerPoints;
+                            var pp = GetPlayerByConnectionId(game, game.LastTile.Owner);
+                            pp.CurrentPoint -= playerPoints;
+                        }
+                        game.Records.Add(record);
+
                         return CommandResult.PlayerWin;
                     }
                     else
