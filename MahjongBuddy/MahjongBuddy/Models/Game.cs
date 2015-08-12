@@ -17,6 +17,7 @@ namespace MahjongBuddy.Models
         public Tile LastTile { get; set; }
         public string WhosTurn { get; set; }
         public int DiceMovedCount { get; set; }
+        public int Count { get; set; }
         public int TileCounter { get; set; }
         public WindDirection CurrentWind { get; set; }
         public string WhoRollTheDice { get; set; }

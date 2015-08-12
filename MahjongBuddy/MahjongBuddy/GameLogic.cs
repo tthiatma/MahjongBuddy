@@ -429,8 +429,11 @@ namespace MahjongBuddy
                         else
                         {
                             player.CurrentPoint += playerPoints;
-                            var pp = GetPlayerByConnectionId(game, game.LastTile.Owner);
-                            pp.CurrentPoint -= playerPoints;
+                            if (game.LastTile != null)
+                            {
+                                var pp = GetPlayerByConnectionId(game, game.LastTile.Owner);
+                                pp.CurrentPoint -= playerPoints;                            
+                            }
                         }
                         game.Records.Add(record);
 

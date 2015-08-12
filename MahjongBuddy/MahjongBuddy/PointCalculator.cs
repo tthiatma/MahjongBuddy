@@ -187,7 +187,6 @@ namespace MahjongBuddy.Models
             }
         }
 
-        //TODO find self pick
         public void FindAllPong(Game game, WinningTileSet wts, Player player)
         {
             bool allPong = true;

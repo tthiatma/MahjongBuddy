@@ -250,7 +250,8 @@ namespace MahjongBuddy
             }
             tiles[46].Owner = p1.ConnectionId;
             tiles[46].Status = TileStatus.UserActive;
-
+            tiles[136].Owner = p1.ConnectionId;
+            tiles[136].Status = TileStatus.UserGraveyard;
 
             for (var i = 14; i < 27; i++)
             {

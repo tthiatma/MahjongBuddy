@@ -151,6 +151,14 @@
                 <label id="playerWind">{{currentPlayerWind}}</label>
                 <br />
                 <label id="warningMessage">{{warningMessage}}</label>
+                <br/>
+                <span class="" ng-repeat="rec in game.Records">
+                    {{rec.GameNo}} - {{rec.WinnerUserID}}
+                    <span class="" ng-repeat="win in rec.WinningTileSet.WinningTypes">
+                        {{win}}
+                    </span>
+                </span>
+                <br/>
             </div>
     <!--end of Main Player-->
     
