@@ -61,6 +61,11 @@ namespace MahjongBuddy.Tests
                 t.Owner = "p1";
                 t.Status = TileStatus.UserActive;
 
+                if (t.Id == 1)
+                {
+                    t.Status = TileStatus.JustPicked;
+                }
+
                 if (t.Id == 10 || t.Id == 11 || t.Id == 12)
                 {
                     t.Status = TileStatus.BoardGraveyard;                

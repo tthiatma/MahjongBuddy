@@ -22,15 +22,34 @@ namespace MahjongBuddy.Models
             Calculate += FindAllPong;
             Calculate += FindFlower;
             Calculate += FindStraight;
+            Calculate += FindSelfDraw;
 
             Calculate(game, wts, player);
 
             return _winningTypes;
         }
 
-        public void FindSelfPick(Game game, WinningTileSet wts, Player player)
-        { 
-        
+        public void FindSelfDraw(Game game, WinningTileSet wts, Player player)
+        {
+            bool isSelfPick = false;
+            if (wts != null)
+            {
+                for (int i = 0; i < wts.Sets.Length; i++)
+                {
+                    var set = wts.Sets[i];
+                    foreach (var t in set.Tiles)
+                    {
+                        if (t.Status == TileStatus.JustPicked)
+                        {
+                            isSelfPick = true;
+                        }
+                    }
+                }
+                if (isSelfPick)
+                {
+                    _winningTypes.Add(WinningType.SelfDraw);
+                }
+            }
         }
 
         public void FindConcealedHand(Game game, WinningTileSet wts, Player player)
@@ -168,23 +187,33 @@ namespace MahjongBuddy.Models
             }
         }
 
+        //TODO find self pick
         public void FindAllPong(Game game, WinningTileSet wts, Player player)
         {
             bool allPong = true;
+            bool allConcealed = true;
             for (int i = 0; i < wts.Sets.Length; i++)
             {
                 var set = wts.Sets[i];
+                if (set.isRevealed)
+                {
+                    allConcealed = false;
+                }
+
                 if (set.TileSetType != TileSetType.Pong)
                 {
                     allPong = false;
                     break;
-                }
-                
+                }                
             }
 
-            if (allPong)
+            if (allPong && allConcealed)
             {
-                _winningTypes.Add(WinningType.Pong);
+                _winningTypes.Add(WinningType.AllHiddenPongAndSelfPick);
+            }
+            else if (allPong)
+            {
+                _winningTypes.Add(WinningType.Pong);            
             }
         }
 
@@ -192,6 +221,13 @@ namespace MahjongBuddy.Models
         {
             int pts = 0;
             var tiles = wts.Flowers;
+
+            if (tiles.Count == 0)
+            {
+                _winningTypes.Add(WinningType.NoFlower);  
+                return;
+            }
+
             IEnumerable<Tile> matchedUserFlowerTile = null;
 
             if (player.Wind == WindDirection.East)
@@ -268,6 +304,49 @@ namespace MahjongBuddy.Models
             if (allChow)
             {
                 _winningTypes.Add(WinningType.Straight);
+            }
+        }
+
+        //TODO
+        public void FindDragonCombo(Game game, WinningTileSet wts, Player player)
+        {
+            
+        }
+
+        //TODO
+        public void FindWindCombo(Game game, WinningTileSet wts, Player player)
+        {
+
+        }
+
+        //TODO
+        public void FindAllTerminal(Game game, WinningTileSet wts, Player player)
+        {
+
+        }
+
+        //TODO
+        public void FindLastPick(Game game, WinningTileSet wts, Player player)
+        {
+
+        }
+
+        public void FindAllKong(Game game, WinningTileSet wts, Player player)
+        {
+            bool allKong = true;
+            for (int i = 0; i < wts.Sets.Length; i++)
+            {
+                var set = wts.Sets[i];
+                if (set.TileSetType != TileSetType.Kong)
+                {
+                    allKong = false;
+                    break;
+                }
+            }
+
+            if (allKong)
+            {
+                _winningTypes.Add(WinningType.AllKong);
             }
         }
 

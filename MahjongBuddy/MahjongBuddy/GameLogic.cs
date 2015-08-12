@@ -384,8 +384,6 @@ namespace MahjongBuddy
                         }
                     }
 
-                    
-
                     if (tempPts >= 3)
                     {
                         //TODO = add the winning types to the game record
@@ -695,6 +693,7 @@ namespace MahjongBuddy
 
         public void PopulatePoint(Game game)
         {
+            game.PointSystem.Add(WinningType.NoFlower, 1);
             game.PointSystem.Add(WinningType.Straight, 1);
             game.PointSystem.Add(WinningType.Pong, 3);
             game.PointSystem.Add(WinningType.MixPureHand, 3);

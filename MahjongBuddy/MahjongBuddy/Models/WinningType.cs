@@ -25,6 +25,7 @@ namespace MahjongBuddy.Models
         SelfDraw,
         ConcealedHand,
         WinOnLastTile,
+        NoFlower,
         OneGoodFlower,
         TwoGoodFlower,
         AllFourFlowerSameType,
