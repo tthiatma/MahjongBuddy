@@ -28,6 +28,11 @@ namespace MahjongBuddy.Models
             return _winningTypes;
         }
 
+        public void FindSelfPick(Game game, WinningTileSet wts, Player player)
+        { 
+        
+        }
+
         public void FindConcealedHand(Game game, WinningTileSet wts, Player player)
         {
             bool foundRevealed = false;

@@ -134,10 +134,10 @@ namespace MahjongBuddy
                     game.DiceMovedCount = 1;
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
-                    game.Board.Tiles.Shuffle();
-                    //DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
+                    //game.Board.Tiles.Shuffle();
+                    DistributeTilesForWin(game);
 
-                    DistributeTiles(game);
+                    //DistributeTiles(game);
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 
                     if (game.GameSetting.SkipInitialFlowerSwapping)
@@ -234,8 +234,15 @@ namespace MahjongBuddy
 
         //all of this belong to test section
         //TODO : move this to test
-        private void DistributeTilesForWin(List<Tile> tiles, Player p1, Player p2, Player p3, Player p4) 
+        private void DistributeTilesForWin(Game game) 
         {
+            List<Tile> tiles = game.Board.Tiles;
+            Player p1, p2, p3, p4;
+            p1 = game.Player1;
+            p2 = game.Player2;
+            p3 = game.Player3;
+            p4 = game.Player4;
+
             for (var i = 0; i < 13; i++)
             {
                 tiles[i].Owner = p1.ConnectionId;

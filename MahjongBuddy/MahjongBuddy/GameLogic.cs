@@ -675,7 +675,9 @@ namespace MahjongBuddy
 
                 if (tileSetIsLegit)
                 {
-                    ret.Eye.Tiles = eyes;
+                    TileSet theEye = new TileSet() { isRevealed = false, Tiles = eyes, TileSetType = TileSetType.Eye, TileType = eyes.First().Type };
+
+                    ret.Eye = theEye;
                     ret.Sets[0] = firstSetWinningTileSet;
                     ret.Sets[1] = secondSetWinningTileSet;
                     ret.Sets[2] = thirdSetWinningTileSet;
