@@ -10,6 +10,11 @@
         };
         var clientPushHubProxy = signalRHubProxy(signalRHubProxy.defaultServer, 'gameHub', startup);
 
+        clientPushHubProxy.on('showWinner', function (msg) {
+            $("#myModal").modal('show');
+
+        });
+
         clientPushHubProxy.on('notifyUserInGroup', function (msg) {
             $('#gameStatus').append(msg + "<br/>");
         });
@@ -81,9 +86,7 @@
         $scope.fnPlayerMove = function (move, tiles) {
             $scope.warningMessage = "";
             clientPushHubProxy.invoke3('PlayerMove', 'mjbuddy', move, tiles, function (game) {
-                $scope.$apply(function () {
-                    $scope.game = game;
-                })
+                $scope.game = game;
             });
             //clear the selected tiles for every player move
             $scope.selectedTiles = [];

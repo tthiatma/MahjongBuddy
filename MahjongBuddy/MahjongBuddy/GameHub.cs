@@ -167,7 +167,6 @@ namespace MahjongBuddy
 
         public void PlayerMove(string group, string command, IEnumerable<int> tiles)
         {
-           
             CommandResult cr = CommandResult.ValidCommand;
             bool switchTurn = false;
             string invalidMessage = "shit went wrong...";
@@ -212,6 +211,10 @@ namespace MahjongBuddy
                 case "win":
                     cr = GameLogic.DoWin(game, player);
                     break;
+
+                case "nextgame":
+                    StartNextGame(player);
+                    break;
             }
             invalidMessage = GameLogic.CommandResultDictionary[cr];
             if (cr == CommandResult.ValidCommand)
@@ -224,7 +227,7 @@ namespace MahjongBuddy
             }
             else if (cr == CommandResult.PlayerWin)
             {
-                StartNextGame(player);
+                Clients.Group(group).showWinner(game.Records.Last()); 
             }
             else
             {

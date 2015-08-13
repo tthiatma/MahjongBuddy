@@ -10,6 +10,7 @@
 }
 <div ng-controller="MahjongController">
     <div id="WaitingRoom" class="container" ng-hide="gameIsReady">
+       
         <div class="row">       
             <div class="col-md-5"></div>     
             <div class="col-md-1"><input type="text" id="usernameTB" class="form-control" /></div>
@@ -24,7 +25,28 @@
     </div><!--end of Waiting Room-->
 
     <div id="GameRoom" class="container" ng-show="gameIsReady">
+        <!-- Modal -->
+        <div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">
 
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Someone Won!</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Winning tiles goes here</p>
+                        <p>Winning type goes here</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Start Next Game</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- end of Modal -->
     <!--start for Top Player-->
         <div id="TopPlayer" class="row">
             <div class="col-md-2"></div>
@@ -120,7 +142,7 @@
                 <input type="button" id="win" value="win" class="btn btn-primary" ng-click="fnPlayerMove('win', selectedTiles)">
                 <input type="button" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', selectedTiles)">
                 <input type="button" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', selectedTiles)">
-                <input type="button" ng-disabled="!isMyturn" id=" chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', selectedTiles)">
+                <input type="button" ng-disabled="!isMyturn" id="chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', selectedTiles)">
                 <input type="button" ng-disabled="!isMyturn || currentPlayer.CanPickTile" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTiles)">
                 <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', selectedTiles)">
             </div>
@@ -166,5 +188,6 @@
         
         <div class="col-md-2"></div>
 
-        <!--end of GameRoom-->
+    </div>
+    <!--end of GameRoom-->
 </div>
