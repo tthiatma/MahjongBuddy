@@ -26,19 +26,45 @@
 
     <div id="GameRoom" class="container" ng-show="gameIsReady">
         <!-- Modal -->
-        <div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div id="myModal" class="modal modal-wide fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
             <div class="modal-dialog">
-
                 <!-- Modal content-->
                 <div class="modal-content">
+
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Someone Won!</h4>
+                        <h4 class="modal-title">Winner: {{record.Winner.Name}}</h4>
                     </div>
+
                     <div class="modal-body">
-                        <p>Winning tiles goes here</p>
-                        <p>Winning type goes here</p>
-                    </div>
+                        <!--winning tiles-->
+                        <div class="winningTiles HorizontalContainer">
+                            <span class="tileHorizontalContainer" ng-repeat="tile in record.WinningTileSet.Eye.Tiles">
+                                <img class="tileHorizontal" ng-src="{{tile.Image}}" />
+                            </span>
+
+                            <span ng-repeat="set in record.WinningTileSet.Sets">
+                                <span class="tileHorizontalContainer" ng-repeat="tile in set.Tiles">
+                                    <img class="tileHorizontal" ng-src="{{tile.Image}}" />
+                                </span>
+                            </span>
+                        </div>
+                        <!--winning tiles flower-->
+                        <div class="winningTiles">
+                            <span class="tileHorizontalContainer" ng-repeat="tile in record.WinningTileSet.Flowers">
+                                <img class="tileHorizontal" ng-src="{{tile.Image}}" />
+                            </span>
+                        </div>
+
+                            <div>
+                                <span class="" ng-repeat="hand in record.WinningTileSet.Hands">
+                                    {{hand.HandName}} - {{hand.Point}}
+                                </span>
+                            </div>
+                            <div>
+                                Total: <strong>{{record.WinningTileSet.TotalPoints}}</strong> pts
+                            </div>
+                        </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Start Next Game</button>
                     </div>
@@ -173,13 +199,6 @@
                 <label id="playerWind">{{currentPlayerWind}}</label>
                 <br />
                 <label id="warningMessage">{{warningMessage}}</label>
-                <br/>
-                <span class="" ng-repeat="rec in game.Records">
-                    {{rec.GameNo}} - {{rec.WinnerUserID}}
-                    <span class="" ng-repeat="win in rec.WinningTileSet.WinningTypes">
-                        {{win}}
-                    </span>
-                </span>
                 <br/>
             </div>
     <!--end of Main Player-->

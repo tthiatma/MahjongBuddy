@@ -227,7 +227,8 @@ namespace MahjongBuddy
             }
             else if (cr == CommandResult.PlayerWin)
             {
-                Clients.Group(group).showWinner(game.Records.Last()); 
+                Clients.Group(group).showWinner(game.Records.Last());
+                Clients.Group(group).updateGame(game); 
             }
             else
             {

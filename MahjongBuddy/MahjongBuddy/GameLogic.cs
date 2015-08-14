@@ -380,9 +380,16 @@ namespace MahjongBuddy
                     {
                         foreach (var item in winningTypes)
                         {
-                            winningSet.WinningTypes.Add(item);
+                            HandWorth temp = new HandWorth();
+                            temp.WinningType = item;
+                            temp.HandName = item.ToString();
+                            temp.Point = game.PointSystem[item];
+
+                            winningSet.Hands.Add(temp);
+                            winningSet.WinningTypes.Add(item.ToString(), game.PointSystem[item]);
                             tempPts += game.PointSystem[item];
                         }
+                        winningSet.TotalPoints = tempPts;
                     }
 
                     if (tempPts >= 3)
@@ -392,7 +399,7 @@ namespace MahjongBuddy
                         game.Count++;
                         Record record = new Record();
                         record.WinningTileSet = winningSet;
-                        record.WinnerUserID = player.ConnectionId;
+                        record.Winner = player;
                         record.GameNo = game.Count;
 
 

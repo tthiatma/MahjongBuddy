@@ -4,15 +4,16 @@
         $scope.gameIsReady = false;
         $scope.selectedTiles = [];
         $scope.isMyturn = false;
+        $scope.record = {};
         var startup = function(conId){
             $scope.isDisonnected = !(conId != undefined);
             $scope.currentUserId = conId;
         };
         var clientPushHubProxy = signalRHubProxy(signalRHubProxy.defaultServer, 'gameHub', startup);
 
-        clientPushHubProxy.on('showWinner', function (msg) {
+        clientPushHubProxy.on('showWinner', function (record) {
+            $scope.record = record;
             $("#myModal").modal('show');
-
         });
 
         clientPushHubProxy.on('notifyUserInGroup', function (msg) {
@@ -86,7 +87,9 @@
         $scope.fnPlayerMove = function (move, tiles) {
             $scope.warningMessage = "";
             clientPushHubProxy.invoke3('PlayerMove', 'mjbuddy', move, tiles, function (game) {
-                $scope.game = game;
+                $scope.$apply(function () {
+                    $scope.game = game;
+                })
             });
             //clear the selected tiles for every player move
             $scope.selectedTiles = [];

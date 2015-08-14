@@ -161,6 +161,7 @@
     <Compile Include="Models\CommandResult.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\GameSetting.cs" />
+    <Compile Include="Models\HandWorth.cs" />
     <Compile Include="Models\Record.cs" />
     <Compile Include="Models\TileSet.cs" />
     <Compile Include="Models\Player.cs" />

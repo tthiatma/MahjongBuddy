@@ -124,3 +124,11 @@ textarea {
 .activeTile img{
     opacity:0.4;
 }
+
+.modal.modal-wide .modal-dialog {
+  width: 50%;
+}
+
+.winningTiles{
+ padding-left:50px;
+}

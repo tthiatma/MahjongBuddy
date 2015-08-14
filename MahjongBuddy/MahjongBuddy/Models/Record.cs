@@ -8,8 +8,8 @@ namespace MahjongBuddy.Models
     public class Record
     {
         public int GameNo { get; set; }
-        public string WinnerUserID { get; set; }
-        public string FeederUserID { get; set; }
+        public Player Winner { get; set; }
+        public Player Feeder { get; set; }
         public WinningTileSet WinningTileSet { get; set; }
 
         public Record()

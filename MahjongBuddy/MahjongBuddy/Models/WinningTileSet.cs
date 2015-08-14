@@ -10,8 +10,9 @@ namespace MahjongBuddy.Models
         public TileSet Eye { get; set; }
         public TileSet[] Sets { get; set; }
         public List<Tile> Flowers { get; set; }
-        public List<WinningType> WinningTypes { get; set; }
-
+        public List<HandWorth> Hands { get; set; }
+        public Dictionary<String, int> WinningTypes { get; set; }
+        public int TotalPoints { get; set; }
 
         public WinningTileSet() 
         {
@@ -19,7 +20,8 @@ namespace MahjongBuddy.Models
             Flowers = new List<Tile>();
             Eye = new TileSet();
             Eye.TileSetType = TileSetType.Eye;
-            WinningTypes = new List<WinningType>();
+            Hands = new List<HandWorth>();
+            WinningTypes = new Dictionary<String, int>();
         }
     }
 }
