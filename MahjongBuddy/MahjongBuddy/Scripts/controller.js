@@ -40,7 +40,7 @@
             $scope.game = game;
             $scope.currentPlayer = mjService.getCurrentPlayer(game, $scope.currentUserId);
             $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
-            $scope.isMyturn = ($scope.currentUserId == game.WhosTurn);
+            $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId);
 
             mjService.setPlayer(game, $scope.currentUserId);
             $scope.topPlayer = mjService.topPlayer;
@@ -48,12 +48,25 @@
             $scope.leftPlayer = mjService.leftPlayer;
         });
 
+        clientPushHubProxy.on('startNextGame', function (game) {
+            $scope.game = game;
+            $scope.currentPlayer = mjService.getCurrentPlayer($scope.game, $scope.currentUserId);
+            $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
+            $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId);
+            $scope.lastTile = game.LastTile;
+            $('#myModal').modal('hide');
+        });
+
         clientPushHubProxy.on('updateGame', function (game) {
             $scope.game = game;
             $scope.currentPlayer = mjService.getCurrentPlayer($scope.game, $scope.currentUserId);
             $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
-            $scope.isMyturn = ($scope.currentUserId == game.WhosTurn);
+            $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId);
             $scope.lastTile = game.LastTile;
+        });
+
+        clientPushHubProxy.on('updatePlayerCount', function (playerCount) {
+            $scope.totalPlayers = playerCount;
         });
 
         clientPushHubProxy.on('alertUser', function (msg) {
@@ -82,6 +95,10 @@
             } else {
                 $scope.selectedTiles.push(tileId)
             }
+        };
+
+        $scope.fnStartNextGame = function () {            
+            clientPushHubProxy.invoke1('StartNextGame', 'mjbuddy', function () {});
         };
 
         $scope.fnPlayerMove = function (move, tiles) {

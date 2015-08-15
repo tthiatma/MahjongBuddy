@@ -45,6 +45,13 @@ namespace MahjongBuddy.Models
                         }
                     }
                 }
+                foreach (var t in wts.Eye.Tiles)
+                {
+                    if (t.Status == TileStatus.JustPicked)
+                    {
+                        isSelfPick = true;
+                    }
+                }
                 if (isSelfPick)
                 {
                     _winningTypes.Add(WinningType.SelfDraw);

@@ -53,7 +53,7 @@ namespace MahjongBuddy
                             actualTiles.Add(game.Board.Tiles.Where(ti => ti.Id == t).FirstOrDefault());
                         }
                         AddTilesToPlayerOpenTileSet(game, actualTiles, player.ConnectionId, TileSetType.Pong);
-                        game.WhosTurn = player.ConnectionId;
+                        game.PlayerTurn = player;
                         player.CanPickTile = false;
                         player.CanOnlyThrowTile = true;
 
@@ -111,7 +111,7 @@ namespace MahjongBuddy
                             {
                                 CommandTileToPlayerGraveyard(game, sortedList, player.ConnectionId);
                                 AddTilesToPlayerOpenTileSet(game, sortedList, player.ConnectionId, TileSetType.Chow);
-                                game.WhosTurn = player.ConnectionId;
+                                game.PlayerTurn = player;
                                 player.CanPickTile = false;
                                 player.CanOnlyThrowTile = true;
 
@@ -183,6 +183,9 @@ namespace MahjongBuddy
                     if (tileToThrow != null)
                     {
                         tileToThrow.Status = TileStatus.BoardGraveyard;
+                        tileToThrow.OpenTileCounter = game.TileCounter;
+                        game.TileCounter++;
+
                         game.LastTile = tileToThrow;
 
                         var justPickedTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked).FirstOrDefault();
@@ -230,7 +233,7 @@ namespace MahjongBuddy
                         }
                         AddTilesToPlayerOpenTileSet(game, actualTiles, player.ConnectionId, TileSetType.Kong);
 
-                        game.WhosTurn = player.ConnectionId;
+                        game.PlayerTurn = player;
                         var pp = GetPlayerByConnectionId(game, player.ConnectionId);
                         pp.CanPickTile = false;
                         pp.CanOnlyThrowTile = true;
@@ -582,28 +585,52 @@ namespace MahjongBuddy
             }
         }
 
-        public void SetNextPLayerTurn(Game game)
+        public void SetNextGamePlayerToStart(Game game)
+        {
+            if (game.Player1.ConnectionId == game.DiceRoller.ConnectionId)
+            {
+                game.DiceRoller = game.Player2;
+                game.PlayerTurn = game.Player2;
+            }
+            else if (game.Player2.ConnectionId == game.DiceRoller.ConnectionId)
+            { 
+                game.DiceRoller = game.Player3;
+                game.PlayerTurn = game.Player3;
+            }
+            else if (game.Player3.ConnectionId == game.DiceRoller.ConnectionId)
+            {
+                game.DiceRoller = game.Player4;
+                game.PlayerTurn = game.Player4;
+            }
+            else if (game.Player4.ConnectionId == game.DiceRoller.ConnectionId)
+            {
+                game.DiceRoller = game.Player1;
+                game.PlayerTurn = game.Player1;
+            }
+        }
+
+        public void SetNextPlayerTurn(Game game)
         {
             if (game != null)
             {
-                if (game.WhosTurn == game.Player1.ConnectionId)
+                if (game.PlayerTurn == game.Player1)
                 {
-                    game.WhosTurn = game.Player2.ConnectionId;
+                    game.PlayerTurn = game.Player2;
                     game.Player2.CanPickTile = true;
                 }
-                else if (game.WhosTurn == game.Player2.ConnectionId)
+                else if (game.PlayerTurn == game.Player2)
                 {
-                    game.WhosTurn = game.Player3.ConnectionId;
+                    game.PlayerTurn = game.Player3;
                     game.Player3.CanPickTile = true;
                 }
-                else if (game.WhosTurn == game.Player3.ConnectionId)
+                else if (game.PlayerTurn == game.Player3)
                 {
-                    game.WhosTurn = game.Player4.ConnectionId;
+                    game.PlayerTurn = game.Player4;
                     game.Player4.CanPickTile = true;
                 }
-                else if (game.WhosTurn == game.Player4.ConnectionId)
+                else if (game.PlayerTurn == game.Player4)
                 {
-                    game.WhosTurn = game.Player1.ConnectionId;
+                    game.PlayerTurn = game.Player1;
                     game.Player1.CanPickTile = true;
                 }
             }

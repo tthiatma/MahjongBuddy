@@ -8,8 +8,8 @@ namespace MahjongBuddy.Models
     public enum WindDirection
     {
         East,
-        West,
         South,
+        West,
         North
     }
 }

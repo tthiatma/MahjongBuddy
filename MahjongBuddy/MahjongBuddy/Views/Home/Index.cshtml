@@ -12,10 +12,13 @@
     <div id="WaitingRoom" class="container" ng-hide="gameIsReady">
        
         <div class="row">       
-            <div class="col-md-5"></div>     
-            <div class="col-md-1"><input type="text" id="usernameTB" class="form-control" /></div>
-            <div class="col-md-1"><input type="button" id="join" value="join" ng-disabled="isDisonnected" ng-click="join()" class="btn btn-primary"></div>
-            <div class="col-md-5"></div>
+            <div class="col-md-4"></div>     
+            <div class="col-md-4">
+                <span><label>mjbuddy({{totalPlayers}})</label></span>
+                <span><input type="text" id="usernameTB" ng-disabled="isDisonnected || totalPlayers >= 4"  placeholder='Enter your name' /></span>
+                <span><input type="button" id="join" value="join" ng-disabled="isDisonnected || totalPlayers >= 4" ng-click="join()" class="btn btn-primary"></span>
+            </div>
+            <div class="col-md-4"></div>
         </div>
         <div class="row">
             <div class="col-md-2"></div>
@@ -66,7 +69,7 @@
                         </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Start Next Game</button>
+                        <button type="button" class="btn btn-default" ng-click="fnStartNextGame()">Start Next Game</button>
                     </div>
                 </div>
 
@@ -125,7 +128,7 @@
                 <div id="TheBoard" class="col-md-6">
                     <strong>Discarded Tiles</strong>
                     <div id="discardedTiles">
-                        <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Status : 4}: true | orderBy: 'Counter'">
+                        <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Status : 4}: true | orderBy: 'OpenTileCounter'">
                             <img class="tileHorizontal" ng-src="{{tile.Image}}" />
                         </div>
                     </div>

@@ -11,6 +11,13 @@ namespace MahjongBuddy
 {
     public class GameHub : Hub
     {
+        public override Task OnConnected()
+        {
+            var playerCount = GameState.Instance.Players.Count();
+            Clients.All.updatePlayerCount(playerCount);
+            return base.OnConnected();
+        }
+
         private GameLogic _gameLogic;
 
         public GameLogic GameLogic {
@@ -40,30 +47,33 @@ namespace MahjongBuddy
             Clients.Caller.id = player.Id;
 
             await Groups.Add(Context.ConnectionId, groupName);
+            var playerCount = GameState.Instance.Players.Count();
+            Clients.All.updatePlayerCount(playerCount);
             Clients.OthersInGroup(groupName).notifyUserInGroup(userName + " joined.");                        
 
             StartGame(player);
         }
 
-        private bool StartNextGame(Player player)
+        public void StartNextGame(string group)
         {
-            var game = GameState.Instance.FindGameByGroupName(player.Group);
+            var game = GameState.Instance.FindGameByGroupName(group);
             if (game != null)
-            {               
-                GameLogic.SetGameNextWind(game);
-                game.DiceMovedCount++;
-                GameLogic.SetPlayerWinds(game);
-                game.WhosTurn = player.ConnectionId;
+            {
+                if (game.DiceRoller.ConnectionId != game.Records.Last().Winner.ConnectionId)
+                {
+                    game.DiceMovedCount++;
+                    GameLogic.SetNextGamePlayerToStart(game);
+                    GameLogic.SetGameNextWind(game);
+                    GameLogic.SetPlayerWinds(game);
+                }
                 GameState.Instance.ResetForNextGame(game);
                 DistributeTiles(game);
                 if (game.GameSetting.SkipInitialFlowerSwapping)
                 {
                     GameLogic.RecycleInitialFlower(game);
-
                 }
-                Clients.Group(player.Group).startGame(game);
+                Clients.Group(group).startNextGame(game);
             }
-            return true;
         }
 
         private bool StartGame(Player player)
@@ -129,8 +139,8 @@ namespace MahjongBuddy
                     }
 
                     game = GameState.Instance.CreateGame(player1, player2, player3, player4, player.Group);
-                    game.WhosTurn = player1.ConnectionId;
-                    game.WhoRollTheDice = player1.ConnectionId;
+                    game.PlayerTurn = player1;
+                    game.DiceRoller = player1;
                     game.DiceMovedCount = 1;
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
@@ -143,7 +153,6 @@ namespace MahjongBuddy
                     if (game.GameSetting.SkipInitialFlowerSwapping)
                     {
                         GameLogic.RecycleInitialFlower(game);
-
                     }
                     GameLogic.SetPlayerWinds(game);
 
@@ -211,17 +220,13 @@ namespace MahjongBuddy
                 case "win":
                     cr = GameLogic.DoWin(game, player);
                     break;
-
-                case "nextgame":
-                    StartNextGame(player);
-                    break;
             }
             invalidMessage = GameLogic.CommandResultDictionary[cr];
             if (cr == CommandResult.ValidCommand)
             {
                 if (switchTurn)
                 {
-                    GameLogic.SetNextPLayerTurn(game);                
+                    GameLogic.SetNextPlayerTurn(game);                
                 }
                 Clients.Group(group).updateGame(game);           
             }
@@ -359,10 +364,34 @@ namespace MahjongBuddy
         {
             List<Tile> tiles = game.Board.Tiles;
             Player p1, p2, p3, p4;
-            p1 = game.Player1;
-            p2 = game.Player2;
-            p3 = game.Player3;
-            p4 = game.Player4;
+            if (game.DiceRoller.ConnectionId == game.Player1.ConnectionId)
+            {
+                p1 = game.Player1;
+                p2 = game.Player2;
+                p3 = game.Player3;
+                p4 = game.Player4;            
+            }
+            else if (game.DiceRoller.ConnectionId == game.Player2.ConnectionId)
+            {
+                p1 = game.Player2;
+                p2 = game.Player3;
+                p3 = game.Player4;
+                p4 = game.Player1;
+            }
+            else if (game.DiceRoller.ConnectionId == game.Player3.ConnectionId)
+            {
+                p1 = game.Player3;
+                p2 = game.Player4;
+                p3 = game.Player1;
+                p4 = game.Player2;
+            }
+            else 
+            {
+                p1 = game.Player4;
+                p2 = game.Player1;
+                p3 = game.Player2;
+                p4 = game.Player3;            
+            }
         
             for (var i = 0; i < 14; i++)
             {                

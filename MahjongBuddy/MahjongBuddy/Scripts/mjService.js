@@ -9,21 +9,21 @@
 
     mjServiceFactory.setPlayerPosition = function(game, loc, curPlayerWind)
     {
-        //0:east 1:west 2:south 3:north
+        //0:east 1:south 2:west 3:north
         if (loc == 'top')
         {
             switch (curPlayerWind) {
                 case 0:
-                    mjServiceFactory.topPlayer = mjServiceFactory.getPlayerByWind(game, 1);
+                    mjServiceFactory.topPlayer = mjServiceFactory.getPlayerByWind(game, 2);
                     break;
                 case 1:
-                    mjServiceFactory.topPlayer = mjServiceFactory.getPlayerByWind(game, 0);
-                    break;
-                case 2:
                     mjServiceFactory.topPlayer = mjServiceFactory.getPlayerByWind(game, 3);
                     break;
+                case 2:
+                    mjServiceFactory.topPlayer = mjServiceFactory.getPlayerByWind(game, 0);
+                    break;
                 case 3:
-                    mjServiceFactory.topPlayer = mjServiceFactory.getPlayerByWind(game, 2);
+                    mjServiceFactory.topPlayer = mjServiceFactory.getPlayerByWind(game, 1);
                     break;
             }
         }
@@ -33,26 +33,26 @@
                     mjServiceFactory.leftPlayer = mjServiceFactory.getPlayerByWind(game, 3);
                     break;
                 case 1:
-                    mjServiceFactory.leftPlayer = mjServiceFactory.getPlayerByWind(game, 2);
-                    break;
-                case 2:
                     mjServiceFactory.leftPlayer = mjServiceFactory.getPlayerByWind(game, 0);
                     break;
-                case 3:
+                case 2:
                     mjServiceFactory.leftPlayer = mjServiceFactory.getPlayerByWind(game, 1);
+                    break;
+                case 3:
+                    mjServiceFactory.leftPlayer = mjServiceFactory.getPlayerByWind(game, 2);
                     break;
             }
         }
         else if (loc == 'right') {
             switch (curPlayerWind) {
                 case 0:
-                    mjServiceFactory.rightPlayer = mjServiceFactory.getPlayerByWind(game, 2);
+                    mjServiceFactory.rightPlayer = mjServiceFactory.getPlayerByWind(game, 1);
                     break;
                 case 1:
-                    mjServiceFactory.rightPlayer = mjServiceFactory.getPlayerByWind(game, 3);
+                    mjServiceFactory.rightPlayer = mjServiceFactory.getPlayerByWind(game, 2);
                     break;
                 case 2:
-                    mjServiceFactory.rightPlayer = mjServiceFactory.getPlayerByWind(game, 1);
+                    mjServiceFactory.rightPlayer = mjServiceFactory.getPlayerByWind(game, 3);
                     break;
                 case 3:
                     mjServiceFactory.rightPlayer = mjServiceFactory.getPlayerByWind(game, 0);
@@ -77,7 +77,7 @@
             mjServiceFactory.currentPlayer = game.Player4;
         }
 
-        //0:east 1:west 2:south 3:north
+        //0:east 1:south 2:west 3:north
         for (i = 0; 1 < 4; i++)
         {
             if (mjServiceFactory.currentPlayer.Wind == i) {
@@ -125,10 +125,10 @@
                 return 'East';
                 break;
             case 1:
-                return 'West';
+                return 'South';
                 break;
             case 2:
-                return 'South';
+                return 'West';
                 break;
             case 3:
                 return 'North';
