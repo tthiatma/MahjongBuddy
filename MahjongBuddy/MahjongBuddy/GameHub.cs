@@ -31,6 +31,17 @@ namespace MahjongBuddy
             }
         }
 
+        public void ResetGame()
+        {
+            var game = GameState.Instance.FindGameByGroupName("mjbuddy");
+            if (game != null)
+            {
+                GameState.Instance.ResetGame(game);
+                var playerCount = GameState.Instance.Players.Count();
+                Clients.All.updatePlayerCount(playerCount);
+            }
+        }
+        
         public async void Join(string userName, string groupName)
         {
             var player = GameState.Instance.GetPlayer(userName);
@@ -145,7 +156,7 @@ namespace MahjongBuddy
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
                     //game.Board.Tiles.Shuffle();
-                    DistributeTilesForWin(game);
+                    DistributeTilesForWinWaitingForEye(game);
 
                     //DistributeTiles(game);
                     game.GameSetting.SkipInitialFlowerSwapping = true;
@@ -277,6 +288,74 @@ namespace MahjongBuddy
                 tiles[i].Owner = p4.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
             }
+        }
+        private void DistributeTilesForWinWaitingForEye(Game game)
+        {
+            List<Tile> tiles = game.Board.Tiles;
+            Player p1, p2, p3, p4;
+            p1 = game.Player1;
+            p2 = game.Player2;
+            p3 = game.Player3;
+            p4 = game.Player4;
+
+            for (var i = 0; i < 12; i++)
+            {
+                tiles[i].Owner = p1.ConnectionId;
+                tiles[i].Status = TileStatus.UserGraveyard;
+            }
+            List<Tile> tempTile1 = new List<Tile>();
+            tempTile1.Add(tiles[0]);
+            tempTile1.Add(tiles[1]);
+            tempTile1.Add(tiles[2]);
+            TileSet newbie1 = new TileSet() { isRevealed = true, Tiles = tempTile1, TileSetType = TileSetType.Chow, TileType = TileType.Money};
+            p1.TileSets.Add(newbie1);
+
+            List<Tile> tempTile2 = new List<Tile>();
+            tempTile2.Add(tiles[3]);
+            tempTile2.Add(tiles[4]);
+            tempTile2.Add(tiles[5]);
+            TileSet newbie2 = new TileSet() { isRevealed = true, Tiles = tempTile2, TileSetType = TileSetType.Chow, TileType = TileType.Money};
+            p1.TileSets.Add(newbie2);
+
+            List<Tile> tempTile3 = new List<Tile>();
+            tempTile3.Add(tiles[6]);
+            tempTile3.Add(tiles[7]);
+            tempTile3.Add(tiles[8]);
+            TileSet newbie3 = new TileSet() { isRevealed = true, Tiles = tempTile3, TileSetType = TileSetType.Chow, TileType = TileType.Money};
+            p1.TileSets.Add(newbie3);
+
+            List<Tile> tempTile4 = new List<Tile>();
+            tempTile4.Add(tiles[9]);
+            tempTile4.Add(tiles[10]);
+            tempTile4.Add(tiles[11]);
+            TileSet newbie4 = new TileSet() { isRevealed = true, Tiles = tempTile4, TileSetType = TileSetType.Chow, TileType = TileType.Round};
+            p1.TileSets.Add(newbie4);
+
+            tiles[12].Owner = p1.ConnectionId;
+            tiles[12].Status = TileStatus.UserActive;
+
+            tiles[66].Owner = p1.ConnectionId;
+            tiles[66].Status = TileStatus.UserActive;
+            tiles[136].Owner = p1.ConnectionId;
+            tiles[136].Status = TileStatus.UserGraveyard;
+
+            for (var i = 14; i < 27; i++)
+            {
+                tiles[i].Owner = p2.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+            for (var i = 27; i < 40; i++)
+            {
+                tiles[i].Owner = p3.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+            for (var i = 53; i < 65; i++)
+            {
+                tiles[i].Owner = p4.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+            tiles[80].Owner = p4.ConnectionId;
+            tiles[80].Status = TileStatus.UserActive;
         }
 
         private void DistributeTilesForKong(List<Tile> tiles, Player p1, Player p2, Player p3, Player p4)

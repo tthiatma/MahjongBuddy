@@ -20,6 +20,7 @@ namespace MahjongBuddy.Models
         public int DiceMovedCount { get; set; }
         public int Count { get; set; }
         public int TileCounter { get; set; }
+        public bool HaltMove { get; set; }
         public WindDirection CurrentWind { get; set; }
         public GameSetting GameSetting { get; set; }
     }

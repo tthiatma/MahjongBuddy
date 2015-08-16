@@ -1,14 +1,16 @@
-﻿app.controller("MahjongController", ['$scope', 'signalRHubProxy', 'mjService',
-    function ($scope, signalRHubProxy, mjService) {
+﻿app.controller("MahjongController", ['$scope', '$timeout', 'signalRHubProxy', 'mjService',
+    function ($scope, $timeout, signalRHubProxy, mjService) {
         $scope.isDisonnected = true;
         $scope.gameIsReady = false;
         $scope.selectedTiles = [];
         $scope.isMyturn = false;
         $scope.record = {};
+        $scope.canPickTile = false;
         var startup = function(conId){
             $scope.isDisonnected = !(conId != undefined);
             $scope.currentUserId = conId;
         };
+        
         var clientPushHubProxy = signalRHubProxy(signalRHubProxy.defaultServer, 'gameHub', startup);
 
         clientPushHubProxy.on('showWinner', function (record) {
@@ -36,33 +38,35 @@
             $('#WaitingRoom').hide();
         });
 
-        clientPushHubProxy.on('startGame', function (game) {
+        var updateGame = function (game) {
             $scope.game = game;
             $scope.currentPlayer = mjService.getCurrentPlayer(game, $scope.currentUserId);
-            $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
-            $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId);
+            $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);            
+            $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId)
+            $timeout(function () {$scope.canPickTile = $scope.currentPlayer.CanPickTile}, 4000);            
+            $scope.isRightPlayerTurn = ($scope.rightPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
+            $scope.isLeftPlayerTurn = ($scope.leftPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
+            $scope.isTopPlayerTurn = ($scope.topPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
+            $scope.lastTile = game.LastTile;
+            $scope.currentGameWind = mjService.getWindName($scope.game.CurrentWind);
+        }
 
+
+        clientPushHubProxy.on('startGame', function (game) {
             mjService.setPlayer(game, $scope.currentUserId);
             $scope.topPlayer = mjService.topPlayer;
             $scope.rightPlayer = mjService.rightPlayer;
             $scope.leftPlayer = mjService.leftPlayer;
+            updateGame(game);
         });
 
         clientPushHubProxy.on('startNextGame', function (game) {
-            $scope.game = game;
-            $scope.currentPlayer = mjService.getCurrentPlayer($scope.game, $scope.currentUserId);
-            $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
-            $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId);
-            $scope.lastTile = game.LastTile;
+            updateGame(game);
             $('#myModal').modal('hide');
         });
 
         clientPushHubProxy.on('updateGame', function (game) {
-            $scope.game = game;
-            $scope.currentPlayer = mjService.getCurrentPlayer($scope.game, $scope.currentUserId);
-            $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
-            $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId);
-            $scope.lastTile = game.LastTile;
+            updateGame(game);
         });
 
         clientPushHubProxy.on('updatePlayerCount', function (playerCount) {
@@ -77,6 +81,10 @@
             var un = $('#usernameTB').val();
             clientPushHubProxy.invoke2('Join', un, 'mjbuddy', function () {
             });
+        };
+
+        $scope.resetGame = function () {
+            clientPushHubProxy.invoke('ResetGame', function () { });
         };
 
         $scope.fnIsTileActive = function (tileId){

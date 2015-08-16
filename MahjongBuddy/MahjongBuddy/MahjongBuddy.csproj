@@ -266,6 +266,7 @@
     <Content Include="Content\images\tiles\64px\dragon\dragon-chun.png" />
     <Content Include="Content\images\tiles\64px\dragon\dragon-green.png" />
     <Content Include="Content\images\tiles\64px\dragon\dragon-haku.png" />
+    <Content Include="Content\images\tiles\64px\dragon\dragon-white.png" />
     <Content Include="Content\images\tiles\64px\face-down-64px.png" />
     <Content Include="Content\images\tiles\64px\flower\flower1.png" />
     <Content Include="Content\images\tiles\64px\flower\flower1a.png" />
@@ -359,6 +360,7 @@
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
     <Content Include="Scripts\jquery-2.1.3.min.map" />
+    <None Include="Properties\PublishProfiles\LocalDeploy.pubxml" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <None Include="Scripts\jquery-2.1.3-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.8.24.js" />

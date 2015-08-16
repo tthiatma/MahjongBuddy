@@ -132,3 +132,8 @@ textarea {
 .winningTiles{
  padding-left:50px;
 }
+
+.activePlayer {
+    background-color: gold;
+    padding: 5px;
+}

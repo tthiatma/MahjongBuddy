@@ -159,6 +159,7 @@ namespace MahjongBuddy
                         {
                             newTileForPlayer.Owner = player.ConnectionId;
                             newTileForPlayer.Status = TileStatus.JustPicked;
+                            game.HaltMove = true;
                             break;
                         }
                     }
@@ -187,6 +188,8 @@ namespace MahjongBuddy
                         game.TileCounter++;
 
                         game.LastTile = tileToThrow;
+
+                        game.HaltMove = false;
 
                         var justPickedTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked).FirstOrDefault();
                         if (justPickedTile != null)
@@ -280,7 +283,8 @@ namespace MahjongBuddy
                 }
                 else 
                 {
-                    isPossibleToGetWeirdWinningSet = false;                
+                    isPossibleToGetWeirdWinningSet = false;
+                    tilesToTestForwin.Add(game.LastTile);
                 }
 
                 //TODO add to the winningtype

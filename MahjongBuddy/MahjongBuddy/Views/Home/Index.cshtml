@@ -17,6 +17,7 @@
                 <span><label>mjbuddy({{totalPlayers}})</label></span>
                 <span><input type="text" id="usernameTB" ng-disabled="isDisonnected || totalPlayers >= 4"  placeholder='Enter your name' /></span>
                 <span><input type="button" id="join" value="join" ng-disabled="isDisonnected || totalPlayers >= 4" ng-click="join()" class="btn btn-primary"></span>
+                <span><input type="button" id="restartGame" value="nuke" ng-click="resetGame()" ng-hide="totalPlayers < 4" class="btn btn-danger"></span>
             </div>
             <div class="col-md-4"></div>
         </div>
@@ -80,7 +81,7 @@
         <div id="TopPlayer" class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8" style="text-align: center">
-                <div class="row">
+                <div ng-class="{'activePlayer' : isTopPlayerTurn}" class="row">
                     {{topPlayer.Name}} - {{topPlayer.CurrentPoint}} pts
                 </div>
 
@@ -107,7 +108,7 @@
 
                     <div class="col-md-1">
                         <span class="rotate90container">
-                            <span class="rotate90">{{leftPlayer.Name}} - {{leftPlayer.CurrentPoint}} pts</span>
+                            <span ng-class="{'activePlayer' : isLeftPlayerTurn}" class="rotate90">{{leftPlayer.Name}} - {{leftPlayer.CurrentPoint}} pts</span>
                         </span> 
                     </div>
 
@@ -151,7 +152,7 @@
 
                     <div class="col-md-1"> 
                         <span class="rotate90container">
-                            <span class="rotateMinus90">{{rightPlayer.Name}} - {{rightPlayer.CurrentPoint}} pts </span>
+                            <span ng-class="{'activePlayer' : isRightPlayerTurn}" class="rotateMinus90">{{rightPlayer.Name}} - {{rightPlayer.CurrentPoint}} pts </span>
                         </span>                     
                     </div>
                 </div>
@@ -168,12 +169,12 @@
                 @*<input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn btn-primary" ng-click="fnPlayerMove('flower', 0)">*@
                 @*<input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn btn-primary" ng-click="fnPlayerMove('noflower' , 0)">*@
 
-                <input type="button" id="win" value="win" class="btn btn-primary" ng-click="fnPlayerMove('win', selectedTiles)">
-                <input type="button" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', selectedTiles)">
-                <input type="button" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', selectedTiles)">
-                <input type="button" ng-disabled="!isMyturn" id="chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', selectedTiles)">
+                <input type="button" ng-disabled="game.HaltMove" id="win" value="win" class="btn btn-primary" ng-click="fnPlayerMove('win', selectedTiles)">
+                <input type="button" ng-disabled="game.HaltMove" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', selectedTiles)">
+                <input type="button" ng-disabled="game.HaltMove" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', selectedTiles)">
+                <input type="button" ng-disabled="!isMyturn || game.HaltMove" id="chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', selectedTiles)">
                 <input type="button" ng-disabled="!isMyturn || currentPlayer.CanPickTile" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTiles)">
-                <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanPickTile" id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', selectedTiles)">
+                <input type="button" ng-disabled="!canPickTile || game.HaltMove || !currentPlayer.CanPickTile"  id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', selectedTiles)">
             </div>
 
             <div id="activeTiles">
@@ -197,9 +198,9 @@
             <div style="clear:both"></div>
 
             <div>
-                <label>{{currentPlayer.Name}} - {{currentPlayer.CurrentPoint}} pts </label>
+                <label ng-class="{'activePlayer' : isMyturn}" class="currentTurn">{{currentPlayer.Name}} - {{currentPlayer.CurrentPoint}} pts </label>
                 <br/>
-                <label id="playerWind">{{currentPlayerWind}}</label>
+                <label id="playerWind">Game Wind:{{currentGameWind}} - My wind:{{currentPlayerWind}}</label>
                 <br />
                 <label id="warningMessage">{{warningMessage}}</label>
                 <br/>
