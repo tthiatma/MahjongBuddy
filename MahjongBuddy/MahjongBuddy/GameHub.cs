@@ -155,10 +155,10 @@ namespace MahjongBuddy
                     game.DiceMovedCount = 1;
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
-                    //game.Board.Tiles.Shuffle();
-                    DistributeTilesForWinWaitingForEye(game);
+                    game.Board.Tiles.Shuffle();
+                    //DistributeTilesForKong(game);
 
-                    //DistributeTiles(game);
+                    DistributeTiles(game);
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 
                     if (game.GameSetting.SkipInitialFlowerSwapping)
@@ -358,8 +358,15 @@ namespace MahjongBuddy
             tiles[80].Status = TileStatus.UserActive;
         }
 
-        private void DistributeTilesForKong(List<Tile> tiles, Player p1, Player p2, Player p3, Player p4)
+        private void DistributeTilesForKong(Game game)
         {
+            List<Tile> tiles = game.Board.Tiles;
+            Player p1, p2, p3, p4;
+            p1 = game.Player1;
+            p2 = game.Player2;
+            p3 = game.Player3;
+            p4 = game.Player4;
+
             for (var i = 0; i < 14; i++)
             {
                 if (i == 3 || i == 5)
@@ -367,22 +374,35 @@ namespace MahjongBuddy
                     continue;
                 }
                 tiles[i].Owner = p1.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
             }
             tiles[38].Owner = p1.ConnectionId;
-            tiles[74].Owner = p1.ConnectionId;
-            tiles[110].Owner = p1.ConnectionId;
+            tiles[38].Status = TileStatus.UserActive;
+
+            tiles[72].Owner = p1.ConnectionId;
+            tiles[72].Status = TileStatus.UserActive;
+
+            tiles[106].Owner = p1.ConnectionId;
+            tiles[106].Status = TileStatus.JustPicked;
 
             for (var i = 14; i < 27; i++)
             {
                 tiles[i].Owner = p2.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
             }
-            for (var i = 27; i < 40; i++)
+            for (var i = 27; i < 41; i++)
             {
+                if (i == 38)
+                {
+                    continue;
+                }
                 tiles[i].Owner = p3.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
             }
             for (var i = 53; i < 66; i++)
             {
                 tiles[i].Owner = p4.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
             }
         }
 
