@@ -24,7 +24,7 @@ namespace MahjongBuddy.Models
         public string Group { get; set; }
         public bool IsPlaying { get; set; }
         public bool CanPickTile { get; set; }
-        public bool CanOnlyThrowTile { get; set; }
+        public bool CanThrowTile { get; set; }
         public bool CanDoNoFlower { get; set; }
         public WindDirection Wind { get; set; }
         public List<int> Matches { get; set; }

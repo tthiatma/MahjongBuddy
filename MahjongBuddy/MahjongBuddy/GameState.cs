@@ -141,6 +141,11 @@ namespace MahjongBuddy
             game.Board.Tiles.Shuffle();
             game.TileCounter = 0;
             game.PlayerTurn = game.DiceRoller;
+
+            game.Player1.TileSets = new List<TileSet>();
+            game.Player2.TileSets = new List<TileSet>();
+            game.Player3.TileSets = new List<TileSet>();
+            game.Player4.TileSets = new List<TileSet>();
         }
 
         public void ResetGame(Game game)

@@ -173,7 +173,7 @@
                 <input type="button" ng-disabled="game.HaltMove" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', selectedTiles)">
                 <input type="button" ng-disabled="game.HaltMove" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', selectedTiles)">
                 <input type="button" ng-disabled="!isMyturn || game.HaltMove" id="chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', selectedTiles)">
-                <input type="button" ng-disabled="!isMyturn || currentPlayer.CanPickTile" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTiles)">
+                <input type="button" ng-disabled="!isMyturn || !currentPlayer.CanThrowTile" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTiles)">
                 <input type="button" ng-disabled="!canPickTile || game.HaltMove || !currentPlayer.CanPickTile"  id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', selectedTiles)">
             </div>
 

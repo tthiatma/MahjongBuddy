@@ -20,6 +20,7 @@ namespace MahjongBuddy
             CommandResultDictionary.Add(CommandResult.InvalidKong, "Nothing to kong!");
             CommandResultDictionary.Add(CommandResult.InvalidChow, "Nothing to chow!");
             CommandResultDictionary.Add(CommandResult.InvalidPick, "It's not your turn yet");
+            CommandResultDictionary.Add(CommandResult.InvalidPickWentWrong, "Can't pick more tile");
             CommandResultDictionary.Add(CommandResult.InvalidThrow, "Select one tile to throw");
             CommandResultDictionary.Add(CommandResult.InvalidChowTileType, "Please select a valid tile");
             CommandResultDictionary.Add(CommandResult.InvalidChowNeedTwoTiles, "Select 2 tiles to chow");
@@ -55,7 +56,7 @@ namespace MahjongBuddy
                         AddTilesToPlayerOpenTileSet(game, actualTiles, player.ConnectionId, TileSetType.Pong);
                         game.PlayerTurn = player;
                         player.CanPickTile = false;
-                        player.CanOnlyThrowTile = true;
+                        player.CanThrowTile = true;
 
                         return CommandResult.ValidCommand;
                     }
@@ -113,7 +114,7 @@ namespace MahjongBuddy
                                 AddTilesToPlayerOpenTileSet(game, sortedList, player.ConnectionId, TileSetType.Chow);
                                 game.PlayerTurn = player;
                                 player.CanPickTile = false;
-                                player.CanOnlyThrowTile = true;
+                                player.CanThrowTile = true;
 
                                 return CommandResult.ValidCommand;
                             }
@@ -143,30 +144,68 @@ namespace MahjongBuddy
         {
             if (player != null)
             {
-                for (var i = 0; i < 8; i++)
-                {
-                    var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").FirstOrDefault();
+                //to know how many tiles a player can have, we need to check how many sets/tiles that they have/revealed
+                //this section is to prevent player to have more tiles when they pick new tile.
+                var playerTileSetCount = player.TileSets.Count();
+                var playerActiveTilesCount = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.UserActive).Count();
+                bool canPickNewTile = false;
+                switch (playerTileSetCount)
+                { 
+                    case 1:
+                        if (playerActiveTilesCount == 10)
+                            canPickNewTile = true;                        
+                        break;
 
-                    if (newTileForPlayer != null)
+                    case 2:
+                        if (playerActiveTilesCount ==7)
+                            canPickNewTile = true;
+                        break;
+
+                    case 3:
+                        if (playerActiveTilesCount == 4)
+                            canPickNewTile = true;
+                        break;
+
+                    case 4:
+                        if (playerActiveTilesCount == 1)
+                            canPickNewTile = true;
+                        break;
+                }
+
+                if (canPickNewTile)
+                {
+                    //we loop 8 times because there are 8 flowers total
+                    //in case we got flower, we need to move the flower to player's graveyard and grab new tile
+                    for (var i = 0; i < 8; i++)
                     {
-                        if (newTileForPlayer.Type == TileType.Flower)
+                        var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").FirstOrDefault();
+
+                        if (newTileForPlayer != null)
                         {
-                            List<Tile> ft = new List<Tile>();
-                            ft.Add(newTileForPlayer);
-                            CommandTileToPlayerGraveyard(game, ft, player.ConnectionId, replaceTile: false);
-                        }
-                        else
-                        {
-                            newTileForPlayer.Owner = player.ConnectionId;
-                            newTileForPlayer.Status = TileStatus.JustPicked;
-                            game.HaltMove = true;
-                            break;
+                            if (newTileForPlayer.Type == TileType.Flower)
+                            {
+                                List<Tile> ft = new List<Tile>();
+                                ft.Add(newTileForPlayer);
+                                CommandTileToPlayerGraveyard(game, ft, player.ConnectionId, replaceTile: false);
+                            }
+                            else
+                            {
+                                newTileForPlayer.Owner = player.ConnectionId;
+                                newTileForPlayer.Status = TileStatus.JustPicked;
+                                game.HaltMove = true;
+                                break;
+                            }
                         }
                     }
-                }
-                SetPlayerCanPickTile(game, player.ConnectionId, false);
+                    player.CanPickTile = false;
+                    player.CanThrowTile = true;                    
 
-                return CommandResult.ValidCommand;
+                    return CommandResult.ValidCommand;
+                }
+                else
+                {
+                    return CommandResult.InvalidPick;
+                }
             }
             else 
             {
@@ -239,7 +278,7 @@ namespace MahjongBuddy
                         game.PlayerTurn = player;
                         var pp = GetPlayerByConnectionId(game, player.ConnectionId);
                         pp.CanPickTile = false;
-                        pp.CanOnlyThrowTile = true;
+                        pp.CanThrowTile = true;
 
                         return CommandResult.ValidCommand;
                     }
@@ -538,15 +577,15 @@ namespace MahjongBuddy
 
         public void SetGameNextWind(Game game)
         {
-            if (game.CurrentWind == WindDirection.East)
+            if (game.DiceMovedCount > 4)
             {
                 game.CurrentWind = WindDirection.South;
             }
-            else if (game.CurrentWind == WindDirection.South)
+            else if (game.DiceMovedCount > 8)
             {
                 game.CurrentWind = WindDirection.West;
             }
-            else if (game.CurrentWind == WindDirection.West)
+            else if (game.DiceMovedCount > 12)
             {
                 game.CurrentWind = WindDirection.North;
             }
@@ -922,26 +961,6 @@ namespace MahjongBuddy
             else
             {
                 return null;
-            }
-        }
-
-        private void SetPlayerCanPickTile(Game game, string conId, bool flag)
-        {
-            if (game.Player1.ConnectionId == conId)
-            {
-                game.Player1.CanPickTile = flag;
-            }
-            else if (game.Player2.ConnectionId == conId)
-            {
-                game.Player2.CanPickTile = flag;
-            }
-            else if (game.Player3.ConnectionId == conId)
-            {
-                game.Player3.CanPickTile = flag;
-            }
-            else if (game.Player4.ConnectionId == conId)
-            {
-                game.Player4.CanPickTile = flag;
             }
         }
     }
