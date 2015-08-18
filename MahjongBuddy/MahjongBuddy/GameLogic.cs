@@ -47,8 +47,12 @@ namespace MahjongBuddy
                         var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
                         playerTilesPong.Add(thrownTile);
                         CommandTileToPlayerGraveyard(game, playerTilesPong, player.ConnectionId);
-                        AddTilesToPlayerOpenTileSet(game, playerTilesPong, player.ConnectionId, TileSetType.Pong);
-                        game.HaltMove = true;
+                        List<Tile> actualTiles = new List<Tile>();
+                        foreach (var t in tiles)
+                        {
+                            actualTiles.Add(game.Board.Tiles.Where(ti => ti.Id == t).FirstOrDefault());
+                        }
+                        AddTilesToPlayerOpenTileSet(game, actualTiles, player.ConnectionId, TileSetType.Pong);
                         game.PlayerTurn = player;
                         player.CanPickTile = false;
                         player.CanOnlyThrowTile = true;
@@ -107,7 +111,6 @@ namespace MahjongBuddy
                             {
                                 CommandTileToPlayerGraveyard(game, sortedList, player.ConnectionId);
                                 AddTilesToPlayerOpenTileSet(game, sortedList, player.ConnectionId, TileSetType.Chow);
-                                game.HaltMove = true;
                                 game.PlayerTurn = player;
                                 player.CanPickTile = false;
                                 player.CanOnlyThrowTile = true;
@@ -215,33 +218,24 @@ namespace MahjongBuddy
         {
             if (player != null)
             {
-                //check if user just picked tile
-                Tile tileToKong = null;
-                var justpickedPlayerTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked);
-
-                if (justpickedPlayerTile != null && justpickedPlayerTile.Count() > 0)
-                {
-                    tileToKong = justpickedPlayerTile.FirstOrDefault();
-                }
-                else
-                {
-                    tileToKong = game.LastTile;
-                }
                 var activePlayerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.UserActive);
-
-                if (tileToKong != null)
+                var thrownTile = game.LastTile;
+                if (thrownTile != null)
                 {
-                    var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == tileToKong.Type && t.Value == tileToKong.Value);
+                    var matchedTileTypeAndValue = activePlayerTiles.Where(t => t.Type == thrownTile.Type && t.Value == thrownTile.Value);
                     if (matchedTileTypeAndValue.Count() == 3)
                     {
                         var playerTilesKong = matchedTileTypeAndValue.Take(3).ToList();
-                        playerTilesKong.Add(tileToKong);
-
+                        playerTilesKong.Add(thrownTile);
                         CommandTileToPlayerGraveyard(game, playerTilesKong, player.ConnectionId);
-                        AddTilesToPlayerOpenTileSet(game, playerTilesKong, player.ConnectionId, TileSetType.Kong);
-                       
-                        
-                        game.HaltMove = true;
+
+                        List<Tile> actualTiles = new List<Tile>();
+                        foreach (var t in tiles)
+                        {
+                            actualTiles.Add(game.Board.Tiles.Where(ti => ti.Id == t).FirstOrDefault());
+                        }
+                        AddTilesToPlayerOpenTileSet(game, actualTiles, player.ConnectionId, TileSetType.Kong);
+
                         game.PlayerTurn = player;
                         var pp = GetPlayerByConnectionId(game, player.ConnectionId);
                         pp.CanPickTile = false;
