@@ -103,7 +103,9 @@ namespace MahjongBuddy
                     Clients.Group(player.Group).gameStarted();
                     var arrayOfPep = pepInGroup.ToArray();
                     Random random = new Random();
-                    int randomPlayerToStart = random.Next(1, 4);
+                    int randomPlayerToStart = 1;
+
+                    //int randomPlayerToStart = random.Next(1, 4);
                     
                     switch (randomPlayerToStart)
                     { 
@@ -243,8 +245,7 @@ namespace MahjongBuddy
             }
             else if (cr == CommandResult.PlayerWin)
             {
-                Clients.Group(group).showWinner(game.Records.Last());
-                Clients.Group(group).updateGame(game); 
+                Clients.Group(group).showWinner(game);
             }
             else
             {
@@ -339,6 +340,8 @@ namespace MahjongBuddy
             tiles[66].Status = TileStatus.UserActive;
             tiles[136].Owner = p1.ConnectionId;
             tiles[136].Status = TileStatus.UserGraveyard;
+            tiles[140].Owner = p1.ConnectionId;
+            tiles[140].Status = TileStatus.UserGraveyard;
 
             for (var i = 14; i < 27; i++)
             {

@@ -13,8 +13,10 @@
         
         var clientPushHubProxy = signalRHubProxy(signalRHubProxy.defaultServer, 'gameHub', startup);
 
-        clientPushHubProxy.on('showWinner', function (record) {
-            $scope.record = record;
+        clientPushHubProxy.on('showWinner', function (game) {
+            $scope.record = game.Records[game.Records.length-1];
+            updateOtherPlayer(game);
+            updateGame(game);
             $("#myModal").modal('show');
         });
 
@@ -51,6 +53,12 @@
             $scope.currentGameWind = mjService.getWindName($scope.game.CurrentWind);
         }
 
+        var updateOtherPlayer = function (game){
+            mjService.setPlayer(game, $scope.currentUserId);
+            $scope.topPlayer = mjService.topPlayer;
+            $scope.rightPlayer = mjService.rightPlayer;
+            $scope.leftPlayer = mjService.leftPlayer;
+        }
 
         clientPushHubProxy.on('startGame', function (game) {
             mjService.setPlayer(game, $scope.currentUserId);
