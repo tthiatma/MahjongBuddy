@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models
         public Dictionary<WinningType, int> PointSystem { get; set; }
         public Board Board { get; set; }
         public Tile LastTile { get; set; }
+        public int TilesLeft { get; set; }
         public Player PlayerTurn { get; set; }
         public Player DiceRoller { get; set; }
         public int DiceMovedCount { get; set; }

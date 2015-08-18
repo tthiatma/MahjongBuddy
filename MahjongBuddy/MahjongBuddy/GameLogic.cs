@@ -200,7 +200,7 @@ namespace MahjongBuddy
                     }
                     player.CanPickTile = false;
                     player.CanThrowTile = true;
-
+                   
                     return CommandResult.ValidCommand;
                 }
                 else

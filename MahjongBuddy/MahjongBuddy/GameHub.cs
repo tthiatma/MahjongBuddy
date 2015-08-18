@@ -103,9 +103,9 @@ namespace MahjongBuddy
                     Clients.Group(player.Group).gameStarted();
                     var arrayOfPep = pepInGroup.ToArray();
                     Random random = new Random();
-                    int randomPlayerToStart = 1;
+                    //int randomPlayerToStart = 1;
 
-                    //int randomPlayerToStart = random.Next(1, 4);
+                    int randomPlayerToStart = random.Next(1, 4);
                     
                     switch (randomPlayerToStart)
                     { 
@@ -157,10 +157,11 @@ namespace MahjongBuddy
                     game.DiceMovedCount = 1;
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
-                    //game.Board.Tiles.Shuffle();
-                    DistributeTilesForWinWaitingForEye(game);
+                    game.Board.Tiles.Shuffle();
+                    //DistributeTilesForWinWaitingForEye(game);
 
-                    //DistributeTiles(game);
+                    DistributeTiles(game);
+                    game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 
                     if (game.GameSetting.SkipInitialFlowerSwapping)
@@ -237,6 +238,8 @@ namespace MahjongBuddy
             invalidMessage = GameLogic.CommandResultDictionary[cr];
             if (cr == CommandResult.ValidCommand)
             {
+                game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+
                 if (switchTurn)
                 {
                     GameLogic.SetNextPlayerTurn(game);                

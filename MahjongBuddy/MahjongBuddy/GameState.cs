@@ -44,7 +44,7 @@ namespace MahjongBuddy
 	        get{return _instance.Value;}
         }
 
-        public IHubConnectionContext Clients { get; set; }
+        public IHubConnectionContext<dynamic> Clients { get; set; }
 
         public IGroupManager Groups { get; set; }
 

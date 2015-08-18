@@ -6,6 +6,7 @@
         $scope.isMyturn = false;
         $scope.record = {};
         $scope.canPickTile = false;
+
         var startup = function(conId){
             $scope.isDisonnected = !(conId != undefined);
             $scope.currentUserId = conId;

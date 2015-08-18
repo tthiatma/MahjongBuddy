@@ -5,7 +5,7 @@
 
 @section head
 {
-    <script src="~/Scripts/jquery.signalR-2.0.0.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
     @*<script src="/signalr/hubs"></script>*@
 }
 <div ng-controller="MahjongController">
@@ -165,6 +165,7 @@
 
         <div id="BottomPlayer" class="col-md-8" style="text-align: center">
 
+            <div id ="tilesLeft">Tiles Left: {{game.TilesLeft}}</div>
             <div id="playerCommand">
                 @*<input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn btn-primary" ng-click="fnPlayerMove('flower', 0)">*@
                 @*<input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn btn-primary" ng-click="fnPlayerMove('noflower' , 0)">*@
@@ -173,7 +174,7 @@
                 <input type="button" ng-disabled="game.HaltMove && !isMyturn" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', selectedTiles)">                <input type="button" ng-disabled="game.HaltMove" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', selectedTiles)">
                 <input type="button" ng-disabled="!isMyturn || game.HaltMove" id="chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', selectedTiles)">
                 <input type="button" ng-disabled="!isMyturn || currentPlayer.CanPickTile" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTiles)">
-                <input type="button" ng-disabled="!canPickTile || game.HaltMove || !currentPlayer.CanPickTile || !isMyturn""  id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', selectedTiles)">
+                <input type="button" ng-disabled="!canPickTile || game.HaltMove || !currentPlayer.CanPickTile || !isMyturn" id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', selectedTiles)">
             </div>
 
             <div id="activeTiles">
