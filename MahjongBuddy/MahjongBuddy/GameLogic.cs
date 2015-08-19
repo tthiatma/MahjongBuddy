@@ -20,16 +20,16 @@ namespace MahjongBuddy
             CommandResultDictionary.Add(CommandResult.InvalidKong, "Nothing to kong!");
             CommandResultDictionary.Add(CommandResult.InvalidChow, "Nothing to chow!");
             CommandResultDictionary.Add(CommandResult.InvalidPick, "It's not your turn yet");
-            CommandResultDictionary.Add(CommandResult.InvalidPickWentWrong, "Can't pick more tile");
             CommandResultDictionary.Add(CommandResult.InvalidThrow, "Select one tile to throw");
             CommandResultDictionary.Add(CommandResult.InvalidChowTileType, "Please select a valid tile");
             CommandResultDictionary.Add(CommandResult.InvalidChowNeedTwoTiles, "Select 2 tiles to chow");
             CommandResultDictionary.Add(CommandResult.InvalidPlayer, "Lost information about player");
             CommandResultDictionary.Add(CommandResult.PlayerWin, "You won!!!!");
             CommandResultDictionary.Add(CommandResult.PlayerWinFailed, "No penalty this time");
-            CommandResultDictionary.Add(CommandResult.SomethingWentWrong, "Something went wrong!");
             CommandResultDictionary.Add(CommandResult.InvalidWin, "Can't win with this");
-            
+            CommandResultDictionary.Add(CommandResult.SomethingWentWrong, "Something went wrong!");
+            CommandResultDictionary.Add(CommandResult.InvalidPickWentWrong, "Can't pick more tile");
+            CommandResultDictionary.Add(CommandResult.NobodyWin, "No one win...sad time");
 
             PointCalculator = new PointCalculator();
         }
@@ -237,7 +237,17 @@ namespace MahjongBuddy
                         {
                             justPickedTile.Status = TileStatus.UserActive;
                         }
-                        return CommandResult.ValidCommand;
+                        
+                        //check remaining tiles when throwing tile
+                        var remainingTiles = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+                        if (remainingTiles > 0)
+                        {
+                            return CommandResult.ValidCommand;
+                        }
+                        else
+                        {
+                            return CommandResult.NobodyWin;
+                        }
                     }
                     else
                     {

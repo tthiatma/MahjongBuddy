@@ -6,6 +6,7 @@
         $scope.isMyturn = false;
         $scope.record = {};
         $scope.canPickTile = false;
+        $scope.hideGameCountdown = true;
 
         var startup = function(conId){
             $scope.isDisonnected = !(conId != undefined);
@@ -18,8 +19,33 @@
             $scope.record = game.Records[game.Records.length-1];
             updateOtherPlayer(game);
             updateGame(game);
-            $("#myModal").modal('show');
+            $("#showWinnerModal").modal('show');
         });
+
+        clientPushHubProxy.on('showNoWinner', function (game) {
+            $scope.record = game.Records[game.Records.length - 1];
+            updateOtherPlayer(game);
+            updateGame(game);
+
+            $scope.hideGameCountdown = false;
+            $scope.gameEndCountdown = 10;
+            $scope.onTimeout = function () {
+                $scope.gameEndCountdown--;
+                mytimeout = $timeout($scope.onTimeout, 1000);
+            }
+            var mytimeout = $timeout($scope.onTimeout, 1000);
+            if ($scope.gameEndCountdown <= 0)
+            {
+                $timeout.cancel(mytimeout);
+            }
+
+            //give ten seconds before next game start
+            $timeout(function () {
+                $("#showNoWinnerModal").modal('show');
+                $scope.hideGameCountdown = true;
+            }, 10000);
+        });
+
 
         clientPushHubProxy.on('notifyUserInGroup', function (msg) {
             $('#gameStatus').append(msg + "<br/>");
@@ -71,7 +97,8 @@
 
         clientPushHubProxy.on('startNextGame', function (game) {
             updateGame(game);
-            $('#myModal').modal('hide');
+            $('#showWinnerModal').modal('hide');
+            $('#showNoWinnerModal').modal('hide');
         });
 
         clientPushHubProxy.on('updateGame', function (game) {

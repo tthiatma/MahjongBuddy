@@ -11,6 +11,7 @@ namespace MahjongBuddy.Models
         public Player Winner { get; set; }
         public Player Feeder { get; set; }
         public WinningTileSet WinningTileSet { get; set; }
+        public bool NoWinner { get; set; }
 
         public Record()
         {

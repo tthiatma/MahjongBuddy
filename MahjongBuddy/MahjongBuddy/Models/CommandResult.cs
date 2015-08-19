@@ -20,6 +20,8 @@ namespace MahjongBuddy.Models
         PlayerWinFailed,
         InvalidWin,
         SomethingWentWrong,
-        InvalidPickWentWrong
+        InvalidPickWentWrong,
+        NobodyWin,
+        
     }
 }
