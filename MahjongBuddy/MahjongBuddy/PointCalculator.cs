@@ -312,29 +312,112 @@ namespace MahjongBuddy.Models
                 _winningTypes.Add(WinningType.Straight);
             }
         }
-
-        //TODO
+        
         public void FindDragonCombo(Game game, WinningTileSet wts, Player player)
         {
-            
+            int dragonCount = 0;
+
+            foreach (var s in wts.Sets)
+            {
+                if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.DragonRed)
+                {
+                    dragonCount++;
+                }
+                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.DragonGreen)
+                {
+                    dragonCount++;
+                }
+                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.DragonGreen)
+                {
+                    dragonCount++;
+                }
+            }
+            if (dragonCount == 3)
+            {
+                _winningTypes.Add(WinningType.BigDragon);
+            }
+            else if (dragonCount == 2)
+            { 
+                //check if the eye is dragon
+                if (wts.Eye.TileType == TileType.Dragon)
+                {
+                    _winningTypes.Add(WinningType.LittleDragon);                     
+                }
+            }
         }
 
-        //TODO
         public void FindWindCombo(Game game, WinningTileSet wts, Player player)
         {
+            int windCount = 0;
 
+            foreach (var s in wts.Sets)
+            {
+                if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.WindEast)
+                {
+                    windCount++;
+                }
+                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.WindNorth)
+                {
+                    windCount++;
+                }
+                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.WindSouth)
+                {
+                    windCount++;
+                }
+                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.WindWest)
+                {
+                    windCount++;
+                }
+            }
+            if (windCount == 4)
+            {
+                _winningTypes.Add(WinningType.BigFourWind);
+            }
+            else if (windCount == 3)
+            {
+                //check if the eye is dragon
+                if (wts.Eye.TileType == TileType.Wind)
+                {
+                    _winningTypes.Add(WinningType.LittleFourWind);
+                }
+            }
         }
 
-        //TODO
         public void FindAllTerminal(Game game, WinningTileSet wts, Player player)
         {
+            int terminalCount = 0;
 
+            foreach (var s in wts.Sets)
+            {
+                if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.One)
+                {
+                    terminalCount++;
+                }
+                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.Nine)
+                {
+                    terminalCount++;
+                }
+                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Type == TileType.Dragon)
+                {
+                    terminalCount++;
+                }
+                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Type == TileType.Wind)
+                {
+                    terminalCount++;
+                }
+            }
+            if (terminalCount == 4)
+            {
+                _winningTypes.Add(WinningType.AllTerminal);
+            }
         }
 
-        //TODO
         public void FindLastPick(Game game, WinningTileSet wts, Player player)
         {
-
+            if (game.TilesLeft == 0)
+            {
+                _winningTypes.Add(WinningType.WinOnLastTile);
+            }
         }
 
         public void FindAllKong(Game game, WinningTileSet wts, Player player)

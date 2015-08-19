@@ -99,12 +99,9 @@
                 </div>
 
                 <div class="row HorizontalContainer">
-                    <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId, Status: 3}: true | orderBy: ['OpenTileCounter']">
+                    <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId, Status: 3}: true | orderBy: ['OpenTileCounter']">
                         <img class="tileHorizontal rotate180" ng-src="{{tile.Image}}" />
-                    </div>
-                </div>
-
-                <div class="row">
+                    </span>
                     <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId, Status: 2}: true">
                         <img class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
                     </span>
@@ -140,7 +137,6 @@
 
             <!--start for Board-->
                 <div id="TheBoard" class="col-md-6">
-                    <strong>Discarded Tiles</strong>
                     <div id="discardedTiles">
                         <div class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Status : 4}: true | orderBy: 'OpenTileCounter'">
                             <img class="tileHorizontal" ng-src="{{tile.Image}}" />
