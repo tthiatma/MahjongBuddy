@@ -369,6 +369,7 @@
     <Content Include="Scripts\jquery-2.1.3.min.js" />
     <Content Include="Scripts\jquery-2.1.3.min.map" />
     <None Include="Properties\PublishProfiles\LocalDeploy.pubxml" />
+    <None Include="Properties\PublishProfiles\mjbudddy_local.pubxml" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <None Include="Scripts\jquery-2.1.3-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.8.24.js" />

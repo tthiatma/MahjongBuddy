@@ -337,12 +337,18 @@ namespace MahjongBuddy
                 else if (playerTiles.Count() == 13)
                 {
                     isPossibleToGetWeirdWinningSet = true;
-                    tilesToTestForwin.Add(game.LastTile);
+                    if (game.LastTile != null)
+                    {
+                        tilesToTestForwin.Add(game.LastTile);
+                    }
                 }
                 else 
                 {
                     isPossibleToGetWeirdWinningSet = false;
-                    tilesToTestForwin.Add(game.LastTile);
+                    if (game.LastTile != null)
+                    {
+                        tilesToTestForwin.Add(game.LastTile);                    
+                    }
                 }
 
                 //TODO add to the winningtype
@@ -355,7 +361,7 @@ namespace MahjongBuddy
                     bool is13Wonders = true;
                     foreach (var t in thirteenWonderTiles)
                     {
-                        var dTile = tilesToTestForwin.Where(dt => dt.Type == t.Type && dt.Value == t.Value);
+                        var dTile = tilesToTestForwin.Where(tt => (tt.Type == t.Type) && (tt.Value == t.Value));
 
                         if (dTile != null)
                         {

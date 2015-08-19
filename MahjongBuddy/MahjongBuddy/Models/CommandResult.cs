@@ -22,6 +22,5 @@ namespace MahjongBuddy.Models
         SomethingWentWrong,
         InvalidPickWentWrong,
         NobodyWin,
-        
     }
 }

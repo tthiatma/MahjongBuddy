@@ -112,9 +112,9 @@ namespace MahjongBuddy
                     Clients.Group(player.Group).gameStarted();
                     var arrayOfPep = pepInGroup.ToArray();
                     Random random = new Random();
-                    //int randomPlayerToStart = 1;
+                    int randomPlayerToStart = 1;
 
-                    int randomPlayerToStart = random.Next(1, 4);
+                    //int randomPlayerToStart = random.Next(1, 4);
                     
                     switch (randomPlayerToStart)
                     { 
@@ -166,10 +166,10 @@ namespace MahjongBuddy
                     game.DiceMovedCount = 1;
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
-                    game.Board.Tiles.Shuffle();
-                    //DistributeTilesForNoWinner(game);
+                    //game.Board.Tiles.Shuffle();
+                    DistributeTilesForNoWinner(game);
 
-                    DistributeTiles(game);
+                    //DistributeTiles(game);
                     game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 
@@ -584,9 +584,14 @@ namespace MahjongBuddy
             }
             for (var i = 27; i < 40; i++)
             {
+                if (i == 39)
+                    continue;
                 tiles[i].Owner = p3.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
             }
+            tiles[114].Owner = p3.ConnectionId;
+            tiles[114].Status = TileStatus.UserActive;
+
             for (var i = 40; i < 53; i++)
             {
                 tiles[i].Owner = p4.ConnectionId;
@@ -595,6 +600,9 @@ namespace MahjongBuddy
 
             for (var i = 54; i < tiles.Count-1; i++)
             {
+                if (i == 114)
+                    continue;
+
                 tiles[i].Owner = p4.ConnectionId;
                 tiles[i].Status = TileStatus.BoardGraveyard;
             }

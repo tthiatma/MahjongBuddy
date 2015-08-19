@@ -83,7 +83,7 @@
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header"><h4 class="modal-title">Nobody win..</h4></div>
-                    <div class="modal-body"> Welp..that was a waste of time...go next game!</div>
+                    <div class="modal-body"> Welp..that was a waste of time...let's do next game!</div>
                     <div class="modal-footer"><button type="button" class="btn btn-default" ng-click="fnStartNextGame()">Start Next Game</button></div>
                 </div>
             </div>
@@ -98,10 +98,13 @@
                     {{topPlayer.Name}} - {{topPlayer.CurrentPoint}} pts
                 </div>
 
-                <div class="row HorizontalContainer">
+                <div class="HorizontalContainer">
                     <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId, Status: 3}: true | orderBy: ['OpenTileCounter']">
                         <img class="tileHorizontal rotate180" ng-src="{{tile.Image}}" />
-                    </span>
+                    </span>                
+                </div>
+
+                <div class="row HorizontalContainer">
                     <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId, Status: 2}: true">
                         <img class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
                     </span>
@@ -174,7 +177,16 @@
 
         <div id="BottomPlayer" class="col-md-8" style="text-align: center">
             <div ng-hide="hideGameCountdown">Game ends in {{gameEndCountdown}}</div>
-            <div id ="tilesLeft">Tiles Left: {{game.TilesLeft}}</div>
+            <div class="alert alert-danger animate-hide" ng-hide="hideAlert">
+                <strong>{{warningMessage}}</strong> 
+            </div>
+
+            <div id ="gameInfo">
+                <label id="tilesLeft">Tiles Left: {{game.TilesLeft}}</label>                
+                <label id="playerWind">Game Wind:{{currentGameWind}} - My wind:{{currentPlayerWind}}</label>
+            
+            </div>
+
             <div id="playerCommand">
                 @*<input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn btn-primary" ng-click="fnPlayerMove('flower', 0)">*@
                 @*<input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn btn-primary" ng-click="fnPlayerMove('noflower' , 0)">*@
@@ -209,12 +221,7 @@
             <div style="clear:both"></div>
 
             <div>
-                <label ng-class="{'activePlayer' : isMyturn}" class="currentTurn">{{currentPlayer.Name}} | Points:{{currentPlayer.CurrentPoint}} pts </label>
-                <br/>
-                <label id="playerWind">Game Wind:{{currentGameWind}} - My wind:{{currentPlayerWind}}</label>
-                <br />
-                <label id="warningMessage">{{warningMessage}}</label>
-                <br/>
+                <label ng-class="{'activePlayer' : isMyturn}" class="currentTurn">{{currentPlayer.Name}} | Points:{{currentPlayer.CurrentPoint}} pts </label>   
             </div>
     <!--end of Main Player-->
     
