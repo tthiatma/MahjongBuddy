@@ -18,6 +18,7 @@ namespace MahjongBuddy.Models
         Chow,
         Pong,
         Kong,
-        Eye
+        Eye,
+        Weird
     }
 }

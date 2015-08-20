@@ -38,7 +38,8 @@ namespace MahjongBuddy.Models
         Stick,
         Wind,
         Dragon,
-        Flower
+        Flower,
+        Mix
     }
 
     public enum TileValue

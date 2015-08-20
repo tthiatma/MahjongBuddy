@@ -355,69 +355,21 @@ namespace MahjongBuddy
                 if (isPossibleToGetWeirdWinningSet)
                 {
                     //check 13 wonder
-                    var thirteenWonderTiles = TileBuilder.BuildThirteenWonder();
-                    List<Tile> tempTilesToCheck13Wonders = new List<Tile>();
-                    bool foundEyesFor13Wonders = false;
-                    bool is13Wonders = true;
-                    foreach (var t in thirteenWonderTiles)
+                    var tempTilesToCheck13Wonders = CheckFor13Wonder(tilesToTestForwin);
+                    if (tempTilesToCheck13Wonders != null && tempTilesToCheck13Wonders.Count() == 14)
                     {
-                        var dTile = tilesToTestForwin.Where(tt => (tt.Type == t.Type) && (tt.Value == t.Value));
-
-                        if (dTile != null)
-                        {
-                            if (foundEyesFor13Wonders)
-                            {
-                                if (dTile.Count() != 1)
-                                {
-                                    is13Wonders = false;
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                if (dTile.Count() == 2)
-                                {
-                                    foundEyesFor13Wonders = true;
-                                }
-                                else if (dTile.Count() > 2)
-                                {
-                                    is13Wonders = false;
-                                    break;
-                                }
-                            }
-
-                            foreach (var tt in dTile)
-                            {
-                                tempTilesToCheck13Wonders.Add(tt);
-                            }
-                        }
-                        else
-                        {
-                            is13Wonders = false;
-                            break;
-                        }
-                    }
-                    if (is13Wonders && tempTilesToCheck13Wonders.Count() == 14)
-                    {
+                        //TODO include flower check if max point is not 10
                         //it's 13 wonder set!
+                        var weirdWinningSet = BuildWinningTilesForWeirdSet(game, player, tempTilesToCheck13Wonders);
+                        Record rec = new Record();
+                        rec.WinningTileSet = weirdWinningSet;
+                        
                         totalPoints += 10;
                         return CommandResult.PlayerWin;
                     }
                     else
                     {
-                        //check al pairs      
-                        bool isAllPair = true;
-                        foreach (var t in tilesToTestForwin)
-                        {
-                            var pairTiles = tilesToTestForwin.Where(tt => tt.Type == t.Type && tt.Value == t.Value);
-                            if (pairTiles != null)
-                            {
-                                if (pairTiles.Count() == 1 || pairTiles.Count() == 3)
-                                {
-                                    isAllPair = false;
-                                }
-                            }
-                        }
+                        bool isAllPair = CheckForAllPair(tilesToTestForwin);
                         if (isAllPair)
                         {
                             var playerFlowerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Type == TileType.Flower);
@@ -478,31 +430,7 @@ namespace MahjongBuddy
                         {
                             playerPoints = tempPts * 3;
                             player.CurrentPoint += playerPoints;
-
-                            if (game.Player1.ConnectionId == player.ConnectionId)
-                            {
-                                game.Player2.CurrentPoint -= tempPts;
-                                game.Player3.CurrentPoint -= tempPts;
-                                game.Player4.CurrentPoint -= tempPts;
-                            }
-                            else if (game.Player2.ConnectionId == player.ConnectionId)
-                            {
-                                game.Player1.CurrentPoint -= tempPts;
-                                game.Player3.CurrentPoint -= tempPts;
-                                game.Player4.CurrentPoint -= tempPts;                                
-                            }
-                            else if (game.Player3.ConnectionId == player.ConnectionId)
-                            {
-                                game.Player1.CurrentPoint -= tempPts;
-                                game.Player2.CurrentPoint -= tempPts;
-                                game.Player4.CurrentPoint -= tempPts;
-                            }
-                            else if (game.Player4.ConnectionId == player.ConnectionId)
-                            {
-                                game.Player1.CurrentPoint -= tempPts;
-                                game.Player2.CurrentPoint -= tempPts;
-                                game.Player3.CurrentPoint -= tempPts;
-                            }                            
+                            DistributePointForSelfDraw(game, player, tempPts);
                         }
                         else
                         {
@@ -534,6 +462,124 @@ namespace MahjongBuddy
             }
         }
 
+        private WinningTileSet BuildWinningTilesForWeirdSet(Game game, Player player, IEnumerable<Tile> tiles)
+        {
+            WinningTileSet ret = new WinningTileSet();
+
+            TileSet t1 = new TileSet();
+            t1.isRevealed = true;
+            t1.TileSetType = TileSetType.Weird;
+            t1.TileType = TileType.Mix;
+            List<Tile> temp1 = new List<Tile>();
+            for (int i = 0; i < 3; i++)
+            {
+                //temp1.Add(tiles[i]);
+            }
+            var playerFlowerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Type == TileType.Flower);
+
+            return ret;
+        }
+        private bool CheckForAllPair(IEnumerable<Tile> tilesToTestForwin)
+        {
+            //check al pairs      
+            bool isAllPair = true;
+            foreach (var t in tilesToTestForwin)
+            {
+                var pairTiles = tilesToTestForwin.Where(tt => tt.Type == t.Type && tt.Value == t.Value);
+                if (pairTiles != null)
+                {
+                    if (pairTiles.Count() == 1 || pairTiles.Count() == 3)
+                    {
+                        isAllPair = false;
+                        break;
+                    }
+                }
+            }
+            return isAllPair;
+        }
+
+        private List<Tile> CheckFor13Wonder(IEnumerable<Tile> tilesToTestForwin)
+        {
+            var thirteenWonderTiles = TileBuilder.BuildThirteenWonder();
+            List<Tile> tempTilesToCheck13Wonders = new List<Tile>();
+            bool foundEyesFor13Wonders = false;
+            bool is13Wonders = true;
+            foreach (var t in thirteenWonderTiles)
+            {
+                var dTile = tilesToTestForwin.Where(tt => (tt.Type == t.Type) && (tt.Value == t.Value));
+
+                if (dTile != null)
+                {
+                    if (foundEyesFor13Wonders)
+                    {
+                        if (dTile.Count() != 1)
+                        {
+                            is13Wonders = false;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (dTile.Count() == 2)
+                        {
+                            foundEyesFor13Wonders = true;
+                        }
+                        else if (dTile.Count() > 2)
+                        {
+                            is13Wonders = false;
+                            break;
+                        }
+                    }
+
+                    foreach (var tt in dTile)
+                    {
+                        tempTilesToCheck13Wonders.Add(tt);
+                    }
+                }
+                else
+                {
+                    is13Wonders = false;
+                    break;
+                }
+            }
+            if (is13Wonders)
+            {
+                return tempTilesToCheck13Wonders;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private void DistributePointForSelfDraw(Game game, Player player, int pts)
+        {
+            if (game.Player1.ConnectionId == player.ConnectionId)
+            {
+                game.Player2.CurrentPoint -= pts;
+                game.Player3.CurrentPoint -= pts;
+                game.Player4.CurrentPoint -= pts;
+            }
+            else if (game.Player2.ConnectionId == player.ConnectionId)
+            {
+                game.Player1.CurrentPoint -= pts;
+                game.Player3.CurrentPoint -= pts;
+                game.Player4.CurrentPoint -= pts;
+            }
+            else if (game.Player3.ConnectionId == player.ConnectionId)
+            {
+                game.Player1.CurrentPoint -= pts;
+                game.Player2.CurrentPoint -= pts;
+                game.Player4.CurrentPoint -= pts;
+            }
+            else if (game.Player4.ConnectionId == player.ConnectionId)
+            {
+                game.Player1.CurrentPoint -= pts;
+                game.Player2.CurrentPoint -= pts;
+                game.Player3.CurrentPoint -= pts;
+            }         
+        }
+        
         public void CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, string playerConnectionId, bool replaceTile = false)
         {
             foreach (var f in tiles)
