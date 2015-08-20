@@ -360,7 +360,7 @@ namespace MahjongBuddy
                     {
                         //TODO include flower check if max point is not 10
                         //it's 13 wonder set!
-                        var weirdWinningSet = BuildWinningTilesForWeirdSet(game, player, tempTilesToCheck13Wonders);
+                        var weirdWinningSet = BuildWinningTilesForWeirdSet(game, player, tempTilesToCheck13Wonders.ToList());
                         Record rec = new Record();
                         rec.WinningTileSet = weirdWinningSet;
                         
@@ -462,7 +462,7 @@ namespace MahjongBuddy
             }
         }
 
-        private WinningTileSet BuildWinningTilesForWeirdSet(Game game, Player player, IEnumerable<Tile> tiles)
+        private WinningTileSet BuildWinningTilesForWeirdSet(Game game, Player player, List<Tile> tiles)
         {
             WinningTileSet ret = new WinningTileSet();
 
@@ -470,15 +470,70 @@ namespace MahjongBuddy
             t1.isRevealed = true;
             t1.TileSetType = TileSetType.Weird;
             t1.TileType = TileType.Mix;
+            
             List<Tile> temp1 = new List<Tile>();
             for (int i = 0; i < 3; i++)
             {
-                //temp1.Add(tiles[i]);
+                temp1.Add(tiles[i]);
             }
+            t1.Tiles = temp1;
+
+            ret.Sets[0] = t1;
+
+            TileSet t2 = new TileSet();
+            t2.isRevealed = true;
+            t2.TileSetType = TileSetType.Weird;
+            t2.TileType = TileType.Mix;
+            
+            List<Tile> temp2 = new List<Tile>();
+            for (int i = 3; i < 6; i++)
+            {
+                temp2.Add(tiles[i]);
+            }
+            t2.Tiles = temp2;
+
+            ret.Sets[1] = t2;
+
+            TileSet t3 = new TileSet();
+            t3.isRevealed = true;
+            t3.TileSetType = TileSetType.Weird;
+            t3.TileType = TileType.Mix;
+
+            List<Tile> temp3 = new List<Tile>();
+            for (int i = 6; i < 9; i++)
+            {
+                temp3.Add(tiles[i]);
+            }
+            t3.Tiles = temp3;
+
+            ret.Sets[2] = t3;
+
+            TileSet t4 = new TileSet();
+            t4.isRevealed = true;
+            t4.TileSetType = TileSetType.Weird;
+            t4.TileType = TileType.Mix;
+
+            List<Tile> temp4 = new List<Tile>();
+            for (int i = 9; i < 12; i++)
+            {
+                temp4.Add(tiles[i]);
+            }
+            t4.Tiles = temp4;
+
+            ret.Sets[3] = t4;
+            
             var playerFlowerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Type == TileType.Flower);
 
+            if (playerFlowerTiles != null && playerFlowerTiles.Count() > 0)
+            {
+                foreach (var t in playerFlowerTiles)
+                {
+                    ret.Flowers.Add(t);
+                }            
+            }
             return ret;
         }
+        
         private bool CheckForAllPair(IEnumerable<Tile> tilesToTestForwin)
         {
             //check al pairs      
