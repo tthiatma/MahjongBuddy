@@ -42,5 +42,15 @@ namespace MahjongBuddy.Tests
             var wt = gl.BuildWinningTiles(tiles, null);
             Assert.IsNull(wt);
         }
+
+        [TestMethod]
+        public void TestMixPureHand()
+        {
+            GameLogic gl = new GameLogic();
+            var tiles = TileBuilder.BuildMixPureHand();
+            var wt = gl.BuildWinningTiles(tiles, null);
+            //PointCalculator.GetWinningType(game, ws, player);
+            Assert.IsNull(wt);
+        }
     }
 }

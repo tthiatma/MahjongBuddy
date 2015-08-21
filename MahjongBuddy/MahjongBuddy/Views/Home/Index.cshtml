@@ -103,7 +103,7 @@
                         <img class="tileHorizontal rotate180" ng-src="{{tile.Image}}" />
                     </span>                
                 </div>
-
+                <div style="clear:both"></div>
                 <div class="row HorizontalContainer">
                     <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : topPlayer.ConnectionId, Status: 2}: true">
                         <img class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
@@ -182,7 +182,7 @@
             </div>
 
             <div id ="gameInfo">
-                <label id="tilesLeft">Tiles Left: {{game.TilesLeft}}</label>                
+                <label id="tilesLeft">Tiles Left: {{game.TilesLeft}}</label><br />                
                 <label id="playerWind">Game Wind:{{currentGameWind}} - My wind:{{currentPlayerWind}}</label>
             
             </div>

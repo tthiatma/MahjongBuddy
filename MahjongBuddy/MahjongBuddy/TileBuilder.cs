@@ -10,6 +10,26 @@ namespace MahjongBuddy
     public static class TileBuilder
     {
 
+        public static List<Tile> BuildMixPureHand()
+        {
+            List<Tile> tiles = new List<Tile>();
+            tiles.Add(new Money1());
+            tiles.Add(new Money2());
+            tiles.Add(new Money3());
+            tiles.Add(new Money4());
+            tiles.Add(new Money4());
+            tiles.Add(new Money4());
+            tiles.Add(new Money7());
+            tiles.Add(new Money8());
+            tiles.Add(new Money9());
+            tiles.Add(new WindNorth());
+            tiles.Add(new WindNorth());
+            tiles.Add(new WindNorth());
+            tiles.Add(new DragonWhite());
+            tiles.Add(new DragonWhite());
+            return tiles;
+        }
+
         public static List<Tile> BuildThirteenWonder()
         {
             List<Tile> tiles = new List<Tile>();
@@ -28,7 +48,6 @@ namespace MahjongBuddy
             tiles.Add(new DragonWhite());
             return tiles;
         }
-
 
         public static List<Tile> BuildWinningAllStraightTilesWithOneFlower()
         {

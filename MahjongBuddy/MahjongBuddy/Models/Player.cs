@@ -29,7 +29,6 @@ namespace MahjongBuddy.Models
         public WindDirection Wind { get; set; }
         public List<int> Matches { get; set; }
         public int CurrentPoint { get; set; }
-        public int Seat { get; set; }
         public List<TileSet> TileSets { get; set; }
     }
 }

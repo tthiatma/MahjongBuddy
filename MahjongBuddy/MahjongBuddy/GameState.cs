@@ -139,8 +139,17 @@ namespace MahjongBuddy
             game.Board.Tiles = new List<Tile>();
             game.Board.CreateTiles();
             game.Board.Tiles.Shuffle();
-            game.TileCounter = 0;
+            game.LastTile = null;
+            game.TileCounter = 0;            
             game.PlayerTurn = game.DiceRoller;
+            game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+            game.HaltMove = false;
+
+            //reset player tileset
+            game.Player1.TileSets = new List<TileSet>();
+            game.Player2.TileSets = new List<TileSet>();
+            game.Player3.TileSets = new List<TileSet>();
+            game.Player4.TileSets = new List<TileSet>();
         }
 
         public void ResetGame(Game game)

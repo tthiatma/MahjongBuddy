@@ -175,7 +175,6 @@ namespace MahjongBuddy
                         break;
                 }
 
-
                 if (canPickNewTile)
                 {
                     for (var i = 0; i < 8; i++)
@@ -1013,6 +1012,11 @@ namespace MahjongBuddy
             game.PointSystem.Add(WinningType.TwoGoodFlower, 2);
             game.PointSystem.Add(WinningType.OneGoodWind, 1);
             game.PointSystem.Add(WinningType.TwoGoodWind, 2);
+            game.PointSystem.Add(WinningType.HeavenlyHand, 10);
+            game.PointSystem.Add(WinningType.EarthlyHand, 10);
+            game.PointSystem.Add(WinningType.RedDragon, 1);
+            game.PointSystem.Add(WinningType.GreenDragon, 1);
+            game.PointSystem.Add(WinningType.WhiteDragon, 1);
         }
 
         private TileSet GetOneWinningTileSet(IEnumerable<Tile> tiles)

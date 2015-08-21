@@ -29,6 +29,24 @@ namespace MahjongBuddy.Models
             return _winningTypes;
         }
 
+        //instant win when game started
+        public void FindHeavenlyHand(Game game, WinningTileSet wts, Player player)
+        {
+            if (game.TileCounter == 0)
+            {
+                _winningTypes.Add(WinningType.HeavenlyHand);
+            }            
+        }
+
+        //instant win withing 4 turn
+        public void FindEarthlyHand(Game game, WinningTileSet wts, Player player)
+        {
+            if (game.TileCounter > 0 && game.TileCounter < 5)
+            {
+                _winningTypes.Add(WinningType.EarthlyHand);
+            }
+        }
+
         public void FindSelfDraw(Game game, WinningTileSet wts, Player player)
         {
             bool isSelfPick = false;
@@ -321,14 +339,17 @@ namespace MahjongBuddy.Models
             {
                 if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.DragonRed)
                 {
+                    _winningTypes.Add(WinningType.RedDragon);
                     dragonCount++;
                 }
                 else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.DragonGreen)
                 {
+                    _winningTypes.Add(WinningType.GreenDragon);
                     dragonCount++;
                 }
-                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.DragonGreen)
+                else if (s.TileSetType == TileSetType.Pong && s.Tiles.First().Value == TileValue.DragonWhite)
                 {
+                    _winningTypes.Add(WinningType.WhiteDragon);
                     dragonCount++;
                 }
             }

@@ -71,7 +71,7 @@ namespace MahjongBuddy
             if (game != null)
             {
                 //if there's winner from game jz now
-                if (game.Records.Last().NoWinner == false)
+                if (game.Records != null && game.Records.Last().NoWinner == false)
                 {
                     if (game.Records != null && game.Records.Last().Winner != null)
                     {
@@ -87,7 +87,7 @@ namespace MahjongBuddy
 
                 GameState.Instance.ResetForNextGame(game);
                 DistributeTiles(game);
-                game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+                
                 if (game.GameSetting.SkipInitialFlowerSwapping)
                 {
                     GameLogic.RecycleInitialFlower(game);
@@ -112,9 +112,9 @@ namespace MahjongBuddy
                     Clients.Group(player.Group).gameStarted();
                     var arrayOfPep = pepInGroup.ToArray();
                     Random random = new Random();
-                    int randomPlayerToStart = 1;
+                    //int randomPlayerToStart = 1;
 
-                    //int randomPlayerToStart = random.Next(1, 4);
+                    int randomPlayerToStart = random.Next(1, 4);
                     
                     switch (randomPlayerToStart)
                     { 
@@ -166,10 +166,11 @@ namespace MahjongBuddy
                     game.DiceMovedCount = 1;
                     game.TileCounter = 0;
                     game.CurrentWind = WindDirection.East;
-                    //game.Board.Tiles.Shuffle();
-                    DistributeTilesForNoWinner(game);
 
-                    //DistributeTiles(game);
+                    game.Board.Tiles.Shuffle();
+                    //DistributeTilesForNoWinner(game);
+                    DistributeTiles(game);
+
                     game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 

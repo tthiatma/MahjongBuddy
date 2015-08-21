@@ -22,6 +22,8 @@ namespace MahjongBuddy.Models
         AllKong,
         AllHiddenPongAndSelfPick,
         AllTerminal,
+        HeavenlyHand,
+        EarthlyHand,
         //additional points
         SelfDraw,
         ConcealedHand,
@@ -31,6 +33,9 @@ namespace MahjongBuddy.Models
         TwoGoodFlower,
         AllFourFlowerSameType,
         OneGoodWind,
-        TwoGoodWind
+        TwoGoodWind,
+        RedDragon,
+        GreenDragon,
+        WhiteDragon
     }
 }
