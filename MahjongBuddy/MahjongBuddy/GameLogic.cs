@@ -27,6 +27,7 @@ namespace MahjongBuddy
             CommandResultDictionary.Add(CommandResult.PlayerWin, "You won!!!!");
             CommandResultDictionary.Add(CommandResult.PlayerWinFailed, "No penalty this time");
             CommandResultDictionary.Add(CommandResult.InvalidWin, "Can't win with this");
+            CommandResultDictionary.Add(CommandResult.WinNotEnoughPoint, "Win doesn't meet minimum points");
             CommandResultDictionary.Add(CommandResult.SomethingWentWrong, "Something went wrong!");
             CommandResultDictionary.Add(CommandResult.InvalidPickWentWrong, "Can't pick more tile");
             CommandResultDictionary.Add(CommandResult.NobodyWin, "No one win...sad time");
@@ -321,7 +322,6 @@ namespace MahjongBuddy
         {
             if (player != null)
             { 
-                int totalPoints = 0;
                 var playerTiles = game.Board.Tiles
                     .Where(t => 
                         t.Owner == player.ConnectionId 
@@ -351,20 +351,18 @@ namespace MahjongBuddy
                     }
                 }
 
-                //TODO add to the winningtype
+                //weird winning set refers to 13wonders and 7pairs combo
+                //weird winning set only works when play have not revealed any of their card
                 if (isPossibleToGetWeirdWinningSet)
                 {
                     //check 13 wonder
                     var tempTilesToCheck13Wonders = CheckFor13Wonder(tilesToTestForwin);
                     if (tempTilesToCheck13Wonders != null && tempTilesToCheck13Wonders.Count() == 14)
                     {
-                        //TODO include flower check if max point is not 10
-                        //it's 13 wonder set!
-                        var weirdWinningSet = BuildWinningTilesForWeirdSet(game, player, tempTilesToCheck13Wonders.ToList());
-                        Record rec = new Record();
-                        rec.WinningTileSet = weirdWinningSet;
-                        
-                        totalPoints += 10;
+                        WinningTileSet weirdWinningSet = BuildWinningTilesForWeirdSet(game, player, tempTilesToCheck13Wonders.ToList());
+                        CalculateWinning(game, player, weirdWinningSet);
+                        AddWinningHand(game, weirdWinningSet, WinningType.ThirteenOrphans);
+                        RecordWinning(game, player, weirdWinningSet);
                         return CommandResult.PlayerWin;
                     }
                     else
@@ -372,18 +370,16 @@ namespace MahjongBuddy
                         bool isAllPair = CheckForAllPair(tilesToTestForwin);
                         if (isAllPair)
                         {
-                            var playerFlowerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Type == TileType.Flower);
-
-                            if (playerFlowerTiles != null)
-                            {
-                                totalPoints += PointCalculator.CalculateFlower(game, playerFlowerTiles, player);
-                            }
-                            totalPoints += 7;
+                            WinningTileSet weirdWinningSet = BuildWinningTilesForWeirdSet(game, player, tilesToTestForwin.ToList());
+                            CalculateWinning(game, player, weirdWinningSet);
+                            AddWinningHand(game, weirdWinningSet, WinningType.SevenPairs);
+                            RecordWinning(game, player, weirdWinningSet);
                             return CommandResult.PlayerWin;
                         }
                     }
                 }
 
+                //Below for logic non weird winning set
                 var playerFlowers = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Type == TileType.Flower);
                 if (playerFlowers != null)
                 {
@@ -396,59 +392,16 @@ namespace MahjongBuddy
                 var winningSet = BuildWinningTiles(tilesToTestForwin, player.TileSets);
                 if (winningSet != null)
                 {
-                    var winningTypes = PointCalculator.GetWinningType(game, winningSet, player);
-                    int tempPts = 0;
-                    
-                    if (winningTypes.Count() > 0)
-                    {
-                        foreach (var item in winningTypes)
-                        {
-                            HandWorth temp = new HandWorth();
-                            temp.WinningType = item;
-                            temp.HandName = item.ToString();
-                            temp.Point = game.PointSystem[item];
-
-                            winningSet.Hands.Add(temp);
-                            winningSet.WinningTypes.Add(item.ToString(), game.PointSystem[item]);
-                            tempPts += game.PointSystem[item];
-                        }
-                        winningSet.TotalPoints = tempPts;
-                    }
-
+                    CalculateWinning(game, player, winningSet);
+                    int tempPts = GetTotalPointForHand(game, winningSet.Hands);
                     if (tempPts >= 3)
                     {
-                        int playerPoints = tempPts;
-
-                        game.Count++;
-                        Record record = new Record();
-                        record.WinningTileSet = winningSet;
-                        record.Winner = player;
-                        record.GameNo = game.Count;
-
-
-                        if (winningTypes.Contains(WinningType.SelfDraw))
-                        {
-                            playerPoints = tempPts * 3;
-                            player.CurrentPoint += playerPoints;
-                            DistributePointForSelfDraw(game, player, tempPts);
-                        }
-                        else
-                        {
-                            player.CurrentPoint += playerPoints;
-                            if (game.LastTile != null)
-                            {                                
-                                var pp = GetPlayerByConnectionId(game, game.LastTile.Owner);
-                                record.Feeder = pp;
-                                pp.CurrentPoint -= playerPoints;                            
-                            }
-                        }
-                        game.Records.Add(record);
-
+                        RecordWinning(game, player, winningSet);
                         return CommandResult.PlayerWin;
                     }
                     else
                     {
-                        return CommandResult.PlayerWinFailed;
+                        return CommandResult.WinNotEnoughPoint;
                     }
                 }
                 else
@@ -461,13 +414,92 @@ namespace MahjongBuddy
                 return CommandResult.InvalidPlayer;
             }
         }
+        
+        private void RecordWinning(Game game, Player player, WinningTileSet wts)
+        {
+            game.Count++;
+            Record rec = new Record();
+            rec.WinningTileSet = wts;
+            rec.Winner = player;
+            rec.GameNo = game.Count;
 
+            int tempPts = GetTotalPointForHand(game, wts.Hands);
+            //TODO check for max point for game logic
+            tempPts = tempPts > 10 ? 10 : tempPts;
+
+            int playerPoints = tempPts;
+
+            var isSelfPick = wts.Hands.Where(h => h.WinningType == WinningType.SelfDraw).FirstOrDefault();
+            if (isSelfPick != null)
+            {
+                playerPoints = tempPts * 3;
+                player.CurrentPoint += playerPoints;
+                DistributePointForSelfDraw(game, player, tempPts);
+            }
+            else
+            {
+                player.CurrentPoint += playerPoints;
+                if (game.LastTile != null)
+                {
+                    var pp = GetPlayerByConnectionId(game, game.LastTile.Owner);
+                    rec.Feeder = pp;
+                    pp.CurrentPoint -= playerPoints;
+                }
+            }
+            game.Records.Add(rec);
+        }
+
+        private int GetTotalPointForHand(Game game, List<HandWorth> hand)
+        {
+            int ret = 0;            
+            foreach (var h in hand)
+            {                
+                ret += game.PointSystem[h.WinningType];
+            }
+            return ret;
+        }
+
+        private void AddWinningHand(Game game, WinningTileSet ws, WinningType wt)
+        {
+            //add the handworth for 13 wonders
+            HandWorth hw = new HandWorth();
+            hw.WinningType = wt;
+            hw.HandName = wt.ToString();
+            hw.Point = game.PointSystem[wt];
+
+            ws.Hands.Add(hw);
+            ws.WinningTypes.Add(wt.ToString(), game.PointSystem[wt]);
+            ws.TotalPoints += game.PointSystem[wt];
+        }
+
+        private void CalculateWinning(Game game, Player player, WinningTileSet ws) 
+        {
+            var winningTypes = PointCalculator.GetWinningType(game, ws, player);
+            int tempPts = 0;
+
+            if (winningTypes != null && winningTypes.Count() > 0)
+            {
+                foreach (var item in winningTypes)
+                {
+                    HandWorth temp = new HandWorth();
+                    temp.WinningType = item;
+                    temp.HandName = item.ToString();
+                    temp.Point = game.PointSystem[item];
+
+                    ws.Hands.Add(temp);
+                    ws.WinningTypes.Add(item.ToString(), game.PointSystem[item]);
+                    tempPts += game.PointSystem[item];
+                }
+                ws.TotalPoints += tempPts;
+            }
+        }
+        
         private WinningTileSet BuildWinningTilesForWeirdSet(Game game, Player player, List<Tile> tiles)
         {
             WinningTileSet ret = new WinningTileSet();
-
+ 
             TileSet t1 = new TileSet();
-            t1.isRevealed = true;
+            t1.isRevealed = false;
             t1.TileSetType = TileSetType.Weird;
             t1.TileType = TileType.Mix;
             
@@ -481,7 +513,7 @@ namespace MahjongBuddy
             ret.Sets[0] = t1;
 
             TileSet t2 = new TileSet();
-            t2.isRevealed = true;
+            t2.isRevealed = false;
             t2.TileSetType = TileSetType.Weird;
             t2.TileType = TileType.Mix;
             
@@ -495,7 +527,7 @@ namespace MahjongBuddy
             ret.Sets[1] = t2;
 
             TileSet t3 = new TileSet();
-            t3.isRevealed = true;
+            t3.isRevealed = false;
             t3.TileSetType = TileSetType.Weird;
             t3.TileType = TileType.Mix;
 
@@ -509,7 +541,7 @@ namespace MahjongBuddy
             ret.Sets[2] = t3;
 
             TileSet t4 = new TileSet();
-            t4.isRevealed = true;
+            t4.isRevealed = false;
             t4.TileSetType = TileSetType.Weird;
             t4.TileType = TileType.Mix;
 
@@ -521,7 +553,19 @@ namespace MahjongBuddy
             t4.Tiles = temp4;
 
             ret.Sets[3] = t4;
-            
+
+            TileSet tEye = new TileSet();
+            tEye.isRevealed = false;
+            tEye.TileSetType = TileSetType.Weird;
+            tEye.TileType = TileType.Mix;
+            List<Tile> tempEye = new List<Tile>();
+            for (int i = 12; i < 14; i++)
+            {
+                tempEye.Add(tiles[i]);
+            }
+            tEye.Tiles = tempEye;
+            ret.Eye = tEye;
+
             var playerFlowerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Type == TileType.Flower);
 
             if (playerFlowerTiles != null && playerFlowerTiles.Count() > 0)
@@ -954,6 +998,7 @@ namespace MahjongBuddy
             game.PointSystem.Add(WinningType.PureHand, 7);
             game.PointSystem.Add(WinningType.PureHonorHand, 10);
             game.PointSystem.Add(WinningType.SevenPairs, 7);
+            game.PointSystem.Add(WinningType.ThirteenOrphans, 10);
             game.PointSystem.Add(WinningType.LittleDragon, 10);
             game.PointSystem.Add(WinningType.BigDragon, 10);
             game.PointSystem.Add(WinningType.LittleFourWind, 10);

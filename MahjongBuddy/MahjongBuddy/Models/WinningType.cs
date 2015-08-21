@@ -14,6 +14,7 @@ namespace MahjongBuddy.Models
         PureHand,
         PureHonorHand,
         SevenPairs,
+        ThirteenOrphans,
         LittleDragon,
         BigDragon,
         LittleFourWind,

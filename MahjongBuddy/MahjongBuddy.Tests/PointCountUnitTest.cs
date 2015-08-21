@@ -101,6 +101,8 @@ namespace MahjongBuddy.Tests
             game.Board = new Board();
             game.Board.CreateTiles();
             game.CurrentWind = WindDirection.East;
+            game.PointSystem = new Dictionary<WinningType, int>();
+            gl.PopulatePoint(game);
             player.Wind = WindDirection.East;
             player.ConnectionId = "p1";
 
@@ -137,6 +139,8 @@ namespace MahjongBuddy.Tests
             game.Board = new Board();
             game.Board.CreateTiles();
             game.CurrentWind = WindDirection.East;
+            game.PointSystem = new Dictionary<WinningType, int>();
+            gl.PopulatePoint(game);
             player.Wind = WindDirection.East;
             player.ConnectionId = "p1";
 
