@@ -31,11 +31,17 @@ namespace MahjongBuddy.Tests
         {
             game.Board = new Board();
             game.Board.CreateTiles();
+            game.Records = new List<Record>();
             game.CurrentWind = WindDirection.East;
             game.PointSystem = new Dictionary<WinningType, int>();
             gl.PopulatePoint(game);
             player.Wind = WindDirection.East;
             player.ConnectionId = "p1";
+
+            game.Player1 = new Player("test","test","test");
+            game.Player2 = new Player("test2","test2","test2");
+            game.Player3 = new Player("test3","test3","test3");
+            game.Player4 = new Player("test4", "test4", "test4");
 
             var dTiles = game.Board.Tiles.Where(
                 t => t.Id == 1
@@ -99,6 +105,7 @@ namespace MahjongBuddy.Tests
         public void TestWin13Wonders()
         {
             game.Board = new Board();
+            game.Records = new List<Record>();
             game.Board.CreateTiles();
             game.CurrentWind = WindDirection.East;
             game.PointSystem = new Dictionary<WinningType, int>();
@@ -133,10 +140,12 @@ namespace MahjongBuddy.Tests
 
             Assert.AreEqual(CommandResult.PlayerWin, cs);
         }
+        
         [TestMethod]
         public void TestWinAllPairs()
         {
             game.Board = new Board();
+            game.Records = new List<Record>();
             game.Board.CreateTiles();
             game.CurrentWind = WindDirection.East;
             game.PointSystem = new Dictionary<WinningType, int>();
@@ -171,5 +180,35 @@ namespace MahjongBuddy.Tests
 
             Assert.AreEqual(CommandResult.PlayerWin, cs);
         }
+
+        [TestMethod]
+        public void TestMixPureHand()
+        {
+            GameLogic gl = new GameLogic();
+            var tiles = TileBuilder.BuildMixPureHand();
+            var ws = gl.BuildWinningTiles(tiles, null);
+            var wt = pc.GetWinningType(game, ws, player);
+            Assert.IsTrue(wt.Contains(WinningType.MixPureHand));
+        }
+
+        [TestMethod]
+        public void TestPureHand()
+        {
+            GameLogic gl = new GameLogic();
+            var tiles = TileBuilder.BuildPureHand();
+            var ws = gl.BuildWinningTiles(tiles, null);
+            var wt = pc.GetWinningType(game, ws, player);
+            Assert.IsTrue(wt.Contains(WinningType.PureHand));
+        }
+
+        //[TestMethod]
+        //public void TestSevenPairs()
+        //{
+        //    GameLogic gl = new GameLogic();
+        //    var tiles = TileBuilder.BuildSevenPairs();
+        //    var ws = gl.BuildWinningTiles(tiles, null);
+        //    var wt = pc.GetWinningType(game, ws, player);
+        //    Assert.IsTrue(wt.Contains(WinningType.SevenPairs));
+        //}
     }
 }

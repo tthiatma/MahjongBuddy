@@ -5,9 +5,18 @@ using System.Collections.Generic;
 
 namespace MahjongBuddy.Tests
 {
+    /// <summary>
+    /// Test to create winningtileset
+    /// winningtileset consist of 4 set of pong/chow + 1 eye
+    /// </summary>
     [TestClass]
     public class WinningTileSetUnitTest
     {
+        Game game = new Game();
+        PointCalculator pc = new PointCalculator();
+        Player player = new Player("test", "test", "test");
+        GameLogic gl = new GameLogic();
+
         [TestMethod]
         public void TestAllPongWinningSet()
         {
@@ -16,6 +25,7 @@ namespace MahjongBuddy.Tests
             var wt = gl.BuildWinningTiles(tiles, null);
             Assert.IsNotNull(wt);
         }
+        
         [TestMethod]
         public void TestNotAllPongWinningSet()
         {
@@ -43,14 +53,5 @@ namespace MahjongBuddy.Tests
             Assert.IsNull(wt);
         }
 
-        [TestMethod]
-        public void TestMixPureHand()
-        {
-            GameLogic gl = new GameLogic();
-            var tiles = TileBuilder.BuildMixPureHand();
-            var wt = gl.BuildWinningTiles(tiles, null);
-            //PointCalculator.GetWinningType(game, ws, player);
-            Assert.IsNull(wt);
-        }
     }
 }

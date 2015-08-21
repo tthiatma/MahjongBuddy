@@ -14,19 +14,27 @@ namespace MahjongBuddy.Models
 
         public List<WinningType> GetWinningType(Game game, WinningTileSet wts, Player player)
         {
-            Action<Game, WinningTileSet, Player> Calculate;
-            Calculate = FindConcealedHand;
-            Calculate += FindWind;
-            Calculate += FindMixPureHand;
-            Calculate += FindPureHand;
-            Calculate += FindAllPong;
-            Calculate += FindFlower;
-            Calculate += FindStraight;
-            Calculate += FindSelfDraw;
+            if (wts != null)
+            {
+                Action<Game, WinningTileSet, Player> Calculate;
+                Calculate = FindConcealedHand;
+                Calculate += FindWind;
+                Calculate += FindMixPureHand;
+                Calculate += FindPureHand;
+                Calculate += FindAllPong;
+                Calculate += FindFlower;
+                Calculate += FindStraight;
+                Calculate += FindSelfDraw;
 
-            Calculate(game, wts, player);
+                Calculate(game, wts, player);
 
-            return _winningTypes;
+                return _winningTypes;
+            }
+            else
+            {
+                logger.Warn("can't calculate null winningtileset");
+                return null;
+            }
         }
 
         //instant win when game started
@@ -172,7 +180,7 @@ namespace MahjongBuddy.Models
             if (tiles.Count() > 0)
             {
                 var dTile = tiles.First().Type;
-                var wrongType = tiles.Where(t => t.Type != dTile);
+                var wrongType = tiles.Where(t => t.Type != dTile).FirstOrDefault();
                 if (wrongType == null)
                 {
                     _winningTypes.Add(WinningType.MixPureHand);

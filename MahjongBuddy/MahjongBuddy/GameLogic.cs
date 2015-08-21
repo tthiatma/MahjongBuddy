@@ -854,7 +854,7 @@ namespace MahjongBuddy
             WinningTileSet ret = new WinningTileSet();
             bool tileSetIsLegit = false;
             var flowerTiles = playerTiles.Where(t => t.Type == TileType.Flower);
-            if (flowerTiles != null)
+            if (flowerTiles != null && flowerTiles.Count() > 0)
             {
                 foreach (var t in flowerTiles)
                 {
@@ -887,7 +887,7 @@ namespace MahjongBuddy
             foreach (var eyes in eyeCollection)
             {
                 //remove possible eyes from tiles
-                var tilesWithoutEyes = tiles.ToList();
+                var tilesWithoutEyes = tiles.OrderBy(t => t.Value).ToList();
                 foreach (var t in eyes) 
                 {
                     tilesWithoutEyes.Remove(t);
