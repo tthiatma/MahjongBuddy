@@ -32,7 +32,9 @@
             $scope.currentPlayer = mjService.getCurrentPlayer(game, $scope.currentUserId);
             $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
             $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId)
-            $timeout(function () { $scope.canPickTile = $scope.currentPlayer.CanPickTile }, 4000);
+            if ($scope.isMyturn){
+                $timeout(function () { $scope.canPickTile = $scope.currentPlayer.CanPickTile }, 4000);
+            }
             $scope.isRightPlayerTurn = ($scope.rightPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
             $scope.isLeftPlayerTurn = ($scope.leftPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
             $scope.isTopPlayerTurn = ($scope.topPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
@@ -49,12 +51,11 @@
 
         $scope.join = function () {
             var un = $('#usernameTB').val();
-            clientPushHubProxy.invoke2('Join', un, 'mjbuddy', function () {
-            });
+            clientPushHubProxy.invoke2('Join', un, 'mjbuddy', function (){});
         };
 
         $scope.resetGame = function () {
-            clientPushHubProxy.invoke('ResetGame', function () { });
+            clientPushHubProxy.invoke('ResetGame', function () {});
         };
 
         $scope.fnIsTileActive = function (tileId) {
@@ -76,16 +77,12 @@
         };
 
         $scope.fnStartNextGame = function () {
-            clientPushHubProxy.invoke1('StartNextGame', 'mjbuddy', function () { });
+            clientPushHubProxy.invoke1('StartNextGame', 'mjbuddy', function (){});
         };
 
         $scope.fnPlayerMove = function (move, tiles) {
             $scope.warningMessage = "";
-            clientPushHubProxy.invoke3('PlayerMove', 'mjbuddy', move, tiles, function (game) {
-                $scope.$apply(function () {
-                    $scope.game = game;
-                })
-            });
+            clientPushHubProxy.invoke3('PlayerMove', 'mjbuddy', move, tiles, function (game) {});
             //clear the selected tiles for every player move
             $scope.selectedTiles = [];
         };
