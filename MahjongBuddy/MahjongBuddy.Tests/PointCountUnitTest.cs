@@ -201,6 +201,16 @@ namespace MahjongBuddy.Tests
             Assert.IsTrue(wt.Contains(WinningType.PureHand));
         }
 
+        [TestMethod]
+        public void TestWinWith4Flowers()
+        {
+            GameLogic gl = new GameLogic();
+            var tiles = TileBuilder.BuildWinWith4FLowers();
+            var ws = gl.BuildWinningTiles(tiles, null);
+            var wt = pc.GetWinningType(game, ws, player);
+            Assert.IsTrue(wt.Contains(WinningType.AllFourFlowerSameType));
+        }
+
         //[TestMethod]
         //public void TestSevenPairs()
         //{

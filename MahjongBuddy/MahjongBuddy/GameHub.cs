@@ -92,6 +92,7 @@ namespace MahjongBuddy
                 {
                     GameLogic.RecycleInitialFlower(game);
                 }
+                game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
                 Clients.Group(group).startNextGame(game);
             }
         }
@@ -171,13 +172,13 @@ namespace MahjongBuddy
                     //DistributeTilesForNoWinner(game);
                     DistributeTiles(game);
 
-                    game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
                     game.GameSetting.SkipInitialFlowerSwapping = true;
 
                     if (game.GameSetting.SkipInitialFlowerSwapping)
                     {
                         GameLogic.RecycleInitialFlower(game);
                     }
+                    game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
                     GameLogic.SetPlayerWinds(game);
 
                     Clients.Group(player.Group).startGame(game);

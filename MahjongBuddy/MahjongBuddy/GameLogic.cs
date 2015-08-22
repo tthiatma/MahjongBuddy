@@ -1010,6 +1010,7 @@ namespace MahjongBuddy
             game.PointSystem.Add(WinningType.WinOnLastTile, 1);
             game.PointSystem.Add(WinningType.OneGoodFlower, 1);
             game.PointSystem.Add(WinningType.TwoGoodFlower, 2);
+            game.PointSystem.Add(WinningType.AllFourFlowerSameType, 1);
             game.PointSystem.Add(WinningType.OneGoodWind, 1);
             game.PointSystem.Add(WinningType.TwoGoodWind, 2);
             game.PointSystem.Add(WinningType.HeavenlyHand, 10);

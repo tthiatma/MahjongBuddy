@@ -294,14 +294,14 @@ namespace MahjongBuddy.Models
 
                 if (numericFlower != null && numericFlower.Count() == 4)
                 {
-                    pts += 1;
+                    _winningTypes.Add(WinningType.AllFourFlowerSameType);
                 }
 
                 var romanFlower = FlowerTiles.Where(t => t.Value == TileValue.FlowerRomanOne || t.Value == TileValue.FlowerRomanTwo || t.Value == TileValue.FlowerRomanThree || t.Value == TileValue.FlowerRomanFour);
 
                 if (romanFlower != null && romanFlower.Count() == 4)
                 {
-                    pts += 1;
+                    _winningTypes.Add(WinningType.AllFourFlowerSameType);
                 }
             }
 
@@ -312,10 +312,6 @@ namespace MahjongBuddy.Models
             else if (pts == 2)
             {
                 _winningTypes.Add(WinningType.TwoGoodFlower);            
-            }
-            else if (pts == 3)
-            {
-                _winningTypes.Add(WinningType.AllFourFlowerSameType);            
             }
         }
         
