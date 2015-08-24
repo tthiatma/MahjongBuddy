@@ -1024,21 +1024,7 @@ namespace MahjongBuddy
         {
             TileSet ret = new TileSet();
 
-            //try get straight tile
-            foreach (var t in tiles)
-            {
-                var temp = FindStraightTiles(t, tiles);
-                if (temp != null && temp.Count() == 3)
-                {
-                    ret.Tiles = temp;
-                    ret.TileSetType = TileSetType.Chow;
-                    ret.isRevealed = false;
-                    ret.TileType = temp.First().Type;
-                    return ret;
-                }
-            }
-
-            //if no straight tile, try get pong tile
+            //try get pong tile
             foreach (var t in tiles)
             {
                 var temp = FindPongTiles(t, tiles);
@@ -1046,6 +1032,20 @@ namespace MahjongBuddy
                 {
                     ret.Tiles = temp;
                     ret.TileSetType = TileSetType.Pong;
+                    ret.isRevealed = false;
+                    ret.TileType = temp.First().Type;
+                    return ret;
+                }
+            }
+
+            //if no pong tile, try get straight/chow tile
+            foreach (var t in tiles)
+            {
+                var temp = FindStraightTiles(t, tiles);
+                if (temp != null && temp.Count() == 3)
+                {
+                    ret.Tiles = temp;
+                    ret.TileSetType = TileSetType.Chow;
                     ret.isRevealed = false;
                     ret.TileType = temp.First().Type;
                     return ret;

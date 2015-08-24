@@ -6,11 +6,10 @@
 @section head
 {
     <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
-    @*<script src="/signalr/hubs"></script>*@
+   @*<script src="/signalr/hubs"></script>*@
 }
 <div ng-controller="MahjongController">
     <div id="WaitingRoom" class="container" ng-hide="gameIsReady">
-       
         <div class="row">       
             <div class="col-md-4"></div>     
             <div class="col-md-4">
@@ -201,8 +200,9 @@
             </div>
 
             <div id="activeTiles">
-                <span ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileActive(tile.Id)}" class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId, Status: 2 }: true | orderBy: ['Type', 'Value']">
-                    <img class="tileHorizontal" ng-src="{{tile.Image}}" />
+@*                <span ng-drop="true" ng-drop-success="onDropComplete($index, $data,$event)" ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileActive(tile.Id)}" class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId, Status: 2 }: true | orderBy: ['Type', 'Value']">*@
+                <span ng-drop="true" ng-drop-success="onDropComplete($index, $data,$event)" ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileActive(tile.Id)}" class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId, Status: 2 }: true | orderBy: ['ActiveTileIndex']">
+                    <img ng-drag="true" ng-drag-data="tile" class="tileHorizontal" ng-src="{{tile.Image}}" />
                 </span>
                 <span class="tileHorizontalContainer" ng-repeat="tile in game.Board.Tiles | filter: {Owner : currentUserId, Status: 1}: true">
                     <img ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileActive(tile.Id)}" class="tileHorizontal" ng-src="{{tile.Image}}" />

@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models
         public string Name { get; set; }
         public string Owner { get; set; }
         public int OpenTileCounter { get; set; }
+        public int ActiveTileIndex { get; set; }
     }
 
     public enum TileStatus

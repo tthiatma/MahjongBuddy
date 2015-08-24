@@ -11,6 +11,24 @@
         $scope.tenSectimeout = null;
         $scope.hideAlert = true;
 
+        $scope.onDropComplete = function (index, obj, evt) {
+
+            var targetTile = FindTileByIndexAndPlayerConnection($scope.game, index, obj.Owner);
+
+            targetTile.ActiveTileIndex = obj.ActiveTileIndex;
+            obj.ActiveTileIndex = index;
+            $scope.selectedTiles = [];
+        }
+
+        var FindTileByIndexAndPlayerConnection = function (game, tileIndex, pid) {
+            var ret = null;
+            $.each(game.Board.Tiles, function (idx, val) {
+                if (val.Owner == pid && val.ActiveTileIndex == tileIndex) {
+                    ret = val;
+                }
+            });
+            return ret;
+        }
         var startup = function(conId){
             $scope.isDisonnected = !(conId != undefined);
             $scope.currentUserId = conId;
@@ -33,7 +51,7 @@
             $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
             $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId)
             if ($scope.isMyturn){
-                $timeout(function () { $scope.canPickTile = $scope.currentPlayer.CanPickTile }, 4000);
+                $timeout(function () { $scope.canPickTile = $scope.currentPlayer.CanPickTile }, 5000);
             }
             $scope.isRightPlayerTurn = ($scope.rightPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
             $scope.isLeftPlayerTurn = ($scope.leftPlayer.ConnectionId == game.PlayerTurn.ConnectionId);

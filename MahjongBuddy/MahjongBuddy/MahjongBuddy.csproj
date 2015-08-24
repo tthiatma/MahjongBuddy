@@ -393,6 +393,7 @@
     <Content Include="Scripts\knockout-2.2.0.js" />
     <Content Include="Scripts\mjService.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\ngDraggable.js" />
     <Content Include="Scripts\signalrService.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
