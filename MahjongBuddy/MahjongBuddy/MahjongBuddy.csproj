@@ -233,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap-toggle.min.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\images\tiles\128px\bamboo\bamboo1.png" />
     <Content Include="Content\images\tiles\128px\bamboo\bamboo2.png" />
@@ -370,6 +371,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\bootstrap-toggle.min.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\controller.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
@@ -395,6 +397,7 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\ngDraggable.js" />
     <Content Include="Scripts\signalrService.js" />
+    <Content Include="Scripts\toggle-checkbox.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

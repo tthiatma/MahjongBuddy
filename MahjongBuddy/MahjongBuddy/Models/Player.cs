@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models
             Matches = new List<int>();
             Group = group;
             TileSets = new List<TileSet>();
+            IsTileAutoSort = true;
         }
 
         public string ConnectionId { get; set; }
@@ -30,5 +31,6 @@ namespace MahjongBuddy.Models
         public List<int> Matches { get; set; }
         public int CurrentPoint { get; set; }
         public List<TileSet> TileSets { get; set; }
+        public bool IsTileAutoSort { get; set; }
     }
 }

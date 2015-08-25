@@ -189,7 +189,7 @@
             <div id="playerCommand">
                 @*<input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn btn-primary" ng-click="fnPlayerMove('flower', 0)">*@
                 @*<input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn btn-primary" ng-click="fnPlayerMove('noflower' , 0)">*@
-
+                <input toggle-checkbox ng-model="currentPlayer.IsTileAutoSort" ng-change="fnToggleSortTile()" data-on="Sort" data-off="Manual" type="checkbox">
                 <input type="button" ng-disabled="game.HaltMove && !isMyturn" id="win" value="win" class="btn btn-primary" ng-click="fnPlayerMove('win', selectedTiles)">
                 <input type="button" ng-disabled="game.HaltMove && !isMyturn" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', selectedTiles)">                
                 <input type="button" ng-disabled="game.HaltMove" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', selectedTiles)">

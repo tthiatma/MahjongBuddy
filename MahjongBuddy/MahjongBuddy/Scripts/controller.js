@@ -11,15 +11,6 @@
         $scope.tenSectimeout = null;
         $scope.hideAlert = true;
 
-        $scope.onDropComplete = function (index, obj, evt) {
-
-            var targetTile = FindTileByIndexAndPlayerConnection($scope.game, index, obj.Owner);
-
-            targetTile.ActiveTileIndex = obj.ActiveTileIndex;
-            obj.ActiveTileIndex = index;
-            $scope.selectedTiles = [];
-        }
-
         var FindTileByIndexAndPlayerConnection = function (game, tileIndex, pid) {
             var ret = null;
             $.each(game.Board.Tiles, function (idx, val) {
@@ -103,6 +94,20 @@
             clientPushHubProxy.invoke3('PlayerMove', 'mjbuddy', move, tiles, function (game) {});
             //clear the selected tiles for every player move
             $scope.selectedTiles = [];
+        };
+
+        $scope.onDropComplete = function (index, obj, evt) {
+
+            var targetTile = FindTileByIndexAndPlayerConnection($scope.game, index, obj.Owner);
+
+            targetTile.ActiveTileIndex = obj.ActiveTileIndex;
+            obj.ActiveTileIndex = index;
+            $scope.currentPlayer.IsTileAutoSort = false;
+            $scope.selectedTiles = [];
+        };
+
+        $scope.fnToggleSortTile = function () {
+
         };
 
 
