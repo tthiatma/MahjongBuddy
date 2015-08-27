@@ -15,6 +15,8 @@ namespace MahjongBuddy.Models
             Matches = new List<int>();
             Group = group;
             TileSets = new List<TileSet>();
+            GraveYardTiles = new List<Tile>();
+            FlowerTiles = new List<Tile>();
             IsTileAutoSort = true;
         }
 
@@ -31,9 +33,11 @@ namespace MahjongBuddy.Models
         public List<int> Matches { get; set; }
         public int CurrentPoint { get; set; }
         public List<TileSet> TileSets { get; set; }
-        public Player TopPlayer { get; set; }
-        public Player LeftPlayer { get; set; }
-        public Player RightPlayer { get; set; }
+        public OtherPlayer TopPlayer { get; set; }
+        public OtherPlayer LeftPlayer { get; set; }
+        public OtherPlayer RightPlayer { get; set; }
         public bool IsTileAutoSort { get; set; }
+        public List<Tile> GraveYardTiles { get; set; }
+        public List<Tile> FlowerTiles { get; set; }
     }
 }

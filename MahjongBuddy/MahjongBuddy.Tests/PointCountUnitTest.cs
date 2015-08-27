@@ -38,10 +38,10 @@ namespace MahjongBuddy.Tests
             player.Wind = WindDirection.East;
             player.ConnectionId = "p1";
 
-            game.Player1 = new Player("test","test","test");
-            game.Player2 = new Player("test2","test2","test2");
-            game.Player3 = new Player("test3","test3","test3");
-            game.Player4 = new Player("test4", "test4", "test4");
+            game.Player1 = new ActivePlayer("test","test","test");
+            game.Player2 = new ActivePlayer("test2", "test2", "test2");
+            game.Player3 = new ActivePlayer("test3", "test3", "test3");
+            game.Player4 = new ActivePlayer("test4", "test4", "test4");
 
             var dTiles = game.Board.Tiles.Where(
                 t => t.Id == 1

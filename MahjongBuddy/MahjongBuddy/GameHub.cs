@@ -75,14 +75,14 @@ namespace MahjongBuddy
             }
         }
 
-        private bool StartGame(Player player)
+        private bool StartGame(ActivePlayer player)
         {
             if (player != null)
             {
-                Player player1;
-                Player player2;
-                Player player3;
-                Player player4;
+                ActivePlayer player1;
+                ActivePlayer player2;
+                ActivePlayer player3;
+                ActivePlayer player4;
 
                 var pepInGroup = GameState.Instance.Players.Where(p => p.Value.Group == player.Group && p.Value.Id != player.Id);
 
@@ -536,21 +536,21 @@ namespace MahjongBuddy
         {
             List<Tile> tiles = game.Board.Tiles;
             Player p1, p2, p3, p4;
-            if (game.DiceRoller.ConnectionId == game.Player1.ConnectionId)
+            if (game.DiceRoller == game.Player1.ConnectionId)
             {
                 p1 = game.Player1;
                 p2 = game.Player2;
                 p3 = game.Player3;
                 p4 = game.Player4;
             }
-            else if (game.DiceRoller.ConnectionId == game.Player2.ConnectionId)
+            else if (game.DiceRoller == game.Player2.ConnectionId)
             {
                 p1 = game.Player2;
                 p2 = game.Player3;
                 p3 = game.Player4;
                 p4 = game.Player1;
             }
-            else if (game.DiceRoller.ConnectionId == game.Player3.ConnectionId)
+            else if (game.DiceRoller == game.Player3.ConnectionId)
             {
                 p1 = game.Player3;
                 p2 = game.Player4;

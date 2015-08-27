@@ -24,11 +24,11 @@ namespace MahjongBuddy
                 )
             );
 
-        private readonly ConcurrentDictionary<string, Player> _players = new ConcurrentDictionary<string, Player>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, ActivePlayer> _players = new ConcurrentDictionary<string, ActivePlayer>(StringComparer.OrdinalIgnoreCase);
 
         private readonly ConcurrentDictionary<string, Game> _games = new ConcurrentDictionary<string, Game>(StringComparer.OrdinalIgnoreCase);
 
-        public ConcurrentDictionary<string, Player> Players
+        public ConcurrentDictionary<string, ActivePlayer> Players
         {
             get { return _players; }
         }
@@ -48,14 +48,14 @@ namespace MahjongBuddy
 
         public IGroupManager Groups { get; set; }
 
-        public Player CreatePlayer(string userName, string userGroup)
+        public ActivePlayer CreatePlayer(string userName, string userGroup)
         {
-            var player = new Player(userName, userGroup, GetMD5Hash(userName));
+            var player = new ActivePlayer(userName, userGroup, GetMD5Hash(userName));
             _players[userName] = player;
             return player;
         }
 
-        public Player GetPlayer(string userName)
+        public ActivePlayer GetPlayer(string userName)
         {
             return _players.Values.FirstOrDefault(u => u.Name == userName);
         }
@@ -67,7 +67,7 @@ namespace MahjongBuddy
             {
                 if (game.Records != null && game.Records.Last().Winner != null)
                 {
-                    if (game.DiceRoller.ConnectionId != game.Records.Last().Winner.ConnectionId)
+                    if (game.DiceRoller != game.Records.Last().Winner.ConnectionId)
                     {
                         game.DiceMovedCount++;
                         gl.SetNextGamePlayerToStart(game);
@@ -87,40 +87,19 @@ namespace MahjongBuddy
             game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
         }
 
-        public Game CreateGame(Player player1, Player player2, Player player3, Player player4, string groupName)
+        public Game CreateGame(ActivePlayer player1, ActivePlayer player2, ActivePlayer player3, ActivePlayer player4, string groupName)
         {
-            var game = new Game()
-            {
-                Player1 = player1,
-                Player2 = player2,
-                Player3 = player3,
-                Player4 = player4,
-                Board = new Board(),
-                Records = new List<Record>(),
-                GameSetting = new GameSetting(),
-                PointSystem = new Dictionary<WinningType,int>()
-            };
+            var game = new Game(player1, player2, player3, player4);
 
             InitPlayerProperties(player1, player2, player3, player4, game, groupName);
             InitGameProperties(player1, game);
-            gl.SetPlayerWinds(game);
+            _games[groupName] = game;            
 
-            _games[groupName] = game;
-            
             return game;
         }
 
         private void InitGameProperties(Player starterPlayer, Game game)
         {
-            game.PlayerTurn = starterPlayer;
-            game.DiceRoller = starterPlayer;
-            game.DiceMovedCount = 1;
-            game.TileCounter = 0;
-            game.CurrentWind = WindDirection.East;
-            game.GameSetting.SkipInitialFlowerSwapping = true;
-            
-            //tiles section
-            game.Board.CreateTiles();
             game.Board.Tiles.Shuffle();            
             DistributeTiles(game);
             if (game.GameSetting.SkipInitialFlowerSwapping)
@@ -128,31 +107,41 @@ namespace MahjongBuddy
                 gl.RecycleInitialFlower(game);
             }
 
-            game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
-            
-            gl.PopulatePoint(game);
-            
+            game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();            
+            gl.PopulatePoint(game);            
             AssignAllPlayersTileIndex(game);
         }
 
         private void InitPlayerProperties(Player player1, Player player2, Player player3, Player player4, Game game, string groupName) 
         {
-
             player1.IsPlaying = true;
             player1.CanDoNoFlower = true;
             player1.Group = groupName;
+            SetOtherPlayer(player1, player2, player3, player4);
 
             player2.IsPlaying = true;
             player2.CanDoNoFlower = true;
             player2.Group = groupName;
+            SetOtherPlayer(player2, player3, player4, player1);
 
             player3.IsPlaying = true;
             player3.CanDoNoFlower = true;
             player3.Group = groupName;
+            SetOtherPlayer(player3, player4, player1, player2);
 
             player4.IsPlaying = true;
             player4.CanDoNoFlower = true;
             player4.Group = groupName;
+            SetOtherPlayer(player4, player1, player2, player3);
+
+            gl.SetPlayerWinds(game);
+        }
+
+        private void SetOtherPlayer(Player currentPlayer, Player rightPlayer, Player topPlayer, Player leftPlayer)
+        {
+            currentPlayer.RightPlayer = new OtherPlayer(rightPlayer);
+            currentPlayer.TopPlayer = new OtherPlayer(topPlayer);
+            currentPlayer.LeftPlayer = new OtherPlayer(leftPlayer);
         }
 
         private void AssignAllPlayersTileIndex(Game game)
@@ -189,21 +178,21 @@ namespace MahjongBuddy
         {
             List<Tile> tiles = game.Board.Tiles;
             Player p1, p2, p3, p4;
-            if (game.DiceRoller.ConnectionId == game.Player1.ConnectionId)
+            if (game.DiceRoller == game.Player1.ConnectionId)
             {
                 p1 = game.Player1;
                 p2 = game.Player2;
                 p3 = game.Player3;
                 p4 = game.Player4;
             }
-            else if (game.DiceRoller.ConnectionId == game.Player2.ConnectionId)
+            else if (game.DiceRoller == game.Player2.ConnectionId)
             {
                 p1 = game.Player2;
                 p2 = game.Player3;
                 p3 = game.Player4;
                 p4 = game.Player1;
             }
-            else if (game.DiceRoller.ConnectionId == game.Player3.ConnectionId)
+            else if (game.DiceRoller == game.Player3.ConnectionId)
             {
                 p1 = game.Player3;
                 p2 = game.Player4;
@@ -307,16 +296,16 @@ namespace MahjongBuddy
             Groups.Remove(game.Player3.ConnectionId, groupName);
             Groups.Remove(game.Player4.ConnectionId, groupName);
 
-            Player p1;
+            ActivePlayer p1;
             _players.TryRemove(player1Name, out p1);
 
-            Player p2;
+            ActivePlayer p2;
             _players.TryRemove(player2Name, out p2);
 
-            Player p3;
+            ActivePlayer p3;
             _players.TryRemove(player3Name, out p3);
 
-            Player p4;
+            ActivePlayer p4;
             _players.TryRemove(player4Name, out p4);
 
             Game g;

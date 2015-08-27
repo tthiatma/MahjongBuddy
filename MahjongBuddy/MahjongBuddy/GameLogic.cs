@@ -35,7 +35,7 @@ namespace MahjongBuddy
             PointCalculator = new PointCalculator();
         }
 
-        public CommandResult DoPong(Game game, IEnumerable<int> tiles, Player player)
+        public CommandResult DoPong(Game game, IEnumerable<int> tiles, ActivePlayer player)
         {
             if (player != null)
             {
@@ -51,7 +51,7 @@ namespace MahjongBuddy
                         CommandTileToPlayerGraveyard(game, playerTilesPong, player.ConnectionId);
                         AddTilesToPlayerOpenTileSet(game, playerTilesPong, player.ConnectionId, TileSetType.Pong);
                         game.HaltMove = true;
-                        game.PlayerTurn = player;
+                        game.PlayerTurn = player.ConnectionId;
                         player.CanPickTile = false;
                         player.CanThrowTile = true;
 
@@ -110,7 +110,7 @@ namespace MahjongBuddy
                                 CommandTileToPlayerGraveyard(game, sortedList, player.ConnectionId);
                                 AddTilesToPlayerOpenTileSet(game, sortedList, player.ConnectionId, TileSetType.Chow);
                                 game.HaltMove = true;
-                                game.PlayerTurn = player;
+                                game.PlayerTurn = player.ConnectionId;
                                 player.CanPickTile = false;
                                 player.CanThrowTile = true;
 
@@ -294,7 +294,7 @@ namespace MahjongBuddy
                         CommandTileToPlayerGraveyard(game, playerTilesKong, player.ConnectionId);
                         AddTilesToPlayerOpenTileSet(game, playerTilesKong, player.ConnectionId, TileSetType.Kong);
                         game.HaltMove = true;
-                        game.PlayerTurn = player;
+                        game.PlayerTurn = player.ConnectionId;
                         var pp = GetPlayerByConnectionId(game, player.ConnectionId);
                         pp.CanPickTile = false;
                         pp.CanThrowTile = true;
@@ -800,25 +800,25 @@ namespace MahjongBuddy
 
         public void SetNextGamePlayerToStart(Game game)
         {
-            if (game.Player1.ConnectionId == game.DiceRoller.ConnectionId)
+            if (game.Player1.ConnectionId == game.DiceRoller)
             {
-                game.DiceRoller = game.Player2;
-                game.PlayerTurn = game.Player2;
+                game.DiceRoller = game.Player2.ConnectionId;
+                game.PlayerTurn = game.Player2.ConnectionId;
             }
-            else if (game.Player2.ConnectionId == game.DiceRoller.ConnectionId)
-            { 
-                game.DiceRoller = game.Player3;
-                game.PlayerTurn = game.Player3;
-            }
-            else if (game.Player3.ConnectionId == game.DiceRoller.ConnectionId)
+            else if (game.Player2.ConnectionId == game.DiceRoller)
             {
-                game.DiceRoller = game.Player4;
-                game.PlayerTurn = game.Player4;
+                game.DiceRoller = game.Player3.ConnectionId;
+                game.PlayerTurn = game.Player3.ConnectionId;
             }
-            else if (game.Player4.ConnectionId == game.DiceRoller.ConnectionId)
+            else if (game.Player3.ConnectionId == game.DiceRoller)
             {
-                game.DiceRoller = game.Player1;
-                game.PlayerTurn = game.Player1;
+                game.DiceRoller = game.Player4.ConnectionId;
+                game.PlayerTurn = game.Player4.ConnectionId;
+            }
+            else if (game.Player4.ConnectionId == game.DiceRoller)
+            {
+                game.DiceRoller = game.Player1.ConnectionId;
+                game.PlayerTurn = game.Player1.ConnectionId;
             }
         }
 
@@ -826,24 +826,24 @@ namespace MahjongBuddy
         {
             if (game != null)
             {
-                if (game.PlayerTurn == game.Player1)
+                if (game.PlayerTurn == game.Player1.ConnectionId)
                 {
-                    game.PlayerTurn = game.Player2;
+                    game.PlayerTurn = game.Player2.ConnectionId;
                     game.Player2.CanPickTile = true;
                 }
-                else if (game.PlayerTurn == game.Player2)
+                else if (game.PlayerTurn == game.Player2.ConnectionId)
                 {
-                    game.PlayerTurn = game.Player3;
+                    game.PlayerTurn = game.Player3.ConnectionId;
                     game.Player3.CanPickTile = true;
                 }
-                else if (game.PlayerTurn == game.Player3)
+                else if (game.PlayerTurn == game.Player3.ConnectionId)
                 {
-                    game.PlayerTurn = game.Player4;
+                    game.PlayerTurn = game.Player4.ConnectionId;
                     game.Player4.CanPickTile = true;
                 }
-                else if (game.PlayerTurn == game.Player4)
+                else if (game.PlayerTurn == game.Player4.ConnectionId)
                 {
-                    game.PlayerTurn = game.Player1;
+                    game.PlayerTurn = game.Player1.ConnectionId;
                     game.Player1.CanPickTile = true;
                 }
             }
