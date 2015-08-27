@@ -60,6 +60,33 @@ namespace MahjongBuddy
             return _players.Values.FirstOrDefault(u => u.Name == userName);
         }
 
+        public void StartNextGame(Game game)
+        {
+            //if there's winner from game jz now
+            if (game.Records != null && game.Records.Last().NoWinner == false)
+            {
+                if (game.Records != null && game.Records.Last().Winner != null)
+                {
+                    if (game.DiceRoller.ConnectionId != game.Records.Last().Winner.ConnectionId)
+                    {
+                        game.DiceMovedCount++;
+                        gl.SetNextGamePlayerToStart(game);
+                        gl.SetGameNextWind(game);
+                        gl.SetPlayerWinds(game);
+                    }
+                }
+            }
+
+            GameState.Instance.ResetForNextGame(game);
+            DistributeTiles(game);
+
+            if (game.GameSetting.SkipInitialFlowerSwapping)
+            {
+                gl.RecycleInitialFlower(game);
+            }
+            game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+        }
+
         public Game CreateGame(Player player1, Player player2, Player player3, Player player4, string groupName)
         {
             var game = new Game()
@@ -73,29 +100,144 @@ namespace MahjongBuddy
                 GameSetting = new GameSetting(),
                 PointSystem = new Dictionary<WinningType,int>()
             };
-            gl.PopulatePoint(game);
-            game.Board.CreateTiles();
 
-            var group = groupName;
-            _games[group] = game;
+            InitPlayerProperties(player1, player2, player3, player4, game, groupName);
+            InitGameProperties(player1, game);
+            gl.SetPlayerWinds(game);
+
+            _games[groupName] = game;
+            
+            return game;
+        }
+
+        private void InitGameProperties(Player starterPlayer, Game game)
+        {
+            game.PlayerTurn = starterPlayer;
+            game.DiceRoller = starterPlayer;
+            game.DiceMovedCount = 1;
+            game.TileCounter = 0;
+            game.CurrentWind = WindDirection.East;
+            game.GameSetting.SkipInitialFlowerSwapping = true;
+            
+            //tiles section
+            game.Board.CreateTiles();
+            game.Board.Tiles.Shuffle();            
+            DistributeTiles(game);
+            if (game.GameSetting.SkipInitialFlowerSwapping)
+            {
+                gl.RecycleInitialFlower(game);
+            }
+
+            game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+            
+            gl.PopulatePoint(game);
+            
+            AssignAllPlayersTileIndex(game);
+        }
+
+        private void InitPlayerProperties(Player player1, Player player2, Player player3, Player player4, Game game, string groupName) 
+        {
 
             player1.IsPlaying = true;
             player1.CanDoNoFlower = true;
-            player1.Group = group;
+            player1.Group = groupName;
 
             player2.IsPlaying = true;
             player2.CanDoNoFlower = true;
-            player2.Group = group;
+            player2.Group = groupName;
 
             player3.IsPlaying = true;
             player3.CanDoNoFlower = true;
-            player3.Group = group;
-            
+            player3.Group = groupName;
+
             player4.IsPlaying = true;
             player4.CanDoNoFlower = true;
-            player4.Group = group;
+            player4.Group = groupName;
+        }
 
-            return game;
+        private void AssignAllPlayersTileIndex(Game game)
+        {
+            List<Tile> tiles = game.Board.Tiles;
+
+            var player1Tiles = tiles.Where(t => t.Owner == game.Player1.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
+            var player2Tiles = tiles.Where(t => t.Owner == game.Player2.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
+            var player3Tiles = tiles.Where(t => t.Owner == game.Player3.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
+            var player4Tiles = tiles.Where(t => t.Owner == game.Player4.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
+
+            for (int i = 0; i < player1Tiles.Count(); i++)
+            {
+                player1Tiles[i].ActiveTileIndex = i;
+            }
+
+            for (int i = 0; i < player2Tiles.Count(); i++)
+            {
+                player2Tiles[i].ActiveTileIndex = i;
+            }
+
+            for (int i = 0; i < player3Tiles.Count(); i++)
+            {
+                player3Tiles[i].ActiveTileIndex = i;
+            }
+
+            for (int i = 0; i < player4Tiles.Count(); i++)
+            {
+                player4Tiles[i].ActiveTileIndex = i;
+            }
+        }
+
+        private void DistributeTiles(Game game)
+        {
+            List<Tile> tiles = game.Board.Tiles;
+            Player p1, p2, p3, p4;
+            if (game.DiceRoller.ConnectionId == game.Player1.ConnectionId)
+            {
+                p1 = game.Player1;
+                p2 = game.Player2;
+                p3 = game.Player3;
+                p4 = game.Player4;
+            }
+            else if (game.DiceRoller.ConnectionId == game.Player2.ConnectionId)
+            {
+                p1 = game.Player2;
+                p2 = game.Player3;
+                p3 = game.Player4;
+                p4 = game.Player1;
+            }
+            else if (game.DiceRoller.ConnectionId == game.Player3.ConnectionId)
+            {
+                p1 = game.Player3;
+                p2 = game.Player4;
+                p3 = game.Player1;
+                p4 = game.Player2;
+            }
+            else
+            {
+                p1 = game.Player4;
+                p2 = game.Player1;
+                p3 = game.Player2;
+                p4 = game.Player3;
+            }
+
+            for (var i = 0; i < 14; i++)
+            {
+                tiles[i].Owner = p1.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+            for (var i = 14; i < 27; i++)
+            {
+                tiles[i].Owner = p2.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+            for (var i = 27; i < 40; i++)
+            {
+                tiles[i].Owner = p3.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
+            for (var i = 40; i < 53; i++)
+            {
+                tiles[i].Owner = p4.ConnectionId;
+                tiles[i].Status = TileStatus.UserActive;
+            }
         }
 
         public Game FindGameByGroupName(string groupName)

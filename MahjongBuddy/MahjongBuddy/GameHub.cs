@@ -70,29 +70,7 @@ namespace MahjongBuddy
             var game = GameState.Instance.FindGameByGroupName(group);
             if (game != null)
             {
-                //if there's winner from game jz now
-                if (game.Records != null && game.Records.Last().NoWinner == false)
-                {
-                    if (game.Records != null && game.Records.Last().Winner != null)
-                    {
-                        if (game.DiceRoller.ConnectionId != game.Records.Last().Winner.ConnectionId)
-                        {
-                            game.DiceMovedCount++;
-                            GameLogic.SetNextGamePlayerToStart(game);
-                            GameLogic.SetGameNextWind(game);
-                            GameLogic.SetPlayerWinds(game);
-                        }
-                    }
-                }
-
-                GameState.Instance.ResetForNextGame(game);
-                DistributeTiles(game);
-                
-                if (game.GameSetting.SkipInitialFlowerSwapping)
-                {
-                    GameLogic.RecycleInitialFlower(game);
-                }
-                game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+                GameState.Instance.StartNextGame(game);
                 Clients.Group(group).startNextGame(game);
             }
         }
@@ -162,25 +140,7 @@ namespace MahjongBuddy
                     }
 
                     game = GameState.Instance.CreateGame(player1, player2, player3, player4, player.Group);
-                    game.PlayerTurn = player1;
-                    game.DiceRoller = player1;
-                    game.DiceMovedCount = 1;
-                    game.TileCounter = 0;
-                    game.CurrentWind = WindDirection.East;
-
-                    game.Board.Tiles.Shuffle();
-                    //DistributeTilesForWinWaitingForEye(game);
-                    DistributeTiles(game);
-
-                    game.GameSetting.SkipInitialFlowerSwapping = true;
-
-                    if (game.GameSetting.SkipInitialFlowerSwapping)
-                    {
-                        GameLogic.RecycleInitialFlower(game);
-                    }
-                    game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
-                    GameLogic.SetPlayerWinds(game);
-                    AssignAllPlayersTileIndex(game);
+                    
 
                     Clients.Group(player.Group).startGame(game);
 
@@ -568,90 +528,9 @@ namespace MahjongBuddy
             }
         }
 
-        private void DistributeTiles(Game game)
-        {
-            List<Tile> tiles = game.Board.Tiles;
-            Player p1, p2, p3, p4;
-            if (game.DiceRoller.ConnectionId == game.Player1.ConnectionId)
-            {
-                p1 = game.Player1;
-                p2 = game.Player2;
-                p3 = game.Player3;
-                p4 = game.Player4;            
-            }
-            else if (game.DiceRoller.ConnectionId == game.Player2.ConnectionId)
-            {
-                p1 = game.Player2;
-                p2 = game.Player3;
-                p3 = game.Player4;
-                p4 = game.Player1;
-            }
-            else if (game.DiceRoller.ConnectionId == game.Player3.ConnectionId)
-            {
-                p1 = game.Player3;
-                p2 = game.Player4;
-                p3 = game.Player1;
-                p4 = game.Player2;
-            }
-            else 
-            {
-                p1 = game.Player4;
-                p2 = game.Player1;
-                p3 = game.Player2;
-                p4 = game.Player3;            
-            }
         
-            for (var i = 0; i < 14; i++)
-            {                
-                tiles[i].Owner = p1.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 14; i < 27; i++)
-            {
-                tiles[i].Owner = p2.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 27; i < 40; i++)
-            {
-                tiles[i].Owner = p3.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 40; i < 53; i++)
-            {
-                tiles[i].Owner = p4.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }        
-        }
 
-        private void AssignAllPlayersTileIndex(Game game)
-        {
-            List<Tile> tiles = game.Board.Tiles;
-
-            var player1Tiles = tiles.Where(t => t.Owner == game.Player1.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t=> t.Type).ThenBy(t=> t.Value).ToArray();
-            var player2Tiles = tiles.Where(t => t.Owner == game.Player2.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
-            var player3Tiles = tiles.Where(t => t.Owner == game.Player3.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
-            var player4Tiles = tiles.Where(t => t.Owner == game.Player4.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
-
-            for (int i = 0; i < player1Tiles.Count(); i++)
-            {
-                player1Tiles[i].ActiveTileIndex = i;
-            }
-
-            for (int i = 0; i < player2Tiles.Count(); i++)
-            {
-                player2Tiles[i].ActiveTileIndex = i;
-            }
-
-            for (int i = 0; i < player3Tiles.Count(); i++)
-            {
-                player3Tiles[i].ActiveTileIndex = i;
-            }
-
-            for (int i = 0; i < player4Tiles.Count(); i++)
-            {
-                player4Tiles[i].ActiveTileIndex = i;
-            }        
-        }
+        
 
         private void DistributeTilesForNoWinner(Game game)
         {
