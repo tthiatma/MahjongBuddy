@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Web;
 
 namespace MahjongBuddy.Extensions
@@ -21,5 +24,22 @@ namespace MahjongBuddy.Extensions
                 list[n] = value;
             }
         }
-    }
+
+        public static T DeepCLone<T>(this T obj)
+        {
+            T newObj = Activator.CreateInstance<T>();
+
+            foreach (PropertyInfo i in newObj.GetType().GetProperties())
+            {
+                //"EntitySet" is specific to link and this conditional logic is optional/can be ignored
+                if (i.CanWrite && i.PropertyType.Name.Contains("EntitySet") == false)
+                {
+                    object value = obj.GetType().GetProperty(i.Name).GetValue(obj, null);
+                    i.SetValue(newObj, value, null);
+                }
+            }
+
+            return newObj;
+        }
+    }    
 }

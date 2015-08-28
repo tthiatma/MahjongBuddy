@@ -177,7 +177,7 @@ namespace MahjongBuddy
         private void DistributeTiles(Game game)
         {
             List<Tile> tiles = game.Board.Tiles;
-            Player p1, p2, p3, p4;
+            ActivePlayer p1, p2, p3, p4;
             if (game.DiceRoller == game.Player1.ConnectionId)
             {
                 p1 = game.Player1;
@@ -211,21 +211,43 @@ namespace MahjongBuddy
             {
                 tiles[i].Owner = p1.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
+                p1.ActiveTiles.Add(tiles[i].DeepCLone());
+
+                p2.LeftPlayer.ActiveTilesCount++;
+                p3.TopPlayer.ActiveTilesCount++;
+                p4.RightPlayer.ActiveTilesCount++;
             }
+
             for (var i = 14; i < 27; i++)
             {
                 tiles[i].Owner = p2.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
+                p2.ActiveTiles.Add(tiles[i].DeepCLone());
+
+                p3.LeftPlayer.ActiveTilesCount++;
+                p4.TopPlayer.ActiveTilesCount++;
+                p1.RightPlayer.ActiveTilesCount++;
+
             }
             for (var i = 27; i < 40; i++)
             {
                 tiles[i].Owner = p3.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
+                p3.ActiveTiles.Add(tiles[i].DeepCLone());
+
+                p4.LeftPlayer.ActiveTilesCount++;
+                p1.TopPlayer.ActiveTilesCount++;
+                p2.RightPlayer.ActiveTilesCount++;
             }
             for (var i = 40; i < 53; i++)
             {
                 tiles[i].Owner = p4.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
+                p4.ActiveTiles.Add(tiles[i].DeepCLone());
+
+                p1.LeftPlayer.ActiveTilesCount++;
+                p2.TopPlayer.ActiveTilesCount++;
+                p3.RightPlayer.ActiveTilesCount++;
             }
         }
 
