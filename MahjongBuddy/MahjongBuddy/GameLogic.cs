@@ -138,11 +138,10 @@ namespace MahjongBuddy
             }
         }
 
-        public CommandResult DoPickNewTile(Game game, Player player) 
+        public CommandResult DoPickNewTile(Game game, ActivePlayer player) 
         {
             if (player != null)
             {
-
                 //to know how many tiles a player can have, we need to check how many sets/tiles that they have/revealed
                 //this section is to prevent player to have more tiles when they pick new tile.
                 var playerTileSetCount = player.TileSets.Count();
@@ -177,6 +176,7 @@ namespace MahjongBuddy
 
                 if (canPickNewTile)
                 {
+                    //we loop 8 times because there are total of 8 flowers
                     for (var i = 0; i < 8; i++)
                     {
                         var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").FirstOrDefault();
@@ -190,9 +190,12 @@ namespace MahjongBuddy
                                 CommandTileToPlayerGraveyard(game, ft, player.ConnectionId, replaceTile: false);
                             }
                             else
-                            {
+                            {                                
                                 newTileForPlayer.Owner = player.ConnectionId;
                                 newTileForPlayer.Status = TileStatus.JustPicked;
+                                player.ActiveTiles.Add(newTileForPlayer);
+
+                                //set haltmove to true because no other player suppose to make a move when tile is picked
                                 game.HaltMove = true;
                                 break;
                             }
@@ -680,23 +683,41 @@ namespace MahjongBuddy
         
         public void CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, string playerConnectionId, bool replaceTile = false)
         {
+            var player = GetPlayerByConnectionId(game, playerConnectionId);
+
             foreach (var f in tiles)
             {
                 var tileToGraveyard = game.Board.Tiles.Where(t => t.Id == f.Id).First();
+
+                //bookkeeping in game state
                 tileToGraveyard.Status = TileStatus.UserGraveyard;
                 tileToGraveyard.Owner = playerConnectionId;
                 f.OpenTileCounter = game.TileCounter;
                 game.TileCounter++;
 
+                //remove the flower tiles from player active tiles
+                if (player.ActiveTiles.Contains(tileToGraveyard))
+                {
+                    player.ActiveTiles.Remove(tileToGraveyard);                
+                }
+
                 if (replaceTile)
                 {
+                    //bookkeeping in game state
                     var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
                     newTileForPlayer.Owner = playerConnectionId;
                     newTileForPlayer.Status = TileStatus.UserActive;
+
+                    //adding the new tile to player active tiles
+                    player.ActiveTiles.Add(newTileForPlayer);
                 }
             }
         }
 
+        /// <summary>
+        /// This function is to replace flowers with other tiles when game started.
+        /// </summary>
+        /// <param name="game"></param>
         public void RecycleInitialFlower(Game game)
         {
             var p1 = game.Player1;
@@ -706,7 +727,7 @@ namespace MahjongBuddy
 
             for (var i = 0; i < 8; i++)
             {
-                var playerTilesFlower = game.Board.Tiles.Where(t => t.Owner == p1.ConnectionId && t.Type == TileType.Flower && t.Status == TileStatus.UserActive);
+                var playerTilesFlower = game.Player1.ActiveTiles.Where(t => t.Type == TileType.Flower);
 
                 if (playerTilesFlower.Count() > 0)
                 {
@@ -716,7 +737,7 @@ namespace MahjongBuddy
 
             for (var i = 0; i < 8; i++)
             {
-                var playerTilesFlower = game.Board.Tiles.Where(t => t.Owner == p2.ConnectionId && t.Type == TileType.Flower && t.Status == TileStatus.UserActive);
+                var playerTilesFlower = game.Player2.ActiveTiles.Where(t => t.Type == TileType.Flower);
 
                 if (playerTilesFlower.Count() > 0)
                 {
@@ -726,7 +747,7 @@ namespace MahjongBuddy
 
             for (var i = 0; i < 8; i++)
             {
-                var playerTilesFlower = game.Board.Tiles.Where(t => t.Owner == p3.ConnectionId && t.Type == TileType.Flower && t.Status == TileStatus.UserActive);
+                var playerTilesFlower = game.Player3.ActiveTiles.Where(t => t.Type == TileType.Flower);
 
                 if (playerTilesFlower.Count() > 0)
                 {
@@ -736,7 +757,7 @@ namespace MahjongBuddy
 
             for (var i = 0; i < 8; i++)
             {
-                var playerTilesFlower = game.Board.Tiles.Where(t => t.Owner == p4.ConnectionId && t.Type == TileType.Flower && t.Status == TileStatus.UserActive);
+                var playerTilesFlower = game.Player4.ActiveTiles.Where(t => t.Type == TileType.Flower);
 
                 if (playerTilesFlower.Count() > 0)
                 {
@@ -1117,7 +1138,7 @@ namespace MahjongBuddy
             return ret;
         }
 
-        private Player GetPlayerByConnectionId(Game game, string connectionId)
+        private ActivePlayer GetPlayerByConnectionId(Game game, string connectionId)
         {
             if (game.Player1.ConnectionId == connectionId)
             {

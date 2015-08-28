@@ -528,10 +528,6 @@ namespace MahjongBuddy
             }
         }
 
-        
-
-        
-
         private void DistributeTilesForNoWinner(Game game)
         {
             List<Tile> tiles = game.Board.Tiles;

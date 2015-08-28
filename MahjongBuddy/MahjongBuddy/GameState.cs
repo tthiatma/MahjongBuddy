@@ -211,7 +211,7 @@ namespace MahjongBuddy
             {
                 tiles[i].Owner = p1.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
-                p1.ActiveTiles.Add(tiles[i].DeepCLone());
+                p1.ActiveTiles.Add(tiles[i]);
 
                 p2.LeftPlayer.ActiveTilesCount++;
                 p3.TopPlayer.ActiveTilesCount++;
@@ -222,7 +222,7 @@ namespace MahjongBuddy
             {
                 tiles[i].Owner = p2.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
-                p2.ActiveTiles.Add(tiles[i].DeepCLone());
+                p2.ActiveTiles.Add(tiles[i]);
 
                 p3.LeftPlayer.ActiveTilesCount++;
                 p4.TopPlayer.ActiveTilesCount++;
@@ -233,7 +233,7 @@ namespace MahjongBuddy
             {
                 tiles[i].Owner = p3.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
-                p3.ActiveTiles.Add(tiles[i].DeepCLone());
+                p3.ActiveTiles.Add(tiles[i]);
 
                 p4.LeftPlayer.ActiveTilesCount++;
                 p1.TopPlayer.ActiveTilesCount++;
@@ -243,7 +243,7 @@ namespace MahjongBuddy
             {
                 tiles[i].Owner = p4.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
-                p4.ActiveTiles.Add(tiles[i].DeepCLone());
+                p4.ActiveTiles.Add(tiles[i]);
 
                 p1.LeftPlayer.ActiveTilesCount++;
                 p2.TopPlayer.ActiveTilesCount++;
