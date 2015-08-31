@@ -36,18 +36,21 @@
 
         var clientPushHubProxy = signalRHubProxy(signalRHubProxy.defaultServer, 'gameHub', startup);
 
-        var updateGame = function (game) {
-            $scope.game = game;
-            $scope.currentPlayer = mjService.getCurrentPlayer(game, $scope.currentUserId);
-            $scope.currentPlayerWind = mjService.getWindName($scope.currentPlayer.Wind);
-            $scope.isMyturn = ($scope.currentUserId == game.PlayerTurn.ConnectionId)
-            if ($scope.isMyturn){
+        var updateGame = function (currentPlayer) {
+
+            $scope.currentPlayer = currentPlayer
+            $scope.rightPlayer = currentPlayer.RightPlayer;
+            $scope.topPlayer = currentPlayer.TopPlayer;
+            $scope.leftPlayer = currentPlayer.LeftPlayer;
+            $scope.currentPlayerWind = currentPlayer.Wind;
+
+            $scope.isMyturn = currentPlayer.CanPickTile;
+
+            if ($scope.isMyturn) {
                 $timeout(function () { $scope.canPickTile = $scope.currentPlayer.CanPickTile }, 5000);
             }
-            $scope.isRightPlayerTurn = ($scope.rightPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
-            $scope.isLeftPlayerTurn = ($scope.leftPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
-            $scope.isTopPlayerTurn = ($scope.topPlayer.ConnectionId == game.PlayerTurn.ConnectionId);
-            $scope.lastTile = game.LastTile;
+
+            //$scope.lastTile = game.LastTile;
             $scope.currentGameWind = mjService.getWindName($scope.game.CurrentWind);
         }
 

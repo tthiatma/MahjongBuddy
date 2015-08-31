@@ -140,9 +140,12 @@ namespace MahjongBuddy
                     }
 
                     game = GameState.Instance.CreateGame(player1, player2, player3, player4, player.Group);
-                    
 
-                    Clients.Group(player.Group).startGame(game);
+                    Clients.Client(game.Player1.ConnectionId).startGame(game.Player1);
+                    Clients.Client(game.Player2.ConnectionId).startGame(game.Player2);
+                    Clients.Client(game.Player3.ConnectionId).startGame(game.Player3);
+                    Clients.Client(game.Player4.ConnectionId).startGame(game.Player4);
+                    //Clients.Group(player.Group).startGame(game);
 
                     //DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
                     //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);

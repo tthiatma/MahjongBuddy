@@ -10,12 +10,10 @@ namespace MahjongBuddy.Models
     {
 
         private List<Tile> _tiles = new List<Tile>();
+        private List<Tile> _graveyardTiles = new List<Tile>();
 
-        public List<Tile> Tiles
-        {
-            get { return _tiles; }
-            set { _tiles = value; }
-        }
+        public List<Tile> GraveyardTiles { get { return _graveyardTiles; } set {_graveyardTiles = value;} }
+        public List<Tile> Tiles{ get { return _tiles; } set { _tiles = value; } }
         public void CreateTiles(){
 
             for (var i = 1; i < 5; i++)
