@@ -175,6 +175,7 @@
     <Compile Include="Models\ActivePlayer.cs" />
     <Compile Include="Models\Board.cs" />
     <Compile Include="Models\CommandResult.cs" />
+    <Compile Include="Models\Dealer.cs" />
     <Compile Include="Models\Game.cs" />
     <Compile Include="Models\GameSetting.cs" />
     <Compile Include="Models\HandWorth.cs" />

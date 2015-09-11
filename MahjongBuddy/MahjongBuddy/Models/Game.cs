@@ -13,6 +13,7 @@ namespace MahjongBuddy.Models
         public ActivePlayer Player3 { get; set; }
         public ActivePlayer Player4 { get; set; }
         public List<Record> Records { get; set; }
+        public Dealer Dealer { get; set; }
         public Dictionary<WinningType, int> PointSystem { get; set; }
         public Board Board { get; set; }
         public Tile LastTile { get; set; }
@@ -44,6 +45,7 @@ namespace MahjongBuddy.Models
             DiceMovedCount = 1;
             TileCounter = 0;
             CurrentWind = WindDirection.East;
+            Dealer.CurrentWind = CurrentWind;
             GameSetting.SkipInitialFlowerSwapping = true;
 
             Board.CreateTiles();
@@ -55,6 +57,7 @@ namespace MahjongBuddy.Models
             Records = new List<Record>();
             GameSetting = new GameSetting();
             PointSystem = new Dictionary<WinningType, int>();
+            Dealer = new Dealer();
         }
     }
 }

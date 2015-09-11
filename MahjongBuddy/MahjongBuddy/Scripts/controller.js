@@ -36,22 +36,24 @@
 
         var clientPushHubProxy = signalRHubProxy(signalRHubProxy.defaultServer, 'gameHub', startup);
 
-        var updateGame = function (currentPlayer) {
-
+        var updatePlayer = function (currentPlayer) {
             $scope.currentPlayer = currentPlayer
-            $scope.rightPlayer = currentPlayer.RightPlayer;
-            $scope.topPlayer = currentPlayer.TopPlayer;
-            $scope.leftPlayer = currentPlayer.LeftPlayer;
             $scope.currentPlayerWind = currentPlayer.Wind;
-
             $scope.isMyturn = currentPlayer.CanPickTile;
 
             if ($scope.isMyturn) {
                 $timeout(function () { $scope.canPickTile = $scope.currentPlayer.CanPickTile }, 5000);
             }
 
-            //$scope.lastTile = game.LastTile;
-            $scope.currentGameWind = mjService.getWindName($scope.game.CurrentWind);
+            $scope.rightPlayer = currentPlayer.RightPlayer;
+            $scope.topPlayer = currentPlayer.TopPlayer;
+            $scope.leftPlayer = currentPlayer.LeftPlayer;
+        }
+
+        var updateGame = function (dealer) {
+            $scope.tilesLeft = dealer.TilesLeft
+            $scope.lastTile = dealer.LastTile;
+            $scope.currentGameWind = mjService.getWindName(dealer.CurrentWind);
         }
 
         var updateOtherPlayer = function (game) {
@@ -169,12 +171,8 @@
             $('#WaitingRoom').hide();
         });
 
-        clientPushHubProxy.on('startGame', function (game) {
-            mjService.setPlayer(game, $scope.currentUserId);
-            $scope.topPlayer = mjService.topPlayer;
-            $scope.rightPlayer = mjService.rightPlayer;
-            $scope.leftPlayer = mjService.leftPlayer;
-            updateGame(game);
+        clientPushHubProxy.on('startGame', function (playerInfo) {
+            updatePlayer(playerInfo);
         });
 
         clientPushHubProxy.on('startNextGame', function (game) {
@@ -183,8 +181,8 @@
             $('#showNoWinnerModal').modal('hide');
         });
 
-        clientPushHubProxy.on('updateGame', function (game) {
-            updateGame(game);
+        clientPushHubProxy.on('updateGame', function (dealer) {
+            updateGame(dealer);
         });
 
         clientPushHubProxy.on('updatePlayerCount', function (playerCount) {

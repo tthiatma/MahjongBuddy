@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using MahjongBuddy.Models;
+using log4net;
 
 namespace MahjongBuddy
 {
     public class GameLogic
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(GameLogic));
+
         public Dictionary<CommandResult, string> CommandResultDictionary { get; set; }
 
         public PointCalculator PointCalculator { get; set; }
@@ -685,33 +688,52 @@ namespace MahjongBuddy
         {
             var player = GetPlayerByConnectionId(game, playerConnectionId);
 
-            foreach (var f in tiles)
+            try
             {
-                var tileToGraveyard = game.Board.Tiles.Where(t => t.Id == f.Id).First();
+                List<Tile> collectionToRemove = new List<Tile>();
+                List<Tile> collectionToAdd = new List<Tile>();
 
-                //bookkeeping in game state
-                tileToGraveyard.Status = TileStatus.UserGraveyard;
-                tileToGraveyard.Owner = playerConnectionId;
-                f.OpenTileCounter = game.TileCounter;
-                game.TileCounter++;
-
-                //remove the flower tiles from player active tiles
-                if (player.ActiveTiles.Contains(tileToGraveyard))
+                foreach (var f in tiles)
                 {
-                    player.ActiveTiles.Remove(tileToGraveyard);                
-                }
+                    var tileToGraveyard = game.Board.Tiles.Where(t => t.Id == f.Id).First();
 
-                if (replaceTile)
-                {
                     //bookkeeping in game state
-                    var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
-                    newTileForPlayer.Owner = playerConnectionId;
-                    newTileForPlayer.Status = TileStatus.UserActive;
+                    tileToGraveyard.Status = TileStatus.UserGraveyard;
+                    tileToGraveyard.Owner = playerConnectionId;
+                    f.OpenTileCounter = game.TileCounter;
+                    game.TileCounter++;
 
-                    //adding the new tile to player active tiles
-                    player.ActiveTiles.Add(newTileForPlayer);
+                    //remove the flower tiles from player active tiles
+                    if (player.ActiveTiles.Contains(tileToGraveyard))
+                    {
+                        collectionToRemove.Add(tileToGraveyard);
+                    }
+
+                    if (replaceTile)
+                    {
+                        //bookkeeping in game state
+                        var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
+                        newTileForPlayer.Owner = playerConnectionId;
+                        newTileForPlayer.Status = TileStatus.UserActive;
+
+                        //adding the new tile to player active tiles
+                        collectionToAdd.Add(newTileForPlayer);
+                    }
                 }
+                foreach (var item in collectionToRemove)
+                {
+                    player.ActiveTiles.Remove(item);
+                }
+                foreach (var item in collectionToAdd)
+                {
+                    player.ActiveTiles.Add(item);
+                }                              
             }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+            }
+            
         }
 
         /// <summary>

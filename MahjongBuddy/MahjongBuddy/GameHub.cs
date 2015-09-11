@@ -91,9 +91,9 @@ namespace MahjongBuddy
                     Clients.Group(player.Group).gameStarted();
                     var arrayOfPep = pepInGroup.ToArray();
                     Random random = new Random();
-                    //int randomPlayerToStart = 1;
+                    int randomPlayerToStart = 1;
 
-                    int randomPlayerToStart = random.Next(1, 4);
+                    //int randomPlayerToStart = random.Next(1, 4);
                     
                     switch (randomPlayerToStart)
                     { 
@@ -145,7 +145,7 @@ namespace MahjongBuddy
                     Clients.Client(game.Player2.ConnectionId).startGame(game.Player2);
                     Clients.Client(game.Player3.ConnectionId).startGame(game.Player3);
                     Clients.Client(game.Player4.ConnectionId).startGame(game.Player4);
-                    //Clients.Group(player.Group).startGame(game);
+                    Clients.Group(player.Group).updateGame(game);
 
                     //DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
                     //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);
