@@ -89,10 +89,9 @@ namespace MahjongBuddy
 
         public Game CreateGame(ActivePlayer player1, ActivePlayer player2, ActivePlayer player3, ActivePlayer player4, string groupName)
         {
-            var game = new Game(player1, player2, player3, player4);
-
-            InitPlayerProperties(player1, player2, player3, player4, game, groupName);
+            var game = new Game(player1, player2, player3, player4);            
             InitGameProperties(player1, game);
+            InitPlayerProperties(player1, player2, player3, player4, game, groupName);
             _games[groupName] = game;            
 
             return game;
@@ -117,7 +116,6 @@ namespace MahjongBuddy
             player1.IsPlaying = true;
             player1.CanDoNoFlower = true;
             player1.Group = groupName;
-
             SetOtherPlayer(player1, player2, player3, player4);
 
             player2.IsPlaying = true;
@@ -154,11 +152,19 @@ namespace MahjongBuddy
             gl.SetPlayerWinds(game);
         }
 
-        private void SetOtherPlayer(Player currentPlayer, Player rightPlayer, Player topPlayer, Player leftPlayer)
+        private void SetOtherPlayer(ActivePlayer currentPlayer, ActivePlayer rightPlayer, ActivePlayer topPlayer, ActivePlayer leftPlayer)
         {
-            currentPlayer.RightPlayer = new OtherPlayer(rightPlayer);           
+            currentPlayer.RightPlayer = new OtherPlayer(rightPlayer);
+            currentPlayer.RightPlayer.ConnectionId = rightPlayer.ConnectionId;
+            currentPlayer.RightPlayer.ActivePlayer = rightPlayer;
+
             currentPlayer.TopPlayer = new OtherPlayer(topPlayer);
+            currentPlayer.TopPlayer.ConnectionId = topPlayer.ConnectionId;
+            currentPlayer.TopPlayer.ActivePlayer = topPlayer;
+
             currentPlayer.LeftPlayer = new OtherPlayer(leftPlayer);
+            currentPlayer.LeftPlayer.ConnectionId = leftPlayer.ConnectionId;
+            currentPlayer.LeftPlayer.ActivePlayer = leftPlayer;
         }
 
         private void AssignAllPlayersTileIndex(Game game)
@@ -229,10 +235,6 @@ namespace MahjongBuddy
                 tiles[i].Owner = p1.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
                 p1.ActiveTiles.Add(tiles[i]);
-
-                p2.LeftPlayer.ActiveTilesCount++;
-                p3.TopPlayer.ActiveTilesCount++;
-                p4.RightPlayer.ActiveTilesCount++;
             }
 
             for (var i = 14; i < 27; i++)
@@ -240,31 +242,18 @@ namespace MahjongBuddy
                 tiles[i].Owner = p2.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
                 p2.ActiveTiles.Add(tiles[i]);
-
-                p3.LeftPlayer.ActiveTilesCount++;
-                p4.TopPlayer.ActiveTilesCount++;
-                p1.RightPlayer.ActiveTilesCount++;
-
             }
             for (var i = 27; i < 40; i++)
             {
                 tiles[i].Owner = p3.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
                 p3.ActiveTiles.Add(tiles[i]);
-
-                p4.LeftPlayer.ActiveTilesCount++;
-                p1.TopPlayer.ActiveTilesCount++;
-                p2.RightPlayer.ActiveTilesCount++;
             }
             for (var i = 40; i < 53; i++)
             {
                 tiles[i].Owner = p4.ConnectionId;
                 tiles[i].Status = TileStatus.UserActive;
                 p4.ActiveTiles.Add(tiles[i]);
-
-                p1.LeftPlayer.ActiveTilesCount++;
-                p2.TopPlayer.ActiveTilesCount++;
-                p3.RightPlayer.ActiveTilesCount++;
             }
         }
 

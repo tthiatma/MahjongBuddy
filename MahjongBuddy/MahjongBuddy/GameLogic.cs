@@ -19,6 +19,8 @@ namespace MahjongBuddy
 
             CommandResultDictionary = new Dictionary<CommandResult, string>();
             CommandResultDictionary.Add(CommandResult.ValidCommand, "");
+            CommandResultDictionary.Add(CommandResult.ValidPick, "");
+            CommandResultDictionary.Add(CommandResult.ValidThrow, "");
             CommandResultDictionary.Add(CommandResult.InvalidPong, "Nothing to pong!");
             CommandResultDictionary.Add(CommandResult.InvalidKong, "Nothing to kong!");
             CommandResultDictionary.Add(CommandResult.InvalidChow, "Nothing to chow!");
@@ -206,8 +208,8 @@ namespace MahjongBuddy
                     }
                     player.CanPickTile = false;
                     player.CanThrowTile = true;
-                   
-                    return CommandResult.ValidCommand;
+
+                    return CommandResult.ValidPick;
                 }
                 else
                 {
@@ -249,7 +251,7 @@ namespace MahjongBuddy
                         var remainingTiles = game.Board.Tiles.Where(t => t.Owner == "board").Count();
                         if (remainingTiles > 0)
                         {
-                            return CommandResult.ValidCommand;
+                            return CommandResult.ValidThrow;
                         }
                         else
                         {

@@ -15,8 +15,8 @@
             <div class="col-md-4">
                 <span><label>mjbuddy({{totalPlayers}})</label></span>
                 <span><input type="text" id="usernameTB" ng-disabled="isDisonnected || totalPlayers >= 4"  placeholder='Enter your name' /></span>
-                <span><input type="button" id="join" value="join" ng-disabled="isDisonnected || totalPlayers >= 4" ng-click="join()" class="btn btn-primary"></span>
-                <span><input type="button" id="restartGame" value="nuke" ng-click="resetGame()" ng-hide="totalPlayers < 4" class="btn btn-danger"></span>
+                <span><input type="button" id="join" value="join" ng-disabled="isDisonnected || totalPlayers >= 4" ng-click="fnJoinGame()" class="btn btn-primary"></span>
+                <span><input type="button" id="restartGame" value="nuke" ng-click="fnResetGame()" ng-hide="totalPlayers < 4" class="btn btn-danger"></span>
             </div>
             <div class="col-md-4"></div>
         </div>
@@ -94,18 +94,18 @@
             <div class="col-md-2"></div>
             <div class="col-md-8" style="text-align: center">
                 <div ng-class="{'activePlayer' : isTopPlayerTurn}" class="row">
-                    {{topPlayer.Name}} - {{topPlayer.CurrentPoint}} pts
+                    {{currentPlayer.TopPlayer.Name}} - {{currentPlayer.TopPlayer.CurrentPoint}} pts
                 </div>
 
                 <!--Graveyard-->
                 <div class="HorizontalContainer">
-                    <span class="tileHorizontalContainer" ng-repeat="tile in topPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']">
+                    <span class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.TopPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']">
                         <img class="tileHorizontal rotate180" ng-src="{{tile.Image}}" />
                     </span>                
                 </div>
                 <div style="clear:both"></div>
                 <div class="row HorizontalContainer">
-                    <span class="tileHorizontalContainer" ng-repeat="tile in getNumber(topPlayer.ActiveTilesCount) track by $index">
+                    <span class="tileHorizontalContainer" ng-repeat="tile in fnGetNumber(currentPlayer.TopPlayer.ActiveTilesCount) track by $index">
                         <img class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
                     </span>
                 </div>
@@ -121,20 +121,20 @@
 
                     <div class="col-xs-1 col-md-1">
                         <span class="rotate90container">
-                            <span ng-class="{'activePlayer' : isLeftPlayerTurn}" class="rotate90">{{leftPlayer.Name}} - {{leftPlayer.CurrentPoint}} pts</span>
+                            <span ng-class="{'activePlayer' : isLeftPlayerTurn}" class="rotate90">{{currentPlayer.LeftPlayer.Name}} - {{currentPlayer.LeftPlayer.CurrentPoint}} pts</span>
                         </span> 
                     </div>
 
                     <!--Graveyard Tile-->
                     <div class="col-xs-1 col-md-1">
-                        <div class=" tileVerticalContainer rotate90" ng-repeat="tile in leftPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']">
+                        <div class=" tileVerticalContainer rotate90" ng-repeat="tile in currentPlayer.LeftPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']">
                             <img class="tileVertical" ng-src="{{tile.Image}}" />
                         </div>
                     </div>
 
                     <!--active tile-->
                     <div class="col-xs-1 col-md-1">
-                        <div class="tileVerticalContainer rotate90" ng-repeat="tile in getNumber(leftPlayer.ActiveTilesCount) track by $index">
+                        <div class="tileVerticalContainer rotate90" ng-repeat="tile in fnGetNumber(currentPlayer.LeftPlayer.ActiveTilesCount) track by $index">
                             {{tile.Image}}
                             <img class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
                         </div>
@@ -157,21 +157,21 @@
 
                     <!--active tile-->
                     <div class="col-xs-1 col-md-1">
-                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in getNumber(rightPlayer.ActiveTilesCount) track by $index">
+                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in fnGetNumber(currentPlayer.RightPlayer.ActiveTilesCount) track by $index">
                             <img class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
                         </div>
                     </div>
 
                     <!--Graveyard tile-->
                     <div class="col-xs-1 col-md-1">
-                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in rightPlayer.GraveYardTiles| orderBy: ['OpenTileCounter']">
+                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in currentPlayer.RightPlayer.GraveYardTiles| orderBy: ['OpenTileCounter']">
                             <img class="tileVertical" ng-src="{{tile.Image}}" />
                         </div>
                     </div>
 
                     <div class="col-xs-1 col-md-1"> 
                         <span class="rotate90container">
-                            <span ng-class="{'activePlayer' : isRightPlayerTurn}" class="rotateMinus90">{{rightPlayer.Name}} - {{rightPlayer.CurrentPoint}} pts </span>
+                            <span ng-class="{'activePlayer' : isRightPlayerTurn}" class="rotateMinus90">{{currentPlayer.RightPlayer.Name}} - {{currentPlayer.RightPlayer.CurrentPoint}} pts </span>
                         </span>                     
                     </div>
                 </div>
@@ -183,7 +183,7 @@
         <div class="col-md-2"></div>
 
         <div id="BottomPlayer" class="col-md-8" style="text-align: center">
-            <div ng-hide="hideGameCountdown">Game ends in {{gameEndCountdown}}</div>
+            <div ng-hide="hideGameEndCountdown">Game ends in {{gameEndCountdown}}</div>
             <div class="alert alert-danger animate-hide" ng-hide="hideAlert">
                 <strong>{{warningMessage}}</strong> 
             </div>
@@ -208,8 +208,14 @@
             </div>
 
             <div id="activeTiles">
-                <span ng-drop="true" ng-drop-success="onDropComplete($index, $data,$event)" ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileActive(tile.Id)}" class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.ActiveTiles | filter: {Owner : currentUserId, Status: 2 }: true | orderBy: ['ActiveTileIndex']">
+                <!--active tiles-->
+                <span ng-drop="true" ng-drop-success="onDropComplete($index, $data,$event)" ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileSelected(tile.Id)}" class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.ActiveTiles | filter: {Owner : currentUserId, Status: 2 }: true | orderBy: ['ActiveTileIndex']">
                     <img ng-drag="true" ng-drag-data="tile" class="tileHorizontal" ng-src="{{tile.Image}}" />
+                </span>
+
+                <!--tile that's just picked-->
+                <span class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.ActiveTiles | filter: {Owner : currentUserId, Status: 1}: true">
+                    <img ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileSelected(tile.Id)}" class="tileHorizontal" ng-src="{{tile.Image}}" />
                 </span>
             </div>
 

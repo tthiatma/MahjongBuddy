@@ -8,6 +8,8 @@ namespace MahjongBuddy.Models
     public enum CommandResult
     {
         ValidCommand,
+        ValidPick,
+        ValidThrow,
         InvalidPong,
         InvalidKong,
         InvalidChow,

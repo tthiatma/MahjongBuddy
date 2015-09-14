@@ -7,10 +7,13 @@ using MahjongBuddy.Models;
 using System.Threading.Tasks;
 using MahjongBuddy.Extensions;
 using System.Collections;
+using log4net;
 namespace MahjongBuddy
 {
     public class GameHub : Hub
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(GameHub));
+
         public override Task OnConnected()
         {
             var playerCount = GameState.Instance.Players.Count();
@@ -20,7 +23,6 @@ namespace MahjongBuddy
 
         private Dealer _dealer;
 
-       
         private GameLogic _gameLogic;
 
         public GameLogic GameLogic {
@@ -52,7 +54,6 @@ namespace MahjongBuddy
             {
                 Clients.Caller.playerExists();
             }
-
 
             player = GameState.Instance.CreatePlayer(userName, groupName);
             player.ConnectionId = Context.ConnectionId;
@@ -147,7 +148,6 @@ namespace MahjongBuddy
 
                     UpdateClient(game, player);
 
-
                     //DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
                     //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);
                     //DistributeTilesForPong(game.Board.Tiles, player, player2, player3, player4);
@@ -166,103 +166,154 @@ namespace MahjongBuddy
 
         public void PlayerMove(string group, string command, IEnumerable<int> tiles)
         {
-            CommandResult cr = CommandResult.ValidCommand;
-            bool switchTurn = false;
-            string invalidMessage = "shit went wrong...";
-            var game = GameState.Instance.FindGameByGroupName(group);
-            var userName = Clients.Caller.name;
-            var player = GameState.Instance.GetPlayer(userName);
-
-            switch (command)
+            try
             {
-                //TODO 
-                //case "flower":
-                //    cr = CommandFlower(game);
-                //    break;
+                CommandResult cr = CommandResult.ValidCommand;
+                bool switchTurn = false;
+                string invalidMessage = "shit went wrong...";
+                var game = GameState.Instance.FindGameByGroupName(group);
+                var userName = Clients.Caller.name;
+                var player = GameState.Instance.GetPlayer(userName);
 
-                //TODO
-                //case "noflower":
-                //    cr = CommandNoFlower(game);
-                //    switchTurn = true;
-                //    break;
+                switch (command)
+                {
+                    //TODO this is to simulate player to manually switching flower tile
+                    //case "flower":
+                    //    cr = CommandFlower(game);
+                    //    break;
 
-                case "pick":                    
-                    cr = GameLogic.DoPickNewTile(game, player);;
-                    break;
+                    //TODO this is to simulate player to say no flower tile
+                    //case "noflower":
+                    //    cr = CommandNoFlower(game);
+                    //    switchTurn = true;
+                    //    break;
 
-                case "throw":
-                    cr = GameLogic.DoThrowTile(game, tiles, player);
-                    switchTurn = true;
-                   break;
+                    case "pick":
+                        cr = GameLogic.DoPickNewTile(game, player); ;
+                        break;
 
-                case "chow":
-                    cr = GameLogic.DoChow(game, tiles, player);
-                    break;
+                    case "throw":
+                        cr = GameLogic.DoThrowTile(game, tiles, player);
+                        switchTurn = true;
+                        break;
 
-                case "pong":
-                    cr = GameLogic.DoPong(game, tiles, player);
-                    break;
+                    case "chow":
+                        cr = GameLogic.DoChow(game, tiles, player);
+                        break;
 
-                case "kong":
-                    cr = GameLogic.DoKong(game, tiles, player);
-                    break;
+                    case "pong":
+                        cr = GameLogic.DoPong(game, tiles, player);
+                        break;
 
-                case "win":
-                    cr = GameLogic.DoWin(game, player);
-                    break;
+                    case "kong":
+                        cr = GameLogic.DoKong(game, tiles, player);
+                        break;
 
-                case "giveup":
-                    cr = CommandResult.NobodyWin;
-                    break;
-            }
-            invalidMessage = GameLogic.CommandResultDictionary[cr];
-            if (cr == CommandResult.ValidCommand)
-            {
-                game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
-             
+                    case "win":
+                        cr = GameLogic.DoWin(game, player);
+                        break;
+
+                    case "giveup":
+                        cr = CommandResult.NobodyWin;
+                        break;
+                }
+                if (GameLogic.CommandResultDictionary.ContainsKey(cr))
+                {
+                    invalidMessage = GameLogic.CommandResultDictionary[cr];
+                }
+                else
+                {
+                    throw new Exception("unable to find invalid message for this command result");
+                }
+                
+                if (cr == CommandResult.ValidCommand)
+                {
+                    game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+
+                    //TODO fix logic when tile left is 0, to be in synch when user throw last tile
+                    if (game.TilesLeft == 0)
+                    {
+                        Record rec = new Record();
+                        rec.NoWinner = true;
+                        game.Records.Add(rec);
+                        Clients.Group(group).showNoWinner(game);
+                    }
+                    if (switchTurn)
+                    {
+                        GameLogic.SetNextPlayerTurn(game);
+                    }
+                    UpdateClient(game, player);
+                }
+                else if (cr == CommandResult.ValidThrow)
+                {
+                    game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+
+                    //TODO fix logic when tile left is 0, to be in synch when user throw last tile
+                    if (game.TilesLeft == 0)
+                    {
+                        Record rec = new Record();
+                        rec.NoWinner = true;
+                        game.Records.Add(rec);
+                        Clients.Group(group).showNoWinner(game);
+                    }
+                    if (switchTurn)
+                    {
+                        GameLogic.SetNextPlayerTurn(game);
+                    }
+                    UpdateClient(game, player);
+                    Clients.Group(group).addBoardTiles(game.LastTile);
+                }
+                else if (cr == CommandResult.ValidPick)
+                {
+                    UpdateCurrentPlayer(game, player);
+                }
+                else if (cr == CommandResult.PlayerWin)
+                {
+                    Clients.Group(group).showWinner(game);
+                }
+
                 //TODO fix logic when tile left is 0, to be in synch when user throw last tile
-                if (game.TilesLeft == 0)
+                else if (cr == CommandResult.NobodyWin)
                 {
                     Record rec = new Record();
                     rec.NoWinner = true;
                     game.Records.Add(rec);
-                    Clients.Group(group).showNoWinner(game); 
+                    Clients.Group(group).showNoWinner(game);
                 }
-                if (switchTurn)
+                else
                 {
-                    GameLogic.SetNextPlayerTurn(game);                
+                    Clients.Caller.alertUser(invalidMessage);
                 }
-                UpdateClient(game, player);
             }
-            else if (cr == CommandResult.PlayerWin)
+            catch (Exception ex)
             {
-                Clients.Group(group).showWinner(game);
+                logger.Error(ex);
             }
             
-                //TODO fix logic when tile left is 0, to be in synch when user throw last tile
-            else if (cr == CommandResult.NobodyWin)
-            {
-                Record rec = new Record();
-                rec.NoWinner = true;
-                game.Records.Add(rec);
-                Clients.Group(group).showNoWinner(game);            
-            }
-            else
-            {
-                Clients.Caller.alertUser(invalidMessage);
-            }
         }
 
-        private void UpdateClient(Game game, Player player)
+        private void UpdateCurrentPlayer(Game game, ActivePlayer player)
         {
             if (_dealer == null) { _dealer = new Dealer(game); };
-            Clients.Group(player.Group).updateGame(_dealer);        
-
-            Clients.Client(game.Player1.ConnectionId).startGame(game.Player1);
-            Clients.Client(game.Player2.ConnectionId).startGame(game.Player2);
-            Clients.Client(game.Player3.ConnectionId).startGame(game.Player3);
-            Clients.Client(game.Player4.ConnectionId).startGame(game.Player4);
+            Clients.Group(player.Group).updateDealer(_dealer);
+            Clients.Client(player.ConnectionId).updateCurrentPlayer(player);
         }
+
+        /// <summary>
+        /// Update all players in the group with all starting information
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        private void UpdateClient(Game game, ActivePlayer player)
+        {
+            if (_dealer == null) { _dealer = new Dealer(game); };
+            Clients.Group(player.Group).updateDealer(_dealer);
+            Clients.Client(game.Player1.ConnectionId).updateCurrentPlayer(game.Player1);
+            Clients.Client(game.Player2.ConnectionId).updateCurrentPlayer(game.Player2);
+            Clients.Client(game.Player3.ConnectionId).updateCurrentPlayer(game.Player3);
+            Clients.Client(game.Player4.ConnectionId).updateCurrentPlayer(game.Player4);
+        }
+        
         //all of this belong to test section
         //TODO : move this to test
         private void DistributeTilesForWin(Game game) 
