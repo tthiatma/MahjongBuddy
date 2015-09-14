@@ -32,6 +32,9 @@ namespace MahjongBuddy.Models
         public WindDirection Wind { get; set; }
         public List<int> Matches { get; set; }
         public int CurrentPoint { get; set; }
+        /// <summary>
+        /// TileSets is a collection of three tiles when player do pong/kong/chow
+        /// </summary>
         public List<TileSet> TileSets { get; set; }
         public OtherPlayer TopPlayer { get; set; }
         public OtherPlayer LeftPlayer { get; set; }

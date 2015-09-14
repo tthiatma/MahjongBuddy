@@ -3,6 +3,7 @@
         $scope.isDisonnected = true;
         $scope.gameIsReady = false;
         $scope.selectedTiles = [];
+        $scope.boardTiles = [];
         $scope.isMyturn = false;
         $scope.record = {};
         $scope.canPickTile = false;
@@ -10,11 +11,13 @@
         $scope.gameEndTimeout = null;
         $scope.tenSectimeout = null;
         $scope.hideAlert = true;
-
-        var FindTileByIndexAndPlayerConnection = function (game, tileIndex, pid) {
+        $scope.getNumber = function (num) {
+            return new Array(num);
+        }
+        var FindTileByIndex = function (currentPlayer, tileIndex) {
             var ret = null;
-            $.each(game.Board.Tiles, function (idx, val) {
-                if (val.Owner == pid && val.ActiveTileIndex == tileIndex) {
+            $.each(currentPlayer.ActiveTiles, function (idx, val) {
+                if (val.ActiveTileIndex == tileIndex) {
                     ret = val;
                 }
             });
@@ -39,21 +42,30 @@
         var updatePlayer = function (currentPlayer) {
             $scope.currentPlayer = currentPlayer
             $scope.currentPlayerWind = currentPlayer.Wind;
-            $scope.isMyturn = currentPlayer.CanPickTile;
+
+            $scope.rightPlayer = currentPlayer.RightPlayer;
+            $scope.topPlayer = currentPlayer.TopPlayer;
+            $scope.leftPlayer = currentPlayer.LeftPlayer;
+            $scope.isMyturn = ($scope.currentUserId == $scope.dealer.PlayerTurn);
 
             if ($scope.isMyturn) {
                 $timeout(function () { $scope.canPickTile = $scope.currentPlayer.CanPickTile }, 5000);
             }
 
-            $scope.rightPlayer = currentPlayer.RightPlayer;
-            $scope.topPlayer = currentPlayer.TopPlayer;
-            $scope.leftPlayer = currentPlayer.LeftPlayer;
         }
 
         var updateGame = function (dealer) {
-            $scope.tilesLeft = dealer.TilesLeft
-            $scope.lastTile = dealer.LastTile;
+            $scope.dealer = dealer;
             $scope.currentGameWind = mjService.getWindName(dealer.CurrentWind);
+            if (dealer.LastTile != null)
+            {
+                if ($scope.boardTiles.length == 0 || $scope.boardTiles[$scope.boardTiles.length - 1].Id != dealer.LastTile.Id)
+                {
+                    $scope.boardTiles.push(dealer.LastTile);
+                }
+            }
+            $scope.isMyturn = ($scope.currentUserId == dealer.PlayerTurn);
+
         }
 
         var updateOtherPlayer = function (game) {
@@ -103,10 +115,11 @@
 
         $scope.onDropComplete = function (index, obj, evt) {
 
-            var targetTile = FindTileByIndexAndPlayerConnection($scope.game, index, obj.Owner);
+            var targetTile = FindTileByIndex($scope.currentPlayer, index);
 
             targetTile.ActiveTileIndex = obj.ActiveTileIndex;
             obj.ActiveTileIndex = index;
+
             $scope.currentPlayer.IsTileAutoSort = false;
             $scope.selectedTiles = [];
         };

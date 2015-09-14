@@ -18,6 +18,9 @@ namespace MahjongBuddy
             return base.OnConnected();
         }
 
+        private Dealer _dealer;
+
+       
         private GameLogic _gameLogic;
 
         public GameLogic GameLogic {
@@ -140,12 +143,10 @@ namespace MahjongBuddy
                     }
 
                     game = GameState.Instance.CreateGame(player1, player2, player3, player4, player.Group);
+                    _dealer = new Dealer(game);
 
-                    Clients.Client(game.Player1.ConnectionId).startGame(game.Player1);
-                    Clients.Client(game.Player2.ConnectionId).startGame(game.Player2);
-                    Clients.Client(game.Player3.ConnectionId).startGame(game.Player3);
-                    Clients.Client(game.Player4.ConnectionId).startGame(game.Player4);
-                    Clients.Group(player.Group).updateGame(game);
+                    UpdateClient(game, player);
+
 
                     //DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
                     //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);
@@ -231,7 +232,7 @@ namespace MahjongBuddy
                 {
                     GameLogic.SetNextPlayerTurn(game);                
                 }
-                Clients.Group(group).updateGame(game);           
+                UpdateClient(game, player);
             }
             else if (cr == CommandResult.PlayerWin)
             {
@@ -252,6 +253,16 @@ namespace MahjongBuddy
             }
         }
 
+        private void UpdateClient(Game game, Player player)
+        {
+            if (_dealer == null) { _dealer = new Dealer(game); };
+            Clients.Group(player.Group).updateGame(_dealer);        
+
+            Clients.Client(game.Player1.ConnectionId).startGame(game.Player1);
+            Clients.Client(game.Player2.ConnectionId).startGame(game.Player2);
+            Clients.Client(game.Player3.ConnectionId).startGame(game.Player3);
+            Clients.Client(game.Player4.ConnectionId).startGame(game.Player4);
+        }
         //all of this belong to test section
         //TODO : move this to test
         private void DistributeTilesForWin(Game game) 

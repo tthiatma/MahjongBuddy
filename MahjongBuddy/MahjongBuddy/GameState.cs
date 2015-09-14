@@ -28,15 +28,15 @@ namespace MahjongBuddy
 
         private readonly ConcurrentDictionary<string, Game> _games = new ConcurrentDictionary<string, Game>(StringComparer.OrdinalIgnoreCase);
 
-        public ConcurrentDictionary<string, ActivePlayer> Players
-        {
-            get { return _players; }
-        }
-
         private GameState(IHubContext context)
         {
             Clients = context.Clients;
             Groups = context.Groups;
+        }
+
+        public ConcurrentDictionary<string, ActivePlayer> Players
+        {
+            get { return _players; }
         }
 
         public static GameState Instance
@@ -112,11 +112,12 @@ namespace MahjongBuddy
             AssignAllPlayersTileIndex(game);
         }
 
-        private void InitPlayerProperties(Player player1, Player player2, Player player3, Player player4, Game game, string groupName) 
+        private void InitPlayerProperties(ActivePlayer player1, ActivePlayer player2, ActivePlayer player3, ActivePlayer player4, Game game, string groupName) 
         {
             player1.IsPlaying = true;
             player1.CanDoNoFlower = true;
             player1.Group = groupName;
+
             SetOtherPlayer(player1, player2, player3, player4);
 
             player2.IsPlaying = true;
@@ -134,12 +135,28 @@ namespace MahjongBuddy
             player4.Group = groupName;
             SetOtherPlayer(player4, player1, player2, player3);
 
+            player1.RightPlayer.GraveYardTiles = player2.GraveYardTiles;
+            player1.TopPlayer.GraveYardTiles = player3.GraveYardTiles;
+            player1.LeftPlayer.GraveYardTiles = player4.GraveYardTiles;
+
+            player2.RightPlayer.GraveYardTiles = player3.GraveYardTiles;
+            player2.TopPlayer.GraveYardTiles = player4.GraveYardTiles;
+            player2.LeftPlayer.GraveYardTiles = player1.GraveYardTiles;
+
+            player3.RightPlayer.GraveYardTiles = player4.GraveYardTiles;
+            player3.TopPlayer.GraveYardTiles = player1.GraveYardTiles;
+            player3.LeftPlayer.GraveYardTiles = player2.GraveYardTiles;
+
+            player4.RightPlayer.GraveYardTiles = player1.GraveYardTiles;
+            player4.TopPlayer.GraveYardTiles = player2.GraveYardTiles;
+            player4.LeftPlayer.GraveYardTiles = player3.GraveYardTiles;
+
             gl.SetPlayerWinds(game);
         }
 
         private void SetOtherPlayer(Player currentPlayer, Player rightPlayer, Player topPlayer, Player leftPlayer)
         {
-            currentPlayer.RightPlayer = new OtherPlayer(rightPlayer);
+            currentPlayer.RightPlayer = new OtherPlayer(rightPlayer);           
             currentPlayer.TopPlayer = new OtherPlayer(topPlayer);
             currentPlayer.LeftPlayer = new OtherPlayer(leftPlayer);
         }

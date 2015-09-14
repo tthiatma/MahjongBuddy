@@ -51,7 +51,7 @@ namespace MahjongBuddy
                     {
                         var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
                         playerTilesPong.Add(thrownTile);
-                        CommandTileToPlayerGraveyard(game, playerTilesPong, player.ConnectionId);
+                        CommandTileToPlayerGraveyard(game, playerTilesPong, player);
                         AddTilesToPlayerOpenTileSet(game, playerTilesPong, player.ConnectionId, TileSetType.Pong);
                         game.HaltMove = true;
                         game.PlayerTurn = player.ConnectionId;
@@ -76,7 +76,7 @@ namespace MahjongBuddy
             }
         }
 
-        public CommandResult DoChow(Game game, IEnumerable<int> tiles, Player player) 
+        public CommandResult DoChow(Game game, IEnumerable<int> tiles, ActivePlayer player) 
         {
             if (player != null)
             {
@@ -110,7 +110,7 @@ namespace MahjongBuddy
                             //check if its straight
                             if (sortedList[0].Value + 1 == sortedList[1].Value && sortedList[1].Value + 1 == sortedList[2].Value)
                             {
-                                CommandTileToPlayerGraveyard(game, sortedList, player.ConnectionId);
+                                CommandTileToPlayerGraveyard(game, sortedList, player);
                                 AddTilesToPlayerOpenTileSet(game, sortedList, player.ConnectionId, TileSetType.Chow);
                                 game.HaltMove = true;
                                 game.PlayerTurn = player.ConnectionId;
@@ -190,7 +190,7 @@ namespace MahjongBuddy
                             {
                                 List<Tile> ft = new List<Tile>();
                                 ft.Add(newTileForPlayer);
-                                CommandTileToPlayerGraveyard(game, ft, player.ConnectionId, replaceTile: false);
+                                CommandTileToPlayerGraveyard(game, ft, player, replaceTile: false);
                             }
                             else
                             {                                
@@ -221,7 +221,7 @@ namespace MahjongBuddy
             }
         }
 
-        public CommandResult DoThrowTile(Game game, IEnumerable<int> tiles, Player player) 
+        public CommandResult DoThrowTile(Game game, IEnumerable<int> tiles, ActivePlayer player) 
         {
             if (player != null)
             {
@@ -232,6 +232,7 @@ namespace MahjongBuddy
                     {
                         tileToThrow.Status = TileStatus.BoardGraveyard;
                         tileToThrow.OpenTileCounter = game.TileCounter;
+                        player.ActiveTiles.Remove(tileToThrow);
                         game.TileCounter++;
 
                         game.LastTile = tileToThrow;
@@ -271,7 +272,7 @@ namespace MahjongBuddy
             }
         }
 
-        public CommandResult DoKong(Game game, IEnumerable<int> tiles, Player player) 
+        public CommandResult DoKong(Game game, IEnumerable<int> tiles, ActivePlayer player) 
         {
             if (player != null)
             {
@@ -297,7 +298,7 @@ namespace MahjongBuddy
                         var playerTilesKong = matchedTileTypeAndValue.Take(3).ToList();
                         playerTilesKong.Add(tileToKong);
                         
-                        CommandTileToPlayerGraveyard(game, playerTilesKong, player.ConnectionId);
+                        CommandTileToPlayerGraveyard(game, playerTilesKong, player);
                         AddTilesToPlayerOpenTileSet(game, playerTilesKong, player.ConnectionId, TileSetType.Kong);
                         game.HaltMove = true;
                         game.PlayerTurn = player.ConnectionId;
@@ -684,14 +685,14 @@ namespace MahjongBuddy
             }         
         }
         
-        public void CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, string playerConnectionId, bool replaceTile = false)
+        public void CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, ActivePlayer player, bool replaceTile = false)
         {
-            var player = GetPlayerByConnectionId(game, playerConnectionId);
-
             try
             {
-                List<Tile> collectionToRemove = new List<Tile>();
-                List<Tile> collectionToAdd = new List<Tile>();
+                List<Tile> collectionToRemoveFromActive = new List<Tile>();
+                List<Tile> collectionToAddToGraveyard = new List<Tile>();
+
+                List<Tile> collectionToAddToActive = new List<Tile>();
 
                 foreach (var f in tiles)
                 {
@@ -699,35 +700,39 @@ namespace MahjongBuddy
 
                     //bookkeeping in game state
                     tileToGraveyard.Status = TileStatus.UserGraveyard;
-                    tileToGraveyard.Owner = playerConnectionId;
+                    tileToGraveyard.Owner = player.ConnectionId;
                     f.OpenTileCounter = game.TileCounter;
                     game.TileCounter++;
 
-                    //remove the flower tiles from player active tiles
                     if (player.ActiveTiles.Contains(tileToGraveyard))
                     {
-                        collectionToRemove.Add(tileToGraveyard);
+                        collectionToRemoveFromActive.Add(tileToGraveyard);
+                        collectionToAddToGraveyard.Add(tileToGraveyard);
                     }
 
                     if (replaceTile)
                     {
                         //bookkeeping in game state
                         var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
-                        newTileForPlayer.Owner = playerConnectionId;
+                        newTileForPlayer.Owner = player.ConnectionId;
                         newTileForPlayer.Status = TileStatus.UserActive;
 
                         //adding the new tile to player active tiles
-                        collectionToAdd.Add(newTileForPlayer);
+                        collectionToAddToActive.Add(newTileForPlayer);
                     }
                 }
-                foreach (var item in collectionToRemove)
+                foreach (var item in collectionToRemoveFromActive)
                 {
                     player.ActiveTiles.Remove(item);
                 }
-                foreach (var item in collectionToAdd)
+                foreach (var item in collectionToAddToActive)
                 {
                     player.ActiveTiles.Add(item);
-                }                              
+                }
+                foreach (var item in collectionToAddToGraveyard)
+                {
+                    player.GraveYardTiles.Add(item);
+                }
             }
             catch (Exception ex)
             {
@@ -753,7 +758,7 @@ namespace MahjongBuddy
 
                 if (playerTilesFlower.Count() > 0)
                 {
-                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p1.ConnectionId, replaceTile: true);
+                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p1, replaceTile: true);
                 }
             }
 
@@ -763,7 +768,7 @@ namespace MahjongBuddy
 
                 if (playerTilesFlower.Count() > 0)
                 {
-                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p2.ConnectionId, replaceTile: true);
+                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p2, replaceTile: true);
                 }
             }
 
@@ -773,7 +778,7 @@ namespace MahjongBuddy
 
                 if (playerTilesFlower.Count() > 0)
                 {
-                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p3.ConnectionId, replaceTile: true);
+                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p3, replaceTile: true);
                 }
             }
 
@@ -783,7 +788,7 @@ namespace MahjongBuddy
 
                 if (playerTilesFlower.Count() > 0)
                 {
-                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p4.ConnectionId, replaceTile: true);
+                    CommandTileToPlayerGraveyard(game, playerTilesFlower, p4, replaceTile: true);
                 }
             }
         }
