@@ -107,8 +107,12 @@ namespace MahjongBuddy
             }
 
             game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();            
-            gl.PopulatePoint(game);            
-            AssignAllPlayersTileIndex(game);
+            gl.PopulatePoint(game);
+            
+            gl.AssignAllPlayersTileIndex(game, game.Player1);
+            gl.AssignAllPlayersTileIndex(game, game.Player2);
+            gl.AssignAllPlayersTileIndex(game, game.Player3);
+            gl.AssignAllPlayersTileIndex(game, game.Player4);
         }
 
         private void InitPlayerProperties(ActivePlayer player1, ActivePlayer player2, ActivePlayer player3, ActivePlayer player4, Game game, string groupName) 
@@ -165,36 +169,6 @@ namespace MahjongBuddy
             currentPlayer.LeftPlayer = new OtherPlayer(leftPlayer);
             currentPlayer.LeftPlayer.ConnectionId = leftPlayer.ConnectionId;
             currentPlayer.LeftPlayer.ActivePlayer = leftPlayer;
-        }
-
-        private void AssignAllPlayersTileIndex(Game game)
-        {
-            List<Tile> tiles = game.Board.Tiles;
-
-            var player1Tiles = tiles.Where(t => t.Owner == game.Player1.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
-            var player2Tiles = tiles.Where(t => t.Owner == game.Player2.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
-            var player3Tiles = tiles.Where(t => t.Owner == game.Player3.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
-            var player4Tiles = tiles.Where(t => t.Owner == game.Player4.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
-
-            for (int i = 0; i < player1Tiles.Count(); i++)
-            {
-                player1Tiles[i].ActiveTileIndex = i;
-            }
-
-            for (int i = 0; i < player2Tiles.Count(); i++)
-            {
-                player2Tiles[i].ActiveTileIndex = i;
-            }
-
-            for (int i = 0; i < player3Tiles.Count(); i++)
-            {
-                player3Tiles[i].ActiveTileIndex = i;
-            }
-
-            for (int i = 0; i < player4Tiles.Count(); i++)
-            {
-                player4Tiles[i].ActiveTileIndex = i;
-            }
         }
 
         private void DistributeTiles(Game game)

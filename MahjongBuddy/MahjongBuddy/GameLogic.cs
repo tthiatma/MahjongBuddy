@@ -199,7 +199,14 @@ namespace MahjongBuddy
                                 newTileForPlayer.Owner = player.ConnectionId;
                                 newTileForPlayer.Status = TileStatus.JustPicked;
                                 player.ActiveTiles.Add(newTileForPlayer);
-
+                                if (player.IsTileAutoSort)
+                                {
+                                    AssignAllPlayersTileIndex(game, player);
+                                }
+                                else
+                                {
+                                    newTileForPlayer.ActiveTileIndex = player.ActiveTiles.Count() + 1 ;
+                                }
                                 //set haltmove to true because no other player suppose to make a move when tile is picked
                                 game.HaltMove = true;
                                 break;
@@ -795,6 +802,20 @@ namespace MahjongBuddy
             }
         }
 
+        public void AssignAllPlayersTileIndex(Game game, ActivePlayer player)
+        {
+            List<Tile> tiles = game.Board.Tiles;
+            var playerTiles = tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
+
+            if (player.IsTileAutoSort)
+            {
+                for (int i = 0; i < playerTiles.Count(); i++)
+                {
+                    playerTiles[i].ActiveTileIndex = i;
+                }
+            }
+        }
+
         public void SetGameNextWind(Game game)
         {
             if (game.DiceMovedCount > 4)
@@ -1167,7 +1188,7 @@ namespace MahjongBuddy
             return ret;
         }
 
-        private ActivePlayer GetPlayerByConnectionId(Game game, string connectionId)
+        public ActivePlayer GetPlayerByConnectionId(Game game, string connectionId)
         {
             if (game.Player1.ConnectionId == connectionId)
             {

@@ -14,7 +14,9 @@ namespace MahjongBuddy.Models
         public string Image { get; set; }
         public string Name { get; set; }
         public string Owner { get; set; }
+        //this is the counter for tile on board graveyard
         public int OpenTileCounter { get; set; }
+        //this is the tile counter for user active tiles
         public int ActiveTileIndex { get; set; }
     }
 

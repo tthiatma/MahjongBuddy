@@ -64,11 +64,15 @@
             targetTile.ActiveTileIndex = obj.ActiveTileIndex;
             obj.ActiveTileIndex = index;
 
-            $scope.currentPlayer.IsTileAutoSort = false;
+            if ($scope.currentPlayer.IsTileAutoSort)
+            {
+                $scope.currentPlayer.IsTileAutoSort = false;
+                $scope.fnToggleSortTile();
+            }
             $scope.selectedTiles = [];
         };
         $scope.fnToggleSortTile = function () {
-
+            clientPushHubProxy.invoke2('SetPlayerSortTile', 'mjbuddy', $scope.currentPlayer.IsTileAutoSort, function () { });
         };
 
 

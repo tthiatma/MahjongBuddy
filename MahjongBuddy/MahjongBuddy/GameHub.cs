@@ -164,6 +164,19 @@ namespace MahjongBuddy
             return false;
         }
 
+        public void SetPlayerSortTile(string group, bool autoSort)
+        {
+            var game = GameState.Instance.FindGameByGroupName(group);
+            var userName = Clients.Caller.name;
+            var player = GameState.Instance.GetPlayer(userName);
+            player.IsTileAutoSort = autoSort;
+            if (autoSort)
+            {
+                GameLogic.AssignAllPlayersTileIndex(game, player);
+                UpdateCurrentPlayer(game, player);
+            }
+        }
+
         public void PlayerMove(string group, string command, IEnumerable<int> tiles)
         {
             try

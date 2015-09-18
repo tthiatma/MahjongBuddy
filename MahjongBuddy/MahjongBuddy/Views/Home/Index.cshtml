@@ -216,7 +216,11 @@
 
             <div id="activeTiles">
                 <!--active tiles-->
-                <span ng-drop="true" ng-drop-success="onDropComplete($index, $data,$event)" ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileSelected(tile.Id)}" class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.ActiveTiles | filter: {Owner : currentUserId, Status: 2 }: true | orderBy: ['ActiveTileIndex']">
+                <span ng-drop="true" ng-drop-success="onDropComplete($index, $data,$event)" 
+                    ng-click="fnSelectTile(tile.Id, $event)" 
+                    ng-class="{'activeTile' : fnIsTileSelected(tile.Id)}" 
+                    class="tileHorizontalContainer" 
+                    ng-repeat="tile in currentPlayer.ActiveTiles | filter: {Owner : currentUserId, Status: 2 }: true | orderBy: ['ActiveTileIndex']">
                     <img ng-drag="true" ng-drag-data="tile" class="tileHorizontal" ng-src="{{tile.Image}}" />
                 </span>
 
