@@ -17,7 +17,7 @@ namespace MahjongBuddy
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
-
+            log4net.Config.XmlConfigurator.Configure();
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

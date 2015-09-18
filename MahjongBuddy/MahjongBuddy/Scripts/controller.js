@@ -170,6 +170,10 @@
 
             if (tile != null) { $scope.boardTiles.push(tile); }
         });
+        clientPushHubProxy.on('removeBoardTiles', function () {
+            $scope.boardTiles.pop();
+        });
+
         clientPushHubProxy.on('alertUser', function (msg) {
             $scope.warningMessage = msg;
             $scope.hideAlert = false;

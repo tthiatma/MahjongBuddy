@@ -172,7 +172,7 @@ namespace MahjongBuddy
             player.IsTileAutoSort = autoSort;
             if (autoSort)
             {
-                GameLogic.AssignAllPlayersTileIndex(game, player);
+                GameLogic.AssignPlayersTileIndex(game, player);
                 UpdateCurrentPlayer(game, player);
             }
         }
@@ -202,7 +202,7 @@ namespace MahjongBuddy
                     //    break;
 
                     case "pick":
-                        cr = GameLogic.DoPickNewTile(game, player); ;
+                        cr = GameLogic.DoPickNewTile(game, player);
                         break;
 
                     case "throw":
@@ -241,40 +241,18 @@ namespace MahjongBuddy
                 
                 if (cr == CommandResult.ValidCommand)
                 {
-                    game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
-
-                    //TODO fix logic when tile left is 0, to be in synch when user throw last tile
-                    if (game.TilesLeft == 0)
-                    {
-                        Record rec = new Record();
-                        rec.NoWinner = true;
-                        game.Records.Add(rec);
-                        Clients.Group(group).showNoWinner(game);
-                    }
-                    if (switchTurn)
-                    {
-                        GameLogic.SetNextPlayerTurn(game);
-                    }
-                    UpdateClient(game, player);
+                    ValidCommand(game, group, switchTurn, player);
+                }
+                else if (cr == CommandResult.ValidChow || cr == CommandResult.ValidPong || cr == CommandResult.ValidKong)
+                { 
+                    //TODO what to do for validSelfKong
+                    Clients.Group(group).removeBoardTiles();
+                    ValidCommand(game, group, switchTurn, player);
                 }
                 else if (cr == CommandResult.ValidThrow)
                 {
-                    game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
-
-                    //TODO fix logic when tile left is 0, to be in synch when user throw last tile
-                    if (game.TilesLeft == 0)
-                    {
-                        Record rec = new Record();
-                        rec.NoWinner = true;
-                        game.Records.Add(rec);
-                        Clients.Group(group).showNoWinner(game);
-                    }
-                    if (switchTurn)
-                    {
-                        GameLogic.SetNextPlayerTurn(game);
-                    }
                     Clients.Group(group).addBoardTiles(game.LastTile);
-                    UpdateClient(game, player);
+                    ValidCommand(game, group, switchTurn, player);
                 }
                 else if (cr == CommandResult.ValidPick)
                 {
@@ -304,6 +282,25 @@ namespace MahjongBuddy
             }
             
         }
+        
+        private void ValidCommand(Game game, string group, bool switchTurn, ActivePlayer player)
+        {
+            game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
+
+            //TODO fix logic when tile left is 0, to be in synch when user throw last tile
+            if (game.TilesLeft == 0)
+            {
+                Record rec = new Record();
+                rec.NoWinner = true;
+                game.Records.Add(rec);
+                Clients.Group(group).showNoWinner(game);
+            }
+            if (switchTurn)
+            {
+                GameLogic.SetNextPlayerTurn(game);
+            }
+            UpdateClient(game, player);
+        }
 
         private void UpdateCurrentPlayer(Game game, ActivePlayer player)
         {
@@ -327,352 +324,6 @@ namespace MahjongBuddy
             Clients.Client(game.Player4.ConnectionId).updateCurrentPlayer(game.Player4);
         }
         
-        //all of this belong to test section
-        //TODO : move this to test
-        private void DistributeTilesForWin(Game game) 
-        {
-            List<Tile> tiles = game.Board.Tiles;
-            Player p1, p2, p3, p4;
-            p1 = game.Player1;
-            p2 = game.Player2;
-            p3 = game.Player3;
-            p4 = game.Player4;
-
-            for (var i = 0; i < 13; i++)
-            {
-                tiles[i].Owner = p1.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            tiles[46].Owner = p1.ConnectionId;
-            tiles[46].Status = TileStatus.UserActive;
-            tiles[136].Owner = p1.ConnectionId;
-            tiles[136].Status = TileStatus.UserGraveyard;
-
-            for (var i = 14; i < 27; i++)
-            {
-                tiles[i].Owner = p2.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 27; i < 40; i++)
-            {
-                tiles[i].Owner = p3.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 53; i < 66; i++)
-            {
-                tiles[i].Owner = p4.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-        }
-
-        private void DistributeTilesForWinWaitingForEyeWithPureHand(Game game)
-        {
-            List<Tile> tiles = game.Board.Tiles;
-            Player p1, p2, p3, p4;
-            p1 = game.Player1;
-            p2 = game.Player2;
-            p3 = game.Player3;
-            p4 = game.Player4;
-
-            for (var i = 0; i < 12; i++)
-            {
-                tiles[i].Owner = p1.ConnectionId;
-                tiles[i].Status = TileStatus.UserGraveyard;
-            }
-            List<Tile> tempTile1 = new List<Tile>();
-            tempTile1.Add(tiles[0]);
-            tempTile1.Add(tiles[1]);
-            tempTile1.Add(tiles[2]);
-            TileSet newbie1 = new TileSet() { isRevealed = true, Tiles = tempTile1, TileSetType = TileSetType.Chow, TileType = TileType.Money };
-            p1.TileSets.Add(newbie1);
-
-            List<Tile> tempTile2 = new List<Tile>();
-            tempTile2.Add(tiles[3]);
-            tempTile2.Add(tiles[4]);
-            tempTile2.Add(tiles[5]);
-            TileSet newbie2 = new TileSet() { isRevealed = true, Tiles = tempTile2, TileSetType = TileSetType.Chow, TileType = TileType.Money };
-            p1.TileSets.Add(newbie2);
-
-            List<Tile> tempTile3 = new List<Tile>();
-            tempTile3.Add(tiles[6]);
-            tempTile3.Add(tiles[7]);
-            tempTile3.Add(tiles[8]);
-            TileSet newbie3 = new TileSet() { isRevealed = true, Tiles = tempTile3, TileSetType = TileSetType.Chow, TileType = TileType.Money };
-            p1.TileSets.Add(newbie3);
-
-            List<Tile> tempTile4 = new List<Tile>();
-            tempTile4.Add(tiles[9]);
-            tempTile4.Add(tiles[10]);
-            tempTile4.Add(tiles[11]);
-            TileSet newbie4 = new TileSet() { isRevealed = true, Tiles = tempTile4, TileSetType = TileSetType.Chow, TileType = TileType.Round };
-            p1.TileSets.Add(newbie4);
-
-            tiles[12].Owner = p1.ConnectionId;
-            tiles[12].Status = TileStatus.UserActive;
-
-            tiles[66].Owner = p1.ConnectionId;
-            tiles[66].Status = TileStatus.UserActive;
-            tiles[136].Owner = p1.ConnectionId;
-            tiles[136].Status = TileStatus.UserGraveyard;
-            tiles[140].Owner = p1.ConnectionId;
-            tiles[140].Status = TileStatus.UserGraveyard;
-
-            for (var i = 14; i < 27; i++)
-            {
-                tiles[i].Owner = p2.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 27; i < 40; i++)
-            {
-                tiles[i].Owner = p3.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 53; i < 65; i++)
-            {
-                tiles[i].Owner = p4.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            tiles[80].Owner = p4.ConnectionId;
-            tiles[80].Status = TileStatus.UserActive;
-        }
-
-        private void DistributeTilesForWinWaitingForEye(Game game)
-        {
-            List<Tile> tiles = game.Board.Tiles;
-            Player p1, p2, p3, p4;
-            p1 = game.Player1;
-            p2 = game.Player2;
-            p3 = game.Player3;
-            p4 = game.Player4;
-
-            for (var i = 0; i < 12; i++)
-            {
-                tiles[i].Owner = p1.ConnectionId;
-                tiles[i].Status = TileStatus.UserGraveyard;
-            }
-            List<Tile> tempTile1 = new List<Tile>();
-            tempTile1.Add(tiles[0]);
-            tempTile1.Add(tiles[1]);
-            tempTile1.Add(tiles[2]);
-            TileSet newbie1 = new TileSet() { isRevealed = true, Tiles = tempTile1, TileSetType = TileSetType.Chow, TileType = TileType.Money};
-            p1.TileSets.Add(newbie1);
-
-            List<Tile> tempTile2 = new List<Tile>();
-            tempTile2.Add(tiles[3]);
-            tempTile2.Add(tiles[4]);
-            tempTile2.Add(tiles[5]);
-            TileSet newbie2 = new TileSet() { isRevealed = true, Tiles = tempTile2, TileSetType = TileSetType.Chow, TileType = TileType.Money};
-            p1.TileSets.Add(newbie2);
-
-            List<Tile> tempTile3 = new List<Tile>();
-            tempTile3.Add(tiles[6]);
-            tempTile3.Add(tiles[7]);
-            tempTile3.Add(tiles[8]);
-            TileSet newbie3 = new TileSet() { isRevealed = true, Tiles = tempTile3, TileSetType = TileSetType.Chow, TileType = TileType.Money};
-            p1.TileSets.Add(newbie3);
-
-            List<Tile> tempTile4 = new List<Tile>();
-            tempTile4.Add(tiles[9]);
-            tempTile4.Add(tiles[10]);
-            tempTile4.Add(tiles[11]);
-            TileSet newbie4 = new TileSet() { isRevealed = true, Tiles = tempTile4, TileSetType = TileSetType.Chow, TileType = TileType.Round};
-            p1.TileSets.Add(newbie4);
-
-            tiles[12].Owner = p1.ConnectionId;
-            tiles[12].Status = TileStatus.UserActive;
-
-            tiles[66].Owner = p1.ConnectionId;
-            tiles[66].Status = TileStatus.UserActive;
-            tiles[136].Owner = p1.ConnectionId;
-            tiles[136].Status = TileStatus.UserGraveyard;
-            tiles[140].Owner = p1.ConnectionId;
-            tiles[140].Status = TileStatus.UserGraveyard;
-
-            for (var i = 14; i < 27; i++)
-            {
-                tiles[i].Owner = p2.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 27; i < 40; i++)
-            {
-                tiles[i].Owner = p3.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 53; i < 65; i++)
-            {
-                tiles[i].Owner = p4.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            tiles[80].Owner = p4.ConnectionId;
-            tiles[80].Status = TileStatus.UserActive;
-        }
-
-        private void DistributeTilesForKong(Game game)
-        {
-            List<Tile> tiles = game.Board.Tiles;
-            Player p1, p2, p3, p4;
-            p1 = game.Player1;
-            p2 = game.Player2;
-            p3 = game.Player3;
-            p4 = game.Player4;
-
-            for (var i = 0; i < 14; i++)
-            {
-                if (i == 3 || i == 5)
-                {
-                    continue;
-                }
-                tiles[i].Owner = p1.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            tiles[38].Owner = p1.ConnectionId;
-            tiles[38].Status = TileStatus.UserActive;
-            tiles[72].Owner = p1.ConnectionId;
-            tiles[72].Status = TileStatus.UserActive;
-            tiles[106].Owner = p1.ConnectionId;
-            tiles[106].Status = TileStatus.JustPicked;
-
-            for (var i = 14; i < 27; i++)
-            {
-                tiles[i].Owner = p2.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 27; i < 41; i++)
-            {
-                if (i == 38)
-                {
-                    continue;
-                }
-                tiles[i].Owner = p3.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 53; i < 66; i++)
-            {
-                tiles[i].Owner = p4.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-        }
-
-        private void DistributeTilesForPong(List<Tile> tiles, Player p1, Player p2, Player p3, Player p4)
-        {
-            for (var i = 0; i < 14; i++)
-            {
-                if (i == 3 || i == 5)
-                {
-                    continue;
-                }
-                tiles[i].Owner = p1.ConnectionId;
-            }
-            tiles[38].Owner = p1.ConnectionId;
-            tiles[74].Owner = p1.ConnectionId;
-
-            for (var i = 14; i < 27; i++)
-            {
-                tiles[i].Owner = p2.ConnectionId;
-            }
-            for (var i = 27; i < 40; i++)
-            {
-                tiles[i].Owner = p3.ConnectionId;
-            }
-            for (var i = 53; i < 66; i++)
-            {
-                tiles[i].Owner = p4.ConnectionId;
-            }
-        }
-
-        private void DistributeTilesForChow(List<Tile> tiles, Player p1, Player p2, Player p3, Player p4)
-        {
-
-            for (var i = 0; i < 17; i++)
-            {
-                if (i == 3 || i == 5 || i == 6)
-                {
-                    continue;
-                }
-                tiles[i].Owner = p1.ConnectionId;
-            }
-
-            for (var i = 14; i < 27; i++)
-            {
-                tiles[i].Owner = p2.ConnectionId;
-            }
-            for (var i = 27; i < 40; i++)
-            {
-                tiles[i].Owner = p3.ConnectionId;
-            }
-            for (var i = 40; i < 53; i++)
-            {
-                tiles[i].Owner = p4.ConnectionId;
-            }
-        }
-
-        private void DistributeTilesForNoWinner(Game game)
-        {
-            List<Tile> tiles = game.Board.Tiles;
-            Player p1, p2, p3, p4;
-            if (game.DiceRoller == game.Player1.ConnectionId)
-            {
-                p1 = game.Player1;
-                p2 = game.Player2;
-                p3 = game.Player3;
-                p4 = game.Player4;
-            }
-            else if (game.DiceRoller == game.Player2.ConnectionId)
-            {
-                p1 = game.Player2;
-                p2 = game.Player3;
-                p3 = game.Player4;
-                p4 = game.Player1;
-            }
-            else if (game.DiceRoller == game.Player3.ConnectionId)
-            {
-                p1 = game.Player3;
-                p2 = game.Player4;
-                p3 = game.Player1;
-                p4 = game.Player2;
-            }
-            else
-            {
-                p1 = game.Player4;
-                p2 = game.Player1;
-                p3 = game.Player2;
-                p4 = game.Player3;
-            }
-
-            for (var i = 0; i < 14; i++)
-            {
-                tiles[i].Owner = p1.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 14; i < 27; i++)
-            {
-                tiles[i].Owner = p2.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            for (var i = 27; i < 40; i++)
-            {
-                if (i == 39)
-                    continue;
-                tiles[i].Owner = p3.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-            tiles[114].Owner = p3.ConnectionId;
-            tiles[114].Status = TileStatus.UserActive;
-
-            for (var i = 40; i < 53; i++)
-            {
-                tiles[i].Owner = p4.ConnectionId;
-                tiles[i].Status = TileStatus.UserActive;
-            }
-
-            for (var i = 54; i < tiles.Count-1; i++)
-            {
-                if (i == 114)
-                    continue;
-
-                tiles[i].Owner = p4.ConnectionId;
-                tiles[i].Status = TileStatus.BoardGraveyard;
-            }
-        }
+       
     }
 }
