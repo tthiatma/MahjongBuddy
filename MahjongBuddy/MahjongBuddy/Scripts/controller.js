@@ -159,6 +159,11 @@
             fnUpdatePlayer(playerInfo);
         });
         clientPushHubProxy.on('addBoardTiles', function (tile) {
+            $scope.rightAnimation = $scope.isRightPlayerTurn;
+            $scope.leftAnimation = $scope.isLeftPlayerTurn;
+            $scope.topAnimation = $scope.isTopPlayerTurn;
+            $scope.bottomAnimation = $scope.isMyturn;
+
             if (tile != null) { $scope.boardTiles.push(tile); }
         });
         clientPushHubProxy.on('alertUser', function (msg) {

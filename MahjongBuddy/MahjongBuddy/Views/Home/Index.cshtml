@@ -142,15 +142,22 @@
                 </div>
             <!--end of LeftPlayer-->
 
+            <!--*********************************************************************************************************************************************-->
+
             <!--start for Board-->
                 <div id="TheBoard" class="col-xs-6 col-md-6">
                     <div id="discardedTiles">
-                        <div class="tileHorizontalContainer" ng-repeat="tile in boardTiles | filter: {Status : 4}: true | orderBy: 'OpenTileCounter'">
+                        <div class="tileHorizontalContainer repeat-animation"
+                             ng-repeat="tile in boardTiles | filter: {Status : 4}: true | orderBy: 'OpenTileCounter'"
+                             ng-class="{top:topAnimation, left:leftAnimation, right:rightAnimation, bottom:bottomAnimation}">
                             <img class="tileHorizontal" ng-src="{{tile.Image}}" />
                         </div>
                     </div>
                 </div>
             <!--end of Board-->
+
+
+            <!--*********************************************************************************************************************************************-->
 
             <!--start for Right Player-->
                 <div id="RightPlayer">

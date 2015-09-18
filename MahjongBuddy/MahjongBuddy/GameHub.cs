@@ -260,8 +260,8 @@ namespace MahjongBuddy
                     {
                         GameLogic.SetNextPlayerTurn(game);
                     }
-                    UpdateClient(game, player);
                     Clients.Group(group).addBoardTiles(game.LastTile);
+                    UpdateClient(game, player);
                 }
                 else if (cr == CommandResult.ValidPick)
                 {

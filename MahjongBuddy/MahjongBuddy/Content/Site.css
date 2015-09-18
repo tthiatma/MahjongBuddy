@@ -153,3 +153,68 @@ textarea {
   opacity: 0;
   padding: 0 10px;
 }
+
+/* Styles for throwing tiles animation
+-----------------------------------------------------------*/
+.repeat-animation {
+  -webkit-transition:0.2s linear all;
+  transition:0.2s linear all;
+  position:relative;
+}
+
+.repeat-animation.top.ng-enter{
+    position: relative;
+    opacity: 0.0;
+    height: 0;
+    top: -100px;
+}
+
+
+.repeat-animation.top.ng-enter.top.ng-enter-active {
+    transition: all 0.5s ease;
+    opacity: 1.0;
+    top: 0;
+}
+
+.repeat-animation.bottom.ng-enter{
+    position: relative;
+    opacity: 0.0;
+    height: 0;
+    top: 100px;
+}
+
+
+.repeat-animation.bottom.ng-enter.bottom.ng-enter-active {
+    transition: all 0.5s ease;
+    opacity: 1.0;
+    top: 0;
+}
+
+
+.repeat-animation.left.ng-enter{
+    position: relative;
+    opacity: 0.0;
+    height: 0;
+    left: -100px;
+}
+
+
+.repeat-animation.left.ng-enter.left.ng-enter-active {
+    transition: all 0.5s ease;
+    opacity: 1.0;
+    left: 0;
+}
+
+.repeat-animation.right.ng-enter{
+    position: relative;
+    opacity: 0.0;
+    height: 0;
+    left: 100px;
+}
+
+
+.repeat-animation.right.ng-enter.right.ng-enter-active {
+    transition: all 0.5s ease;
+    opacity: 1.0;
+    left: 0;
+}

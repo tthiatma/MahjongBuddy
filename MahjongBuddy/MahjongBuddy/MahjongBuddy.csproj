@@ -235,6 +235,7 @@
     <Compile Include="TileBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\animate.min.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap-toggle.min.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -373,6 +374,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\angular-animate-1.4.4.js" />
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\bootstrap-toggle.min.js" />
     <Content Include="Scripts\bootstrap.min.js" />

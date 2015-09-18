@@ -1,1 +1,1 @@
-﻿var app = angular.module("app", ['ngDraggable']);
+﻿var app = angular.module("app", ["ngDraggable", "ngAnimate"]);
