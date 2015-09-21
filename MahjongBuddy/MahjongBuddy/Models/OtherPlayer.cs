@@ -9,7 +9,7 @@ namespace MahjongBuddy.Models
     public class OtherPlayer : Player
     {
         public int ActiveTilesCount { get { return ActivePlayer != null ? ActivePlayer.ActiveTiles.Count() : 0; } }
-
+        public override int CurrentPoint { get { return ActivePlayer.CurrentPoint; } }
         [JsonIgnore]
         public ActivePlayer ActivePlayer { get; set; }
 

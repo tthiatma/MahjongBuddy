@@ -197,15 +197,21 @@ namespace MahjongBuddy
                             {
                                 List<Tile> ft = new List<Tile>();
                                 ft.Add(newTileForPlayer);
-                                CommandTileToPlayerGraveyard(game, ft, player, replaceTile: false);
+                                if (!CommandTileToPlayerGraveyard(game, ft, player, replaceTile: false))
+                                {
+                                    return CommandResult.NobodyWin;
+                                }
                             }
                             else
                             {                                
                                 newTileForPlayer.Owner = player.ConnectionId;
                                 newTileForPlayer.Status = TileStatus.JustPicked;
-                                player.ActiveTiles.Add(newTileForPlayer);
-                                newTileForPlayer.ActiveTileIndex = player.ActiveTiles.Count() + 1;
+                                if (!player.IsTileAutoSort)
+                                {
+                                    newTileForPlayer.ActiveTileIndex = player.ActiveTiles.Count() + 1;
+                                }
                                 AssignPlayersTileIndex(game, player);
+                                player.ActiveTiles.Add(newTileForPlayer);
 
                                 //set haltmove to true because no other player suppose to make a move when tile is picked
                                 game.HaltMove = true;
@@ -255,7 +261,8 @@ namespace MahjongBuddy
                         {
                             justPickedTile.Status = TileStatus.UserActive;
                         }
-                        
+
+                        AssignPlayersTileIndex(game, player);
                         //check remaining tiles when throwing tile
                         var remainingTiles = game.Board.Tiles.Where(t => t.Owner == "board").Count();
                         if (remainingTiles > 0)
@@ -311,6 +318,19 @@ namespace MahjongBuddy
                         
                         CommandTileToPlayerGraveyard(game, playerTilesKong, player);
                         AddTilesToPlayerOpenTileSet(game, playerTilesKong, player.ConnectionId, TileSetType.Kong);
+
+                        if (game.Board.Tiles.Where(t => t.Owner == "board").Count() > 0)
+                        {
+                            var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
+                            newTileForPlayer.Owner = player.ConnectionId;
+                            newTileForPlayer.Status = TileStatus.JustPicked;
+                            if (!player.IsTileAutoSort)
+                            {
+                                newTileForPlayer.ActiveTileIndex = player.ActiveTiles.Count() + 1;
+                            }
+                            player.ActiveTiles.Add(newTileForPlayer);
+                        }
+
                         game.HaltMove = true;
                         game.PlayerTurn = player.ConnectionId;
                         var pp = GetPlayerByConnectionId(game, player.ConnectionId);
@@ -696,7 +716,15 @@ namespace MahjongBuddy
             }         
         }
         
-        public void CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, ActivePlayer player, bool replaceTile = false)
+        /// <summary>
+        /// return false when there's no more tiles : when 
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="tiles"></param>
+        /// <param name="player"></param>
+        /// <param name="replaceTile"></param>
+        /// <returns></returns>
+        public bool CommandTileToPlayerGraveyard(Game game, IEnumerable<Tile> tiles, ActivePlayer player, bool replaceTile = false)
         {
             try
             {
@@ -724,12 +752,23 @@ namespace MahjongBuddy
                     if (replaceTile)
                     {
                         //bookkeeping in game state
-                        var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
-                        newTileForPlayer.Owner = player.ConnectionId;
-                        newTileForPlayer.Status = TileStatus.UserActive;
 
-                        //adding the new tile to player active tiles
-                        collectionToAddToActive.Add(newTileForPlayer);
+                        if (game.Board.Tiles.Where(t => t.Owner == "board").Count() > 0)
+                        {
+                            var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
+                            newTileForPlayer.Owner = player.ConnectionId;
+                            newTileForPlayer.Status = TileStatus.UserActive;
+                            if (!player.IsTileAutoSort)
+                            {
+                                newTileForPlayer.ActiveTileIndex = player.ActiveTiles.Count() + 1;
+                            }
+                            //adding the new tile to player active tiles
+                            collectionToAddToActive.Add(newTileForPlayer);
+                        }
+                        else
+                        {
+                            return false;
+                        }
                     }
                 }
                 foreach (var item in collectionToRemoveFromActive)
@@ -740,12 +779,14 @@ namespace MahjongBuddy
                 {
                     player.ActiveTiles.Add(item);
                 }
+                AssignPlayersTileIndex(game, player);
+                return true;
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
-            }
-            
+                return false;
+            }            
         }
 
         /// <summary>
@@ -806,7 +847,7 @@ namespace MahjongBuddy
 
             if (player.IsTileAutoSort)
             {
-                var playerTiles = tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
+                var playerTiles = tiles.Where(t => t.Owner == player.ConnectionId && (t.Status == TileStatus.UserActive || t.Status == TileStatus.JustPicked)).OrderBy(t => t.Type).ThenBy(t => t.Value).ToArray();
                 for (int i = 0; i < playerTiles.Count(); i++)
                 {
                     playerTiles[i].ActiveTileIndex = i;
@@ -814,7 +855,7 @@ namespace MahjongBuddy
             }
             else
             {
-                var playerTiles = tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.UserActive).OrderBy(t => t.ActiveTileIndex).ToArray();
+                var playerTiles = tiles.Where(t => t.Owner == player.ConnectionId && (t.Status == TileStatus.UserActive || t.Status == TileStatus.JustPicked)).OrderBy(t => t.ActiveTileIndex).ToArray();
                 for (int i = 0; i < playerTiles.Count(); i++)
                 {
                     playerTiles[i].ActiveTileIndex = i;

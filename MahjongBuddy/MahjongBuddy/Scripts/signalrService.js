@@ -24,6 +24,15 @@
                             });
                         });
                     },
+                    on1: function (eventName, callback) {
+                        proxy.on(eventName, function (result1, result2) {
+                            $rootScope.$apply(function () {
+                                if (callback) {
+                                    callback(result1, result2);
+                                }
+                            });
+                        });
+                    },
                     off: function (eventName, callback) {
                         proxy.off(eventName, function (result) {
                             $rootScope.$apply(function () {

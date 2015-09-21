@@ -75,7 +75,8 @@ namespace MahjongBuddy
             if (game != null)
             {
                 GameState.Instance.StartNextGame(game);
-                Clients.Group(group).startNextGame(game);
+                UpdateClient(game, group);
+                Clients.Group(group).startNextGame();                
             }
         }
 
@@ -95,9 +96,9 @@ namespace MahjongBuddy
                     Clients.Group(player.Group).gameStarted();
                     var arrayOfPep = pepInGroup.ToArray();
                     Random random = new Random();
-                    int randomPlayerToStart = 1;
+                    //int randomPlayerToStart = 1;
 
-                    //int randomPlayerToStart = random.Next(1, 4);
+                    int randomPlayerToStart = random.Next(1, 4);
                     
                     switch (randomPlayerToStart)
                     { 
@@ -144,14 +145,9 @@ namespace MahjongBuddy
                     }
 
                     game = GameState.Instance.CreateGame(player1, player2, player3, player4, player.Group);
-                    _dealer = new Dealer(game);
 
-                    UpdateClient(game, player);
+                    UpdateClient(game, player.Group);
 
-                    //DistributeTilesForWin(game.Board.Tiles, player, player2, player3, player4);
-                    //DistributeTilesForChow(game.Board.Tiles, player, player2, player3, player4);
-                    //DistributeTilesForPong(game.Board.Tiles, player, player2, player3, player4);
-                    //DistributeTilesForKong(game.Board.Tiles, player, player2, player3, player4);
                     return true;
                 }
                 else
@@ -164,19 +160,6 @@ namespace MahjongBuddy
             return false;
         }
 
-        public void SetPlayerSortTile(string group, bool autoSort)
-        {
-            var game = GameState.Instance.FindGameByGroupName(group);
-            var userName = Clients.Caller.name;
-            var player = GameState.Instance.GetPlayer(userName);
-            player.IsTileAutoSort = autoSort;
-            if (autoSort)
-            {
-                GameLogic.AssignPlayersTileIndex(game, player);
-                UpdateCurrentPlayer(game, player);
-            }
-        }
-
         public void PlayerMove(string group, string command, IEnumerable<int> tiles)
         {
             try
@@ -186,7 +169,7 @@ namespace MahjongBuddy
                 string invalidMessage = "shit went wrong...";
                 var game = GameState.Instance.FindGameByGroupName(group);
                 var userName = Clients.Caller.name;
-                var player = GameState.Instance.GetPlayer(userName);
+                ActivePlayer player = GameState.Instance.GetPlayer(userName);
 
                 switch (command)
                 {
@@ -266,10 +249,7 @@ namespace MahjongBuddy
                 //TODO fix logic when tile left is 0, to be in synch when user throw last tile
                 else if (cr == CommandResult.NobodyWin)
                 {
-                    Record rec = new Record();
-                    rec.NoWinner = true;
-                    game.Records.Add(rec);
-                    Clients.Group(group).showNoWinner(game);
+                    ValidCommand(game, group, switchTurn, player);
                 }
                 else
                 {
@@ -282,7 +262,20 @@ namespace MahjongBuddy
             }
             
         }
-        
+
+        public void SetPlayerSortTile(string group, bool autoSort)
+        {
+            var game = GameState.Instance.FindGameByGroupName(group);
+            var userName = Clients.Caller.name;
+            var player = GameState.Instance.GetPlayer(userName);
+            player.IsTileAutoSort = autoSort;
+            if (autoSort)
+            {
+                GameLogic.AssignPlayersTileIndex(game, player);
+                UpdateCurrentPlayer(game, player);
+            }
+        }
+
         private void ValidCommand(Game game, string group, bool switchTurn, ActivePlayer player)
         {
             game.TilesLeft = game.Board.Tiles.Where(t => t.Owner == "board").Count();
@@ -299,14 +292,13 @@ namespace MahjongBuddy
             {
                 GameLogic.SetNextPlayerTurn(game);
             }
-            UpdateClient(game, player);
+            UpdateClient(game, player.Group);
         }
 
         private void UpdateCurrentPlayer(Game game, ActivePlayer player)
         {
             if (_dealer == null) { _dealer = new Dealer(game); };
-            Clients.Group(player.Group).updateDealer(_dealer);
-            Clients.Client(player.ConnectionId).updateCurrentPlayer(player);
+            Clients.Client(player.ConnectionId).updateCurrentPlayer(player, _dealer);
         }
 
         /// <summary>
@@ -314,14 +306,13 @@ namespace MahjongBuddy
         /// </summary>
         /// <param name="game"></param>
         /// <param name="player"></param>
-        private void UpdateClient(Game game, ActivePlayer player)
+        private void UpdateClient(Game game, string group)
         {
             if (_dealer == null) { _dealer = new Dealer(game); };
-            Clients.Group(player.Group).updateDealer(_dealer);
-            Clients.Client(game.Player1.ConnectionId).updateCurrentPlayer(game.Player1);
-            Clients.Client(game.Player2.ConnectionId).updateCurrentPlayer(game.Player2);
-            Clients.Client(game.Player3.ConnectionId).updateCurrentPlayer(game.Player3);
-            Clients.Client(game.Player4.ConnectionId).updateCurrentPlayer(game.Player4);
+            Clients.Client(game.Player1.ConnectionId).updateCurrentPlayer(game.Player1, _dealer);
+            Clients.Client(game.Player2.ConnectionId).updateCurrentPlayer(game.Player2, _dealer);
+            Clients.Client(game.Player3.ConnectionId).updateCurrentPlayer(game.Player3, _dealer);
+            Clients.Client(game.Player4.ConnectionId).updateCurrentPlayer(game.Player4, _dealer);
         }
         
        

@@ -165,6 +165,11 @@ namespace MahjongBuddy.Models
 
         public void FindMixPureHand(Game game, WinningTileSet wts, Player player)
         {
+            // mix pure hand logic
+            //-eye to be dragon / wind
+            //-if any set contain pong of dragon/wind
+            //-all set to be same type
+
             List<Tile> tiles = new List<Tile>();
             for (int i = 0; i < wts.Sets.Length; i++)
             {
@@ -183,7 +188,23 @@ namespace MahjongBuddy.Models
                 var wrongType = tiles.Where(t => t.Type != dTile).FirstOrDefault();
                 if (wrongType == null)
                 {
-                    _winningTypes.Add(WinningType.MixPureHand);
+                    bool containDragonOrWind = false;
+                    for (int i = 0; i < wts.Sets.Length; i++)
+                    {
+                        var set = wts.Sets[i];
+                        if (set.TileType == TileType.Dragon || set.TileType == TileType.Wind)
+                        {
+                            containDragonOrWind = true;
+                        }
+                    }
+                    if (wts.Eye.TileType == TileType.Dragon || wts.Eye.TileType == TileType.Wind)
+                    {
+                        containDragonOrWind = true;
+                    }
+                    if (containDragonOrWind)
+                    {
+                        _winningTypes.Add(WinningType.MixPureHand);
+                    }                    
                 }
             }
         }
@@ -194,7 +215,7 @@ namespace MahjongBuddy.Models
             for (int i = 0; i < wts.Sets.Length; i++)
             {
                 var set = wts.Sets[i];
-                if (set.TileSetType == TileSetType.Pong)
+                if (set.TileType != TileType.Dragon && set.TileType != TileType.Wind)
                 {
                     foreach (var t in set.Tiles)
                     {
@@ -202,20 +223,29 @@ namespace MahjongBuddy.Models
                     }
                 }
             }
-            
-            var firstTileType = tiles.Where(t => t.Type != TileType.Dragon && t.Type != TileType.Wind && t.Type != TileType.Flower).FirstOrDefault();
-
-            if (firstTileType != null)
+            if (tiles.Count() > 0)
             {
-                bool foundDifferentType = false;
-                foreach (var t in tiles)
+                var dTile = tiles.First().Type;
+                var wrongType = tiles.Where(t => t.Type != dTile).FirstOrDefault();
+                if (wrongType == null)
                 {
-                    if (t.Type != firstTileType.Type) { foundDifferentType = true; }
-                }
-
-                if (!foundDifferentType)
-                {
-                    _winningTypes.Add(WinningType.PureHand);
+                    bool containDragonOrWind = false;
+                    for (int i = 0; i < wts.Sets.Length; i++)
+                    {
+                        var set = wts.Sets[i];
+                        if (set.TileType == TileType.Dragon || set.TileType == TileType.Wind)
+                        {
+                            containDragonOrWind = true;
+                        }
+                    }
+                    if (wts.Eye.TileType == TileType.Dragon || wts.Eye.TileType == TileType.Wind)
+                    {
+                        containDragonOrWind = true;
+                    }
+                    if (!containDragonOrWind)
+                    {
+                        _winningTypes.Add(WinningType.PureHand);
+                    }
                 }
             }
         }

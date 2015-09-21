@@ -19,6 +19,15 @@ namespace MahjongBuddy.Models
         public WindDirection CurrentWind { get { return Game.CurrentWind; } }
         public int TilesLeft { get { return Game.TilesLeft; } }
         public Tile LastTile { get { return Game.LastTile; } }
+        public bool IsNoWinner { 
+            get 
+            {
+                bool noMoreBoardTile = false;
+                var boardTile = Game.Board.Tiles.Where(t => t.Owner == "board" || t.Status == TileStatus.JustPicked).Count();
+                if (boardTile == 0) noMoreBoardTile = true;
+                return noMoreBoardTile;
+            } 
+        }
         public bool HaltMove { get { return Game.HaltMove; }  }
         public string PlayerTurn { get { return Game.PlayerTurn; } }
 

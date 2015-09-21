@@ -100,16 +100,18 @@
             $scope.hideGameEndCountdown = true;
             $scope.gameEndCountdown = 10;
         }
-        var fnUpdatePlayer = function (currentPlayer) {
+        var fnUpdatePlayer = function (currentPlayer, dealer) {
+            $scope.dealer = dealer;
+            $scope.currentGameWind = mjService.getWindName(dealer.CurrentWind);
             $scope.currentPlayer = currentPlayer            
             $scope.currentPlayerWind = mjService.getWindName(currentPlayer.Wind);
-            $scope.isMyturn = ($scope.currentUserId == $scope.dealer.PlayerTurn);
+            $scope.isMyturn = ($scope.currentUserId == dealer.PlayerTurn);
             if ($scope.isMyturn) {
                 $timeout(function () { $scope.canPickTile = $scope.currentPlayer.CanPickTile }, 5000);
             }
-            $scope.isRightPlayerTurn = ($scope.currentPlayer.RightPlayer.ConnectionId == $scope.dealer.PlayerTurn);
-            $scope.isLeftPlayerTurn = ($scope.currentPlayer.LeftPlayer.ConnectionId == $scope.dealer.PlayerTurn);
-            $scope.isTopPlayerTurn = ($scope.currentPlayer.TopPlayer.ConnectionId == $scope.dealer.PlayerTurn);
+            $scope.isRightPlayerTurn = ($scope.currentPlayer.RightPlayer.ConnectionId == dealer.PlayerTurn);
+            $scope.isLeftPlayerTurn = ($scope.currentPlayer.LeftPlayer.ConnectionId == dealer.PlayerTurn);
+            $scope.isTopPlayerTurn = ($scope.currentPlayer.TopPlayer.ConnectionId == dealer.PlayerTurn);
 
         }
 
@@ -147,20 +149,16 @@
     ///-------------------------
         
     //dealer holds critical information about the game, this needs to be populated first (even before starting the game)
-        clientPushHubProxy.on('updateDealer', function (dealer) {
-            $scope.dealer = dealer;
-        });
-        clientPushHubProxy.on('startGame', function (playerInfo) {
-            $scope.currentGameWind = mjService.getWindName(dealer.CurrentWind);
+        clientPushHubProxy.on('startGame', function (playerInfo) {            
             fnUpdatePlayer(playerInfo);
         });
-        clientPushHubProxy.on('startNextGame', function (game) {
-            $scope.currentGameWind = mjService.getWindName(dealer.CurrentWind);
+        clientPushHubProxy.on('startNextGame', function () {
+            $scope.boardTiles = [];
             $('#showWinnerModal').modal('hide');
             $('#showNoWinnerModal').modal('hide');
         });
-        clientPushHubProxy.on('updateCurrentPlayer', function (playerInfo) {
-            fnUpdatePlayer(playerInfo);
+        clientPushHubProxy.on1('updateCurrentPlayer', function (playerInfo, dealer) {
+            fnUpdatePlayer(playerInfo, dealer);
         });
         clientPushHubProxy.on('addBoardTiles', function (tile) {
             $scope.rightAnimation = $scope.isRightPlayerTurn;
@@ -203,7 +201,7 @@
             $scope.gameEndTimeout = $timeout(function () {
                 $("#showNoWinnerModal").modal('show');
                 $scope.hideGameEndCountdown = true;
-            }, 50000);
+            }, 10000);
         });
     }
 ]);
