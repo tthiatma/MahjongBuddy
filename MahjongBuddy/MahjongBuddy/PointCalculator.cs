@@ -170,7 +170,9 @@ namespace MahjongBuddy.Models
             //-if any set contain pong of dragon/wind
             //-all set to be same type
 
-            List<Tile> tiles = new List<Tile>();
+
+            //first get list of tiles that is not dragon and wind
+            List<Tile> tilesNotDragonOrWind = new List<Tile>();
             for (int i = 0; i < wts.Sets.Length; i++)
             {
                 var set = wts.Sets[i];
@@ -178,15 +180,16 @@ namespace MahjongBuddy.Models
                 {
                     foreach (var t in set.Tiles)
                     {
-                        tiles.Add(t);
+                        tilesNotDragonOrWind.Add(t);
                     }
                 }
             }
-            if (tiles.Count() > 0)
+            
+            if (tilesNotDragonOrWind.Count() > 0)
             {
-                var dTile = tiles.First().Type;
-                var wrongType = tiles.Where(t => t.Type != dTile).FirstOrDefault();
-                if (wrongType == null)
+                var dTileType = tilesNotDragonOrWind.First().Type;
+                var wrongTypeTile = tilesNotDragonOrWind.Where(t => t.Type != dTileType).FirstOrDefault();
+                if (wrongTypeTile == null)
                 {
                     bool containDragonOrWind = false;
                     for (int i = 0; i < wts.Sets.Length; i++)

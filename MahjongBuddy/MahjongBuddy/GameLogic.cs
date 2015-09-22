@@ -58,7 +58,7 @@ namespace MahjongBuddy
                         var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
                         playerTilesPong.Add(thrownTile);
                         CommandTileToPlayerGraveyard(game, playerTilesPong, player);
-                        AddTilesToPlayerOpenTileSet(game, playerTilesPong, player.ConnectionId, TileSetType.Pong);
+                        AddTilesToPlayerOpenTileSet(game, playerTilesPong, player.ConnectionId, TileSetType.Pong, playerTilesPong.First().Type);
                         game.HaltMove = true;
                         game.PlayerTurn = player.ConnectionId;
                         player.CanPickTile = false;
@@ -117,7 +117,7 @@ namespace MahjongBuddy
                             if (sortedList[0].Value + 1 == sortedList[1].Value && sortedList[1].Value + 1 == sortedList[2].Value)
                             {
                                 CommandTileToPlayerGraveyard(game, sortedList, player);
-                                AddTilesToPlayerOpenTileSet(game, sortedList, player.ConnectionId, TileSetType.Chow);
+                                AddTilesToPlayerOpenTileSet(game, sortedList, player.ConnectionId, TileSetType.Chow, sortedList.First().Type);
                                 game.HaltMove = true;
                                 game.PlayerTurn = player.ConnectionId;
                                 player.CanPickTile = false;
@@ -154,6 +154,17 @@ namespace MahjongBuddy
             {
                 //to know how many tiles a player can have, we need to check how many sets/tiles that they have/revealed
                 //this section is to prevent player to have more tiles when they pick new tile.
+                
+                //if there's any just picked tiles, set it to active
+                var justPickedTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked);
+                if (justPickedTile != null)
+                {
+                    foreach (var tile in justPickedTile)
+                    {
+                        tile.Status = TileStatus.UserActive;
+                    }
+                }
+
                 var playerTileSetCount = player.TileSets.Count();
                 var playerActiveTilesCount = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.UserActive).Count();
                 bool canPickNewTile = false;
@@ -294,6 +305,40 @@ namespace MahjongBuddy
         {
             if (player != null)
             {
+                //first checked player tileset that already ponged
+                //this is when player want to add one of their active tile to kong
+                if (player.TileSets.Count > 0)
+                {
+                    var pongTileSets = player.TileSets.Where(t => t.TileSetType == TileSetType.Pong);
+                    if (pongTileSets.Count() > 0 && player.ActiveTiles.Count() > 1)
+                    {
+                        foreach (var ps in pongTileSets)
+                        {
+                            var theTile = ps.Tiles.First();
+                            var matchedTile = player.ActiveTiles.Where(t => t.Type == theTile.Type && t.Value == theTile.Value);
+
+                            if (matchedTile != null)
+                            {
+                                ps.TileSetType = TileSetType.Kong;
+                                List<Tile> newbie = new List<Tile>();
+                                newbie.AddRange(ps.Tiles);
+                                newbie.Add(matchedTile.First());
+                                ps.Tiles = newbie;
+                                CommandTileToPlayerGraveyard(game, matchedTile, player);
+
+                                DoPickNewTile(game, player);
+                                game.HaltMove = true;
+                                game.PlayerTurn = player.ConnectionId;
+                                var pp = GetPlayerByConnectionId(game, player.ConnectionId);
+                                pp.CanPickTile = false;
+                                pp.CanThrowTile = true;
+
+                                return CommandResult.ValidSelfKong;
+                            }                            
+                        }
+                    }
+                }
+
                 //check if user just picked tile
                 Tile tileToKong = null;
                 var justpickedPlayerTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked);
@@ -317,19 +362,9 @@ namespace MahjongBuddy
                         playerTilesKong.Add(tileToKong);
                         
                         CommandTileToPlayerGraveyard(game, playerTilesKong, player);
-                        AddTilesToPlayerOpenTileSet(game, playerTilesKong, player.ConnectionId, TileSetType.Kong);
+                        AddTilesToPlayerOpenTileSet(game, playerTilesKong, player.ConnectionId, TileSetType.Kong, playerTilesKong.First().Type);
 
-                        if (game.Board.Tiles.Where(t => t.Owner == "board").Count() > 0)
-                        {
-                            var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").First();
-                            newTileForPlayer.Owner = player.ConnectionId;
-                            newTileForPlayer.Status = TileStatus.JustPicked;
-                            if (!player.IsTileAutoSort)
-                            {
-                                newTileForPlayer.ActiveTileIndex = player.ActiveTiles.Count() + 1;
-                            }
-                            player.ActiveTiles.Add(newTileForPlayer);
-                        }
+                        DoPickNewTile(game, player);
 
                         game.HaltMove = true;
                         game.PlayerTurn = player.ConnectionId;
@@ -1173,14 +1208,15 @@ namespace MahjongBuddy
             return ret;
         }
 
-        private void AddTilesToPlayerOpenTileSet(Game game, IEnumerable<Tile> tiles, string playerConnectionId, TileSetType type)
+        private void AddTilesToPlayerOpenTileSet(Game game, IEnumerable<Tile> tiles, string playerConnectionId, TileSetType type, TileType tileType)
         {
             var player = GetPlayerByConnectionId(game, playerConnectionId);
             var temp = new TileSet()
             {
                 Tiles = tiles,
                 TileSetType = type,
-                isRevealed = true
+                isRevealed = true,
+                TileType = tileType
             };
 
             player.TileSets.Add(temp);

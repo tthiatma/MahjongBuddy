@@ -19,37 +19,37 @@ namespace MahjongBuddy.Models
             for (var i = 1; i < 5; i++)
             {
                 //1 - 35 - 69 - 103
-                _tiles.Add(new Money1() {Name = i + "MoneyOne"});
-                _tiles.Add(new Money2() {Name = i + "MoneyTwo"});
-                _tiles.Add(new Money3() {Name = i + "MoneyThree"});
-                _tiles.Add(new Money4() {Name = i + "MoneyFour"});
-                _tiles.Add(new Money5() {Name = i + "MoneyFive"});
-                _tiles.Add(new Money6() {Name = i + "MoneySix"});
-                _tiles.Add(new Money7() {Name = i + "MoneySeven"});
-                _tiles.Add(new Money8() {Name = i + "MoneyEight"});
-                _tiles.Add(new Money9() {Name = i + "MoneyNine"});
+                _tiles.Add(new Money1() {Name = i + "MoneyOne"});   //0/34/68/102
+                _tiles.Add(new Money2() {Name = i + "MoneyTwo"});   //1/35/69/103
+                _tiles.Add(new Money3() {Name = i + "MoneyThree"}); //2/36/70/104
+                _tiles.Add(new Money4() {Name = i + "MoneyFour"});  //3/37/71/105
+                _tiles.Add(new Money5() {Name = i + "MoneyFive"});  //4/38/72/106
+                _tiles.Add(new Money6() {Name = i + "MoneySix"});   //5/39/73/107
+                _tiles.Add(new Money7() {Name = i + "MoneySeven"}); //6/40/74/108
+                _tiles.Add(new Money8() {Name = i + "MoneyEight"}); //7/41/75/109
+                _tiles.Add(new Money9() {Name = i + "MoneyNine"});  //8/42/76/110
 
                 //10 - 44 - 78 - 112
-                _tiles.Add(new Round1() {Name = i + "RoundOne"});
-                _tiles.Add(new Round2() {Name = i + "RoundTwo"});
-                _tiles.Add(new Round3() {Name = i + "RoundThree"});
-                _tiles.Add(new Round4() {Name = i + "RoundFour"});
-                _tiles.Add(new Round5() {Name = i + "RoundFive"});
-                _tiles.Add(new Round6() {Name = i + "RoundSix"});
-                _tiles.Add(new Round7() {Name = i + "RoundSeven"});
-                _tiles.Add(new Round8() {Name = i + "RoundEight"});
-                _tiles.Add(new Round9() {Name = i + "RoundNine"});
+                _tiles.Add(new Round1() {Name = i + "RoundOne"});   //43
+                _tiles.Add(new Round2() {Name = i + "RoundTwo"});   //44
+                _tiles.Add(new Round3() {Name = i + "RoundThree"}); //45
+                _tiles.Add(new Round4() {Name = i + "RoundFour"});  //46
+                _tiles.Add(new Round5() {Name = i + "RoundFive"});  //47
+                _tiles.Add(new Round6() {Name = i + "RoundSix"});   //48
+                _tiles.Add(new Round7() {Name = i + "RoundSeven"}); //49
+                _tiles.Add(new Round8() {Name = i + "RoundEight"}); //50
+                _tiles.Add(new Round9() {Name = i + "RoundNine"});  //51
 
                 //19 - 53 - 87 - 121
-                _tiles.Add(new Stick1() {Name = i + "StickOne"});
-                _tiles.Add(new Stick2() {Name = i + "StickTwo"});
-                _tiles.Add(new Stick3() {Name = i + "StickThree"});
-                _tiles.Add(new Stick4() {Name = i + "StickFour"});
-                _tiles.Add(new Stick5() {Name = i + "StickFive"});
-                _tiles.Add(new Stick6() {Name = i + "StickSix"});
-                _tiles.Add(new Stick7() {Name = i + "StickSeven"});
-                _tiles.Add(new Stick8() {Name = i + "StickEight"});
-                _tiles.Add(new Stick9() {Name = i + "StickNine"});
+                _tiles.Add(new Stick1() {Name = i + "StickOne"});   //52
+                _tiles.Add(new Stick2() {Name = i + "StickTwo"});   //53
+                _tiles.Add(new Stick3() {Name = i + "StickThree"}); //54
+                _tiles.Add(new Stick4() {Name = i + "StickFour"});  //55
+                _tiles.Add(new Stick5() {Name = i + "StickFive"});  //56
+                _tiles.Add(new Stick6() {Name = i + "StickSix"});   //57
+                _tiles.Add(new Stick7() {Name = i + "StickSeven"}); //58
+                _tiles.Add(new Stick8() {Name = i + "StickEight"}); //59
+                _tiles.Add(new Stick9() {Name = i + "StickNine"});  //60
 
                 //28 - 62 - 96 - 130
                 _tiles.Add(new DragonGreen() {Name = i + "DragonGreen"});

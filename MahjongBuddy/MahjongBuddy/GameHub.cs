@@ -101,7 +101,7 @@ namespace MahjongBuddy
                     int randomPlayerToStart = random.Next(1, 4);
                     
                     switch (randomPlayerToStart)
-                    { 
+                    {
                         case 1:
                             player1 = player;
                             player2 = arrayOfPep[0].Value;
@@ -228,8 +228,11 @@ namespace MahjongBuddy
                 }
                 else if (cr == CommandResult.ValidChow || cr == CommandResult.ValidPong || cr == CommandResult.ValidKong)
                 { 
-                    //TODO what to do for validSelfKong
                     Clients.Group(group).removeBoardTiles();
+                    ValidCommand(game, group, switchTurn, player);
+                }
+                else if (cr == CommandResult.ValidSelfKong)
+                {
                     ValidCommand(game, group, switchTurn, player);
                 }
                 else if (cr == CommandResult.ValidThrow)
