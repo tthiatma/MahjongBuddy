@@ -11,7 +11,7 @@
 <div ng-controller="MahjongController">
     <div id="WaitingRoom" class="container" ng-hide="gameIsReady">
         <div class="row">       
-            <div class="col-md-4"></div>     
+            <div class="col-md-4">Hello @CurrentUser.Name. How's the weather in @CurrentUser.Country?</div>     
             <div class="col-md-4">
                 <span><label>mjbuddy({{totalPlayers}})</label></span>
                 <span><input type="text" id="usernameTB" ng-model="playerName" ng-disabled="isDisonnected || totalPlayers >= 4"  placeholder='Enter your name to join' /></span>
@@ -22,7 +22,7 @@
                     <strong>name already been used, pick different one to join</strong>
                 </div>
             </div>
-            <div class="col-md-4"></div>
+            <div class="col-md-4"><a href="@Url.Action("logout", "auth")">Log Out</a></div>
         </div>
         <div class="row">
             <div class="col-md-2"></div>
