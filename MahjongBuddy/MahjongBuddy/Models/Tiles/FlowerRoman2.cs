@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models.Tiles
             Owner = "board";
             Name = "FlowerRomanTwo";
             Image = "/Content/images/tiles/64px/flower/flower2b.png";
+            ImageSmall = "/Content/images/tiles/50px/flower/flower2b.png";
         }
     }
 }

@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models.Tiles
             Owner = "board";
             Name = "DragonRed";
             Image = "/Content/images/tiles/64px/dragon/dragon-chun.png";
+            ImageSmall = "/Content/images/tiles/50px/dragon/dragon-chun.png";
         }
     }
 }

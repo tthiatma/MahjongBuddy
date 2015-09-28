@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models.Tiles
             Owner = "board";
             Name = "WindWest";
             Image = "/Content/images/tiles/64px/wind/wind-west.png";
+            ImageSmall = "/Content/images/tiles/50px/wind/wind-west.png";
         }
     }
 }

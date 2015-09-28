@@ -103,6 +103,11 @@ textarea {
     height:64px;
     display:inline-block;
 }
+.tileHorizontalContainerMobile {
+    width:34px;
+    height:50px;
+    display:inline-block;
+}
 .tileHorizontal {
     margin: 0 -100% 0 -100%;
     overflow:hidden
@@ -111,6 +116,11 @@ textarea {
     height:39px;
     display:inline-block
 }
+.tileVerticalContainerMobile {
+    height:30px;
+    display:inline-block
+}
+
 .tileVertical {
     margin: -100% 0 -100% 0;
     transform-origin: 100% 100%;
@@ -217,4 +227,9 @@ textarea {
     transition: all 0.5s ease;
     opacity: 1.0;
     left: 0;
+}
+
+#discardedTiles {
+    padding-top:10px;
+    padding-left:15px;
 }

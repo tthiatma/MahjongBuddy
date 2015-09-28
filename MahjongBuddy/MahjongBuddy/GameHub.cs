@@ -54,19 +54,21 @@ namespace MahjongBuddy
             {
                 Clients.Caller.playerExists();
             }
+            else 
+            {
+                player = GameState.Instance.CreatePlayer(userName, groupName);
+                player.ConnectionId = Context.ConnectionId;
+                Clients.Caller.name = player.Name;
+                Clients.Caller.hash = player.Hash;
+                Clients.Caller.id = player.Id;
 
-            player = GameState.Instance.CreatePlayer(userName, groupName);
-            player.ConnectionId = Context.ConnectionId;
-            Clients.Caller.name = player.Name;
-            Clients.Caller.hash = player.Hash;
-            Clients.Caller.id = player.Id;
+                await Groups.Add(Context.ConnectionId, groupName);
+                var playerCount = GameState.Instance.Players.Count();
+                Clients.All.updatePlayerCount(playerCount);
+                Clients.OthersInGroup(groupName).notifyUserInGroup(userName + " joined.");
 
-            await Groups.Add(Context.ConnectionId, groupName);
-            var playerCount = GameState.Instance.Players.Count();
-            Clients.All.updatePlayerCount(playerCount);
-            Clients.OthersInGroup(groupName).notifyUserInGroup(userName + " joined.");                        
-
-            StartGame(player);
+                StartGame(player);            
+            }
         }
 
         public void StartNextGame(string group)
@@ -262,6 +264,7 @@ namespace MahjongBuddy
             catch (Exception ex)
             {
                 logger.Error(ex);
+                Clients.Caller.alertUser("something went wrong: " + ex);
             }
             
         }

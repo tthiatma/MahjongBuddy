@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models.Tiles
             Owner = "board";
             Name = "MoneyOne";
             Image = "/Content/images/tiles/64px/man/man1.png";
+            ImageSmall = "/Content/images/tiles/50px/man/man1.png";
         }
     }
 }

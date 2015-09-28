@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models.Tiles
             Owner = "board";
             Name = "FlowerNumericFour";
             Image = "/Content/images/tiles/64px/flower/flower4.png";
+            ImageSmall = "/Content/images/tiles/50px/flower/flower4.png";
         }
     }
 }

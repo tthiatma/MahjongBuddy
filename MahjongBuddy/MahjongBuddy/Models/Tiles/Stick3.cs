@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models.Tiles
             Owner = "board";
             Name = "StickThree";
             Image = "/Content/images/tiles/64px/bamboo/bamboo3.png";
+            ImageSmall = "/Content/images/tiles/50px/bamboo/bamboo3.png";
         }
     }
 }

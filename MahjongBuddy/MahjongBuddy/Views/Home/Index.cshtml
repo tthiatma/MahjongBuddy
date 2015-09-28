@@ -14,9 +14,13 @@
             <div class="col-md-4"></div>     
             <div class="col-md-4">
                 <span><label>mjbuddy({{totalPlayers}})</label></span>
-                <span><input type="text" id="usernameTB" ng-disabled="isDisonnected || totalPlayers >= 4"  placeholder='Enter your name' /></span>
-                <span><input type="button" id="join" value="join" ng-disabled="isDisonnected || totalPlayers >= 4" ng-click="fnJoinGame()" class="btn btn-primary"></span>
+                <span><input type="text" id="usernameTB" ng-model="playerName" ng-disabled="isDisonnected || totalPlayers >= 4"  placeholder='Enter your name to join' /></span>
+                <span><input type="button" id="join" value="join" ng-disabled="isDisonnected || totalPlayers >= 4 || playerName ==''" ng-click="fnJoinGame()" class="btn btn-primary"></span>
                 <span><input type="button" id="restartGame" value="nuke" ng-click="fnResetGame()" ng-hide="totalPlayers < 4" class="btn btn-danger"></span>
+                <br />                
+                <div class="alert alert-danger animate-hide" ng-hide="hideNameUsed">
+                    <strong>name already been used, pick different one to join</strong>
+                </div>
             </div>
             <div class="col-md-4"></div>
         </div>
@@ -64,7 +68,7 @@
                                 </span>
                             </div>
                             <div>
-                                Total: <strong>{{record.WinningTileSet.TotalPoints}}</strong> pts
+                                Total: <strong>{{record.WinningTileSet.TotalPoints}}</strong> pts (win limit: <strong>10</strong>pts)
                             </div>
                         </div>
 
@@ -98,15 +102,21 @@
                 </div>
 
                 <!--Graveyard-->
-                <div class="HorizontalContainer">
-                    <span class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.TopPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']">
-                        <img class="tileHorizontal rotate180" ng-src="{{tile.Image}}" />
+                <div class="row HorizontalContainer">
+                    <span ng-class="{tileHorizontalContainer: !isMobile, tileHorizontalContainerMobile: isMobile}"
+                        ng-repeat="tile in currentPlayer.TopPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']"
+                        ng-switch on="isMobile">
+                        <img ng-switch-when="false" class="tileHorizontal rotate180" ng-src="{{tile.Image}}" />
+                        <img ng-switch-when="true" class="tileHorizontal rotate180" ng-src="{{tile.ImageSmall}}" />
                     </span>                
                 </div>
                 <div style="clear:both"></div>
                 <div class="row HorizontalContainer">
-                    <span class="tileHorizontalContainer" ng-repeat="tile in fnGetNumber(currentPlayer.TopPlayer.ActiveTilesCount) track by $index">
-                        <img class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
+                    <span ng-class="{tileHorizontalContainer: !isMobile, tileHorizontalContainerMobile: isMobile}" 
+                          ng-repeat="tile in fnGetNumber(currentPlayer.TopPlayer.ActiveTilesCount) track by $index" 
+                          ng-switch on="isMobile">
+                            <img ng-switch-when="false" class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
+                            <img ng-switch-when="true" class="tileHorizontal" src="~/Content/images/tiles/50px/face-down-50px.png" />
                     </span>
                 </div>
             </div>
@@ -127,17 +137,22 @@
 
                     <!--Graveyard Tile-->
                     <div class="col-xs-1 col-md-1">
-                        <div class=" tileVerticalContainer rotate90" ng-repeat="tile in currentPlayer.LeftPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']">
-                            <img class="tileVertical" ng-src="{{tile.Image}}" />
+                        <div ng-class="{'tileVerticalContainer rotate90': !isMobile, 'tileVerticalContainerMobile rotate90': isMobile}" 
+                             ng-repeat="tile in currentPlayer.LeftPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']"
+                             ng-switch on="isMobile">
+                            <img ng-switch-when="false" class="tileVertical" ng-src="{{tile.Image}}" />
+		                    <img ng-switch-when="true" class="tileVertical" ng-src="{{tile.ImageSmall}}" />
                         </div>
                     </div>
 
                     <!--active tile-->
                     <div class="col-xs-1 col-md-1">
-                        <div class="tileVerticalContainer rotate90" ng-repeat="tile in fnGetNumber(currentPlayer.LeftPlayer.ActiveTilesCount) track by $index">
-                            {{tile.Image}}
-                            <img class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
-                        </div>
+	                    <div ng-class="{'tileVerticalContainer rotate90': !isMobile, 'tileVerticalContainerMobile rotate90': isMobile}" 
+                             ng-repeat="tile in fnGetNumber(currentPlayer.LeftPlayer.ActiveTilesCount) track by $index" 
+                             ng-switch on="isMobile">
+		                    <img ng-switch-when="false" class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
+		                    <img ng-switch-when="true" class="tileVertical" src="~/Content/images/tiles/50px/face-down-50px.png" />
+	                    </div>
                     </div>
                 </div>
             <!--end of LeftPlayer-->
@@ -148,9 +163,11 @@
                 <div id="TheBoard" class="col-xs-6 col-md-6">
                     <div id="discardedTiles">
                         <div class="tileHorizontalContainer repeat-animation"
-                             ng-repeat="tile in boardTiles | filter: {Status : 4}: true | orderBy: 'OpenTileCounter'"
-                             ng-class="{top:topAnimation, left:leftAnimation, right:rightAnimation, bottom:bottomAnimation}">
-                            <img class="tileHorizontal" ng-src="{{tile.Image}}" />
+                            ng-repeat="tile in boardTiles | filter: {Status : 4}: true | orderBy: 'OpenTileCounter'"
+                            ng-class="{top:topAnimation, left:leftAnimation, right:rightAnimation, bottom:bottomAnimation, tileHorizontalContainer: !isMobile, tileHorizontalContainerMobile: isMobile}"
+                            ng-switch on="isMobile">
+                            <img ng-switch-when="false" class="tileHorizontal" src="{{tile.Image}}" />
+                            <img ng-switch-when="true" class="tileHorizontal" src="{{tile.ImageSmall}}" />
                         </div>
                     </div>
                 </div>
@@ -164,15 +181,21 @@
 
                     <!--active tile-->
                     <div class="col-xs-1 col-md-1">
-                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in fnGetNumber(currentPlayer.RightPlayer.ActiveTilesCount) track by $index">
-                            <img class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
+                        <div ng-class="{'tileVerticalContainer rotateMinus90': !isMobile, 'tileVerticalContainerMobile rotateMinus90': isMobile}" 
+                            ng-repeat="tile in fnGetNumber(currentPlayer.RightPlayer.ActiveTilesCount) track by $index" 
+                            ng-switch on="isMobile">
+		                    <img ng-switch-when="false" class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
+		                    <img ng-switch-when="true" class="tileVertical" src="~/Content/images/tiles/50px/face-down-50px.png" />
                         </div>
                     </div>
 
                     <!--Graveyard tile-->
                     <div class="col-xs-1 col-md-1">
-                        <div class="tileVerticalContainer rotateMinus90" ng-repeat="tile in currentPlayer.RightPlayer.GraveYardTiles| orderBy: ['OpenTileCounter']">
-                            <img class="tileVertical" ng-src="{{tile.Image}}" />
+                        <div ng-class="{'tileVerticalContainer rotateMinus90': !isMobile, 'tileVerticalContainerMobile rotateMinus90': isMobile}"  
+                            ng-repeat="tile in currentPlayer.RightPlayer.GraveYardTiles| orderBy: ['OpenTileCounter']"
+                            ng-switch on="isMobile">
+                            <img ng-switch-when="false" class="tileVertical" ng-src="{{tile.Image}}" />
+		                    <img ng-switch-when="true" class="tileVertical" ng-src="{{tile.ImageSmall}}" />
                         </div>
                     </div>
 

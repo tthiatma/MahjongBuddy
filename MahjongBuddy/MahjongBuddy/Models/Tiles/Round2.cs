@@ -14,7 +14,8 @@ namespace MahjongBuddy.Models.Tiles
             Value = TileValue.Two;
             Owner = "board";
             Name = "RoundTwo";
-            Image = "/Content/images/tiles/64px/pin/pin2.png";        
+            Image = "/Content/images/tiles/64px/pin/pin2.png";
+            ImageSmall = "/Content/images/tiles/50px/pin/pin2.png";
         }
     }
 }

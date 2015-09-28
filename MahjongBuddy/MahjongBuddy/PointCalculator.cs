@@ -17,14 +17,21 @@ namespace MahjongBuddy.Models
             if (wts != null)
             {
                 Action<Game, WinningTileSet, Player> Calculate;
-                Calculate = FindConcealedHand;
+                Calculate = FindHeavenlyHand;
+                Calculate += FindEarthlyHand;
+                Calculate += FindSelfDraw;
+                Calculate += FindConcealedHand;
                 Calculate += FindWind;
                 Calculate += FindMixPureHand;
                 Calculate += FindPureHand;
                 Calculate += FindAllPong;
                 Calculate += FindFlower;
                 Calculate += FindStraight;
-                Calculate += FindSelfDraw;
+                Calculate += FindDragonCombo;
+                Calculate += FindWindCombo;
+                Calculate += FindAllTerminal;        
+                Calculate += FindLastPick;
+                Calculate += FindAllKong;
 
                 Calculate(game, wts, player);
 

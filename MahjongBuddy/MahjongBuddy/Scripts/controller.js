@@ -1,5 +1,15 @@
-﻿app.controller("MahjongController", ['$scope', '$timeout', 'signalRHubProxy', 'mjService',
-    function ($scope, $timeout, signalRHubProxy, mjService) {
+﻿app.controller("MahjongController", ['$scope', '$timeout', 'signalRHubProxy', 'mjService', 'screenSize',
+    function ($scope, $timeout, signalRHubProxy, mjService, screenSize) {
+
+        //detect screensize to use different tile image size for mobile        
+        $scope.isMobile = screenSize.is('xs, sm');
+        screenSize.when('xs, sm,', function () {
+            $scope.isMobile = true;
+        });
+
+        screenSize.when('md, lg,', function () {
+            $scope.isMobile = false;
+        });
 
     //list of tiles that user clicked/selected
         $scope.selectedTiles = [];
@@ -19,6 +29,9 @@
         $scope.gameEndTimeout = null;
         $scope.tenSectimeout = null;
         $scope.hideAlert = true;
+        $scope.hideNameUsed = true;
+        $scope.playerName = "";
+
 
     //func to allow ng-repeat works with int
         $scope.fnGetNumber = function (num) {
@@ -58,18 +71,20 @@
         };
     //func that control drag and drop / sorting tile
         $scope.onDropComplete = function (index, obj, evt) {
+            if (index != null && obj != null && obj.ActiveTileIndex != null) {
 
-            var targetTile = fnFindTileByIndex($scope.currentPlayer, index);
-
-            targetTile.ActiveTileIndex = obj.ActiveTileIndex;
-            obj.ActiveTileIndex = index;
-
-            if ($scope.currentPlayer.IsTileAutoSort)
-            {
-                $scope.currentPlayer.IsTileAutoSort = false;
-                $scope.fnToggleSortTile();
+                var targetTile = fnFindTileByIndex($scope.currentPlayer, index);
+                if (targetTile != null && targetTile.ActiveTileIndex != null)
+                {
+                    targetTile.ActiveTileIndex = obj.ActiveTileIndex;
+                    obj.ActiveTileIndex = index;
+                }
+                if ($scope.currentPlayer.IsTileAutoSort) {
+                    $scope.currentPlayer.IsTileAutoSort = false;
+                    $scope.fnToggleSortTile();
+                }
+                $scope.selectedTiles = [];
             }
-            $scope.selectedTiles = [];
         };
         $scope.fnToggleSortTile = function () {
             clientPushHubProxy.invoke2('SetPlayerSortTile', 'mjbuddy', $scope.currentPlayer.IsTileAutoSort, function () { });
@@ -81,11 +96,14 @@
 ///**************************
         var fnFindTileByIndex = function (currentPlayer, tileIndex) {
             var ret = null;
-            $.each(currentPlayer.ActiveTiles, function (idx, val) {
-                if (val.ActiveTileIndex == tileIndex) {
-                    ret = val;
-                }
-            });
+
+            if (tileIndex != null && currentPlayer != null){
+                $.each(currentPlayer.ActiveTiles, function (idx, val) {
+                    if (val.ActiveTileIndex != null && val.ActiveTileIndex == tileIndex) {
+                        ret = val;
+                    }
+                });
+            }
             return ret;
         }
         var fnStartup = function (conId) {
@@ -108,7 +126,10 @@
             $scope.isMyturn = ($scope.currentUserId == dealer.PlayerTurn);
             if ($scope.isMyturn) {
                 $timeout(function () { $scope.canPickTile = $scope.currentPlayer.CanPickTile }, 5000);
+            } else {
+                $scope.canPickTile = false;
             }
+
             $scope.isRightPlayerTurn = ($scope.currentPlayer.RightPlayer.ConnectionId == dealer.PlayerTurn);
             $scope.isLeftPlayerTurn = ($scope.currentPlayer.LeftPlayer.ConnectionId == dealer.PlayerTurn);
             $scope.isTopPlayerTurn = ($scope.currentPlayer.TopPlayer.ConnectionId == dealer.PlayerTurn);
@@ -166,11 +187,26 @@
             $scope.topAnimation = $scope.isTopPlayerTurn;
             $scope.bottomAnimation = $scope.isMyturn;
 
-            if (tile != null) { $scope.boardTiles.push(tile); }
+            if (tile != null)
+            {
+                if ($scope.boardTiles.length == 0
+                    || $scope.boardTiles.length > 0 && $scope.boardTiles[$scope.boardTiles.length - 1].Id != tile.Id)
+                {
+                    $scope.boardTiles.push(tile);
+                }
+            }
         });
         clientPushHubProxy.on('removeBoardTiles', function () {
             $scope.boardTiles.pop();
         });
+
+        clientPushHubProxy.on('playerExists', function () {
+            $scope.hideNameUsed = false;
+            $timeout(function () {
+                $scope.hideNameUsed = true;
+            }, 4000);
+        });
+        
 
         clientPushHubProxy.on('alertUser', function (msg) {
             $scope.warningMessage = msg;

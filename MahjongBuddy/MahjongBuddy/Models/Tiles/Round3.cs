@@ -15,6 +15,7 @@ namespace MahjongBuddy.Models.Tiles
             Owner = "board";
             Name = "RoundThree";
             Image = "/Content/images/tiles/64px/pin/pin3.png";
+            ImageSmall = "/Content/images/tiles/50px/pin/pin3.png";
         }
     }
 }

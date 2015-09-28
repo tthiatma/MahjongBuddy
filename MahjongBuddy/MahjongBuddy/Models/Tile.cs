@@ -12,6 +12,7 @@ namespace MahjongBuddy.Models
         public TileValue Value { get; set; }
         public TileStatus Status { get; set; }         
         public string Image { get; set; }
+        public string ImageSmall { get; set; }
         public string Name { get; set; }
         public string Owner { get; set; }
         //this is the counter for tile on board graveyard

@@ -52,9 +52,9 @@ namespace MahjongBuddy.Models
                 _tiles.Add(new Stick9() {Name = i + "StickNine"});  //60
 
                 //28 - 62 - 96 - 130
-                _tiles.Add(new DragonGreen() {Name = i + "DragonGreen"});
-                _tiles.Add(new DragonRed() {Name = i + "DragonRed"});
-                _tiles.Add(new DragonWhite() {Name = i + "DragonWhite"});
+                _tiles.Add(new DragonGreen() {Name = i + "DragonGreen"});   //27/61/95/129
+                _tiles.Add(new DragonRed() {Name = i + "DragonRed"});       //28/62/96/130
+                _tiles.Add(new DragonWhite() {Name = i + "DragonWhite"});   //29/63/97/131
 
                 //31 - 65 - 99 - 133
                 _tiles.Add(new WindNorth() { Name = i + "WindNorth" });
