@@ -372,6 +372,7 @@ namespace MahjongBuddy
                 p4.ActiveTiles.Add(tiles[i]);
             }
         }
+        
         //all of this belong to test section
         //TODO : move this to test
         private void DistributeTilesForWin(Game game)

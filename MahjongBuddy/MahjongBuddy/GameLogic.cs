@@ -9,7 +9,7 @@ namespace MahjongBuddy
 {
     public class GameLogic
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(GameLogic));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(GameLogic));
 
         public Dictionary<CommandResult, string> CommandResultDictionary { get; set; }
 
@@ -46,6 +46,7 @@ namespace MahjongBuddy
 
         public CommandResult DoPong(Game game, IEnumerable<int> tiles, ActivePlayer player)
         {
+            _logger.Debug("DoPong Called by " + player.Name);
             if (player != null)
             {
                 var activePlayerTiles = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.UserActive);
@@ -57,8 +58,10 @@ namespace MahjongBuddy
                     {
                         var playerTilesPong = matchedTileTypeAndValue.Take(2).ToList();
                         playerTilesPong.Add(thrownTile);
+
                         CommandTileToPlayerGraveyard(game, playerTilesPong, player);
                         AddTilesToPlayerOpenTileSet(game, playerTilesPong, player.ConnectionId, TileSetType.Pong, playerTilesPong.First().Type);
+                        
                         game.HaltMove = true;
                         game.PlayerTurn = player.ConnectionId;
                         player.CanPickTile = false;
@@ -78,12 +81,14 @@ namespace MahjongBuddy
             }
             else
             {
+                _logger.Debug("Player is null when trying to do pong");
                 return CommandResult.InvalidPlayer;
             }
         }
 
         public CommandResult DoChow(Game game, IEnumerable<int> tiles, ActivePlayer player) 
         {
+            _logger.Debug("DoChow Called by " + player.Name);
             if (player != null)
             {
                 if (tiles == null || tiles.Count() < 2 || tiles.Count() > 2)
@@ -143,18 +148,16 @@ namespace MahjongBuddy
             }
             else 
             {
+                _logger.Debug("Player is null when trying to do chow");
                 return CommandResult.InvalidPlayer;
             }
         }
 
         public CommandResult DoPickNewTile(Game game, ActivePlayer player) 
         {
-            logger.Debug("init");
+            _logger.Debug("Pick New Tile Called by " + player.Name);
             if (player != null)
-            {
-                //to know how many tiles a player can have, we need to check how many sets/tiles that they have/revealed
-                //this section is to prevent player to have more tiles when they pick new tile.
-                
+            {                
                 //if there's any just picked tiles, set it to active
                 var justPickedTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked);
                 if (justPickedTile != null)
@@ -165,9 +168,14 @@ namespace MahjongBuddy
                     }
                 }
 
+                //to know how many tiles a player can have, we need to check how many sets/tiles that they have/revealed
+                //this section is to prevent player to have more tiles when they pick new tile.
+
                 var playerTileSetCount = player.TileSets.Count();
                 var playerActiveTilesCount = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.UserActive).Count();
                 bool canPickNewTile = false;
+
+                _logger.Debug(string.Format("player active tiles count is {0}, and the tileset count is {1}", playerTileSetCount, playerActiveTilesCount));
                 switch (playerTileSetCount)
                 {
                     case 0:
@@ -197,7 +205,7 @@ namespace MahjongBuddy
 
                 if (canPickNewTile)
                 {
-                    //we loop 8 times because there are total of 8 flowers
+                    //we loop 8 times because there are total of 8 flowers. Suppose to do while loop but too lazy to change
                     for (var i = 0; i < 8; i++)
                     {
                         var newTileForPlayer = game.Board.Tiles.Where(t => t.Owner == "board").FirstOrDefault();
@@ -206,6 +214,7 @@ namespace MahjongBuddy
                         {
                             if (newTileForPlayer.Type == TileType.Flower)
                             {
+                                _logger.Debug("pick new tile and got flower tile");
                                 List<Tile> ft = new List<Tile>();
                                 ft.Add(newTileForPlayer);
                                 if (!CommandTileToPlayerGraveyard(game, ft, player, replaceTile: false))
@@ -232,28 +241,29 @@ namespace MahjongBuddy
                     }
                     player.CanPickTile = false;
                     player.CanThrowTile = true;
-
+                    _logger.Debug("valid pick new tile command");
                     return CommandResult.ValidPick;
                 }
                 else
                 {
+                    _logger.Error("player trying to pick tile but somethign went wrong...");
                     return CommandResult.InvalidPickWentWrong;
-                }
-                
+                }                
             }
             else 
             {
+                _logger.Error("Trying to pick tile but player is null");
                 return CommandResult.InvalidPlayer;
             }
         }
 
         public CommandResult DoThrowTile(Game game, IEnumerable<int> tiles, ActivePlayer player) 
         {
-            logger.Debug("init");
+            _logger.Debug("Throw Tile Called by " + player.Name);
 
             if (player != null)
             {
-                if (tiles.Count() > 0 && tiles.Count() < 2)
+                if (tiles.Count() == 1)
                 {
                     var tileToThrow = game.Board.Tiles.Where(t => t.Id == tiles.First()).FirstOrDefault();
                     if (tileToThrow != null)
@@ -274,6 +284,7 @@ namespace MahjongBuddy
                         }
 
                         AssignPlayersTileIndex(game, player);
+
                         //check remaining tiles when throwing tile
                         var remainingTiles = game.Board.Tiles.Where(t => t.Owner == "board").Count();
                         if (remainingTiles > 0)
@@ -287,6 +298,7 @@ namespace MahjongBuddy
                     }
                     else
                     {
+                        _logger.Error("trying to find the tile to throw in the game but failed");
                         return CommandResult.InvalidThrow;                    
                     }
                 }
@@ -303,6 +315,7 @@ namespace MahjongBuddy
 
         public CommandResult DoKong(Game game, IEnumerable<int> tiles, ActivePlayer player) 
         {
+            _logger.Debug("DoKong Called by " + player.Name);
             if (player != null)
             {
                 //first checked player tileset that already ponged
@@ -310,6 +323,7 @@ namespace MahjongBuddy
                 if (player.TileSets.Count > 0)
                 {
                     var pongTileSets = player.TileSets.Where(t => t.TileSetType == TileSetType.Pong);
+
                     if (pongTileSets.Count() > 0 && player.ActiveTiles.Count() > 1)
                     {
                         foreach (var ps in pongTileSets)
@@ -341,14 +355,18 @@ namespace MahjongBuddy
 
                 //check if user just picked tile
                 Tile tileToKong = null;
+
                 var justpickedPlayerTile = game.Board.Tiles.Where(t => t.Owner == player.ConnectionId && t.Status == TileStatus.JustPicked);
 
-                if (justpickedPlayerTile != null && justpickedPlayerTile.Count() > 0)
+                _logger.Debug("justpickedPlayerTile count is " + justpickedPlayerTile.Count());
+                if (justpickedPlayerTile != null && justpickedPlayerTile.Count() == 1)
                 {
+                    _logger.Debug("kong from tile that's just picked");
                     tileToKong = justpickedPlayerTile.FirstOrDefault();
                 }
                 else
                 {
+                    _logger.Debug("kong from tile that was thrown by other player");
                     tileToKong = game.LastTile;
                 }
 
@@ -392,6 +410,8 @@ namespace MahjongBuddy
 
         public CommandResult DoWin(Game game, Player player)
         {
+            _logger.Debug("DoWin Called by " + player.Name);
+
             if (player != null)
             { 
                 var playerTiles = game.Board.Tiles
@@ -437,6 +457,7 @@ namespace MahjongBuddy
                         RecordWinning(game, player, weirdWinningSet);
                         return CommandResult.PlayerWin;
                     }
+                    //check for 7 pairs
                     else
                     {
                         bool isAllPair = CheckForAllPair(tilesToTestForwin);
@@ -489,6 +510,7 @@ namespace MahjongBuddy
         
         private void RecordWinning(Game game, Player player, WinningTileSet wts)
         {
+            _logger.Debug("RecordWinning is called");
             game.Count++;
             Record rec = new Record();
             rec.WinningTileSet = wts;
@@ -819,7 +841,7 @@ namespace MahjongBuddy
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                _logger.Error(ex);
                 return false;
             }            
         }
