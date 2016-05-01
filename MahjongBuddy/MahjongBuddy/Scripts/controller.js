@@ -36,10 +36,12 @@
     //func to allow ng-repeat works with int
         $scope.fnGetNumber = function (num) {
             return new Array(num);
-        }       
+        }
         $scope.fnJoinGame = function () {
-            var un = $('#usernameTB').val();
-            clientPushHubProxy.invoke2('Join', un, 'mjbuddy', function (){});
+            clientPushHubProxy.invoke1('Join', 'mjbuddy', function (){});
+        };
+        $scope.fnReconnectToGame = function () {
+            clientPushHubProxy.invoke1('Reconnect', 'mjbuddy', function () { });
         };
         $scope.fnResetGame = function () {
             clientPushHubProxy.invoke('ResetGame', function () {});
@@ -164,6 +166,10 @@
         clientPushHubProxy.on('updatePlayerCount', function (playerCount) {
             $scope.totalPlayers = playerCount;
         });
+        clientPushHubProxy.on('isPlayerPlaying', function (isPlaying) {
+            $scope.isPlaying = isPlaying;
+        });
+
 
     ///-------------------------
     ///In Game

@@ -10,17 +10,44 @@ using System.Collections;
 using log4net;
 namespace MahjongBuddy
 {
+    [Authorize]
     public class GameHub : Hub
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(GameHub));
         private Dealer _dealer;
-        private GameLogic _gameLogic;
+        private GameLogic _gameLogic;        
 
         public override Task OnConnected()
         {
             var playerCount = GameState.Instance.Players.Count();
             Clients.All.updatePlayerCount(playerCount);
             return base.OnConnected();
+        }
+
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            string userName = Context.User.Identity.Name;
+            string connectionId = Context.ConnectionId;
+
+            var player = GameState.Instance.GetPlayer(userName);
+            if (player != null)
+            {
+                lock(player.ConnectionIds)
+                {
+                    player.ConnectionIds.RemoveWhere(cid => cid.Equals(connectionId));
+
+                    //if (!player.ConnectionIds.Any())
+                    //{
+                    //    ActivePlayer removedPlayer;
+                    //    GameState.Instance.Players.TryRemove(userName, out removedPlayer);
+
+                    //    //TODO: create this in client side
+                    //    Clients.Others.userDisconnected(userName);
+                    //}
+                }
+            }
+
+            return base.OnDisconnected(stopCalled);
         }
 
         public GameLogic GameLogic {
@@ -46,20 +73,51 @@ namespace MahjongBuddy
                 Clients.All.updatePlayerCount(playerCount);
             }
         }
-        
-        public async void Join(string userName, string groupName)
+
+        public void ReconnectToGame(string groupName)
         {
+            _logger.Debug("ReconnectToGame Called to group " + groupName);
+            string userName = Context.User.Identity.Name;
+            var player = GameState.Instance.GetPlayer(userName);
+            var game = GameState.Instance.FindGameByGroupName(groupName);
+            var pepInGroup = GameState.Instance.Players.Where(p => p.Value.Group == player.Group).Count();
+            if (game != null)
+            {
+                if (pepInGroup == 4)
+                {
+                    Clients.Group(groupName).gameStarted();
+                }
+                else
+                {
+                    //TODO: show all connected players
+                }
+            }
+        }
+
+        public async void Join(string groupName)
+        {
+            string userName = Context.User.Identity.Name;
+            string connectionId = Context.ConnectionId;
+
             _logger.Debug(string.Format("Player joined. Name: {0} to Group: {1}", userName, groupName));
 
             var player = GameState.Instance.GetPlayer(userName);
             if (player != null)
             {
-                Clients.Caller.playerExists();
+                lock(player.ConnectionIds)
+                {
+                    player.ConnectionIds.Add(connectionId);
+                }
+                //TODO: need to retrieve user game status and put them back in the game
             }
             else 
             {
                 player = GameState.Instance.CreatePlayer(userName, groupName);
                 player.ConnectionId = Context.ConnectionId;
+                lock(player.ConnectionIds)
+                {
+                    player.ConnectionIds.Add(connectionId);
+                }
                 Clients.Caller.name = player.Name;
                 Clients.Caller.hash = player.Hash;
                 Clients.Caller.id = player.Id;
@@ -67,6 +125,7 @@ namespace MahjongBuddy
                 await Groups.Add(Context.ConnectionId, groupName);
                 var playerCount = GameState.Instance.Players.Count();
                 Clients.All.updatePlayerCount(playerCount);
+                Clients.All.isPlayerPlaying(player.IsPlaying);
                 Clients.OthersInGroup(groupName).notifyUserInGroup(userName + " joined.");
 
                 StartGame(player);            

@@ -18,8 +18,11 @@ namespace MahjongBuddy.Models
             GraveYardTiles = new List<Tile>();
             FlowerTiles = new List<Tile>();
             IsTileAutoSort = true;
+            ConnectionIds = new HashSet<string>();
         }
 
+        public AppUser User { get; set; }
+        public HashSet<string> ConnectionIds { get; set; }
         public string ConnectionId { get; set; }
         public string Id { get; set; }
         public string Name { get; set; }

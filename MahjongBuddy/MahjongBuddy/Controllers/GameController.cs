@@ -14,5 +14,10 @@ namespace MahjongBuddy.Controllers
         {
             return View();
         }
+
+        public ActionResult Canvas()
+        {
+            return View();
+        }
     }
 }

@@ -1,278 +1,287 @@
 ﻿@{
-    ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section head
 {
-    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
    @*<script src="/signalr/hubs"></script>*@
 }
 <div ng-controller="MahjongController">
-    <div id="WaitingRoom" class="container" ng-hide="gameIsReady">
-        <div class="row">       
-            <div class="col-md-4"></div>     
-            <div class="col-md-4">
-                <span><label ng-cloak>mjbuddy({{totalPlayers}})</label></span>
-                <span><input type="text" id="usernameTB" ng-model="playerName" ng-disabled="isDisonnected || totalPlayers >= 4"  placeholder='Enter your name to join' /></span>
-                <span><input type="button" id="join" ng-cloak value="join" ng-disabled="isDisonnected || totalPlayers >= 4 || playerName ==''" ng-click="fnJoinGame()" class="btn btn-primary"></span>
-                <span ng-show="totalPlayers > 4" ng-cloak><input class="btn btn-danger" type="button" id="restartGame" value="nuke" ng-click="fnResetGame()"></span>
-                <br />                
-                <div class="alert alert-danger animate-hide" ng-hide="hideNameUsed" ng-cloak>
-                    <strong>name already been used, pick different one to join</strong>
-                </div>
-            </div>
-            <div class="col-md-4"></div>
-        </div>
-        <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8"><label id="gameStatus"></label></div>
-            <div class="col-md-2"></div>
-        </div>
-    </div><!--end of Waiting Room-->
+	<div id="WaitingRoom" class="container" ng-hide="gameIsReady">
+		<div class="row">       
+			<div class="col-md-4"></div>     
+			<div class="col-md-4">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Room Name</th>
+							<th>Players#</th>
+							<th>Join/Reconnect</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>mjbuddy</td>
+							<td>{{totalPlayers}}</td>
+							<td>
+								<input type="button" id="join" ng-cloak value="Join" ng-show="!isPlaying" ng-disabled="isDisonnected || totalPlayers >= 4" ng-click="fnJoinGame()" class="btn btn-primary">
+								<input type="button" id="reconnect" ng-cloak value="Reconnect" ng-show="isPlaying" ng-click="fnReconnectToGame()" class="btn btn-primary">
+								<span ng-show="totalPlayers > 4" ng-cloak><input class="btn btn-danger" type="button" id="restartGame" value="nuke" ng-click="fnResetGame()"></span>
+							</td>
+							<td><label id="gameStatus"></label></td>    
 
-    <div id="GameRoom" class="container" ng-show="gameIsReady" ng-cloak>
-        <!-- Show Winner Modal -->
-        <div id="showWinnerModal" class="modal modal-wide fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
-            <div class="modal-dialog">
-                <!-- Modal content-->
-                <div class="modal-content">
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-md-4"></div>
+		</div>
+	</div><!--end of Waiting Room-->
 
-                    <div class="modal-header">
-                        <h4 class="modal-title">Winner: {{record.Winner.Name}}</h4>
-                    </div>
+	<div id="GameRoom" class="container" ng-show="gameIsReady" ng-cloak>
+		<!-- Show Winner Modal -->
+		<div id="showWinnerModal" class="modal modal-wide fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
 
-                    <div class="modal-body">
-                        <!--winning tiles-->
-                        <div class="winningTiles HorizontalContainer">
-                            <span class="tileHorizontalContainer" ng-repeat="tile in record.WinningTileSet.Eye.Tiles">
-                                <img class="tileHorizontal" ng-src="{{tile.Image}}" />
-                            </span>
+					<div class="modal-header">
+						<h4 class="modal-title">Winner: {{record.Winner.Name}}</h4>
+					</div>
 
-                            <span ng-repeat="set in record.WinningTileSet.Sets">
-                                <span class="tileHorizontalContainer" ng-repeat="tile in set.Tiles">
-                                    <img class="tileHorizontal" ng-src="{{tile.Image}}" />
-                                </span>
-                            </span>
-                        </div>
-                        <!--winning tiles flower-->
-                        <div class="winningTiles">
-                            <span class="tileHorizontalContainer" ng-repeat="tile in record.WinningTileSet.Flowers">
-                                <img class="tileHorizontal" ng-src="{{tile.Image}}" />
-                            </span>
-                        </div>
+					<div class="modal-body">
+						<!--winning tiles-->
+						<div class="winningTiles HorizontalContainer">
+							<span class="tileHorizontalContainer" ng-repeat="tile in record.WinningTileSet.Eye.Tiles">
+								<img class="tileHorizontal" ng-src="{{tile.Image}}" />
+							</span>
 
-                            <div>
-                                <span class="" ng-repeat="hand in record.WinningTileSet.Hands">
-                                    {{hand.HandName}} - {{hand.Point}}
-                                </span>
-                            </div>
-                            <div>
-                                Total: <strong>{{record.WinningTileSet.TotalPoints}}</strong> pts (win limit: <strong>10</strong>pts)
-                            </div>
-                        </div>
+							<span ng-repeat="set in record.WinningTileSet.Sets">
+								<span class="tileHorizontalContainer" ng-repeat="tile in set.Tiles">
+									<img class="tileHorizontal" ng-src="{{tile.Image}}" />
+								</span>
+							</span>
+						</div>
+						<!--winning tiles flower-->
+						<div class="winningTiles">
+							<span class="tileHorizontalContainer" ng-repeat="tile in record.WinningTileSet.Flowers">
+								<img class="tileHorizontal" ng-src="{{tile.Image}}" />
+							</span>
+						</div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" ng-click="fnStartNextGame()">Start Next Game</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- end of Show Winner Modal -->
+							<div>
+								<span class="" ng-repeat="hand in record.WinningTileSet.Hands">
+									{{hand.HandName}} - {{hand.Point}}
+								</span>
+							</div>
+							<div>
+								Total: <strong>{{record.WinningTileSet.TotalPoints}}</strong> pts (win limit: <strong>10</strong>pts)
+							</div>
+						</div>
 
-        <!-- Show No Winner Modal -->
-        <div id="showNoWinnerModal" class="modal modal-wide fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
-            <div class="modal-dialog">
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header"><h4 class="modal-title">Nobody win..</h4></div>
-                    <div class="modal-body"> Welp..that was a waste of time...let's do next game!</div>
-                    <div class="modal-footer"><button type="button" class="btn btn-default" ng-click="fnStartNextGame()">Start Next Game</button></div>
-                </div>
-            </div>
-        </div>
-        <!-- end of Show No Winner Modal -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" ng-click="fnStartNextGame()">Start Next Game</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end of Show Winner Modal -->
 
-    <!--start for Top Player-->
-        <div id="TopPlayer" class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8" style="text-align: center">
-                <div ng-class="{'activePlayer' : isTopPlayerTurn}" class="row">
-                    {{currentPlayer.TopPlayer.Name}} : {{currentPlayer.TopPlayer.CurrentPoint}} pts
-                </div>
+		<!-- Show No Winner Modal -->
+		<div id="showNoWinnerModal" class="modal modal-wide fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header"><h4 class="modal-title">Nobody win..</h4></div>
+					<div class="modal-body"> Welp..that was a waste of time...let's do next game!</div>
+					<div class="modal-footer"><button type="button" class="btn btn-default" ng-click="fnStartNextGame()">Start Next Game</button></div>
+				</div>
+			</div>
+		</div>
+		<!-- end of Show No Winner Modal -->
 
-                <!--Graveyard-->
-                <div class="row HorizontalContainer">
-                    <span ng-class="{tileHorizontalContainer: !isMobile, tileHorizontalContainerMobile: isMobile}"
-                        ng-repeat="tile in currentPlayer.TopPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']"
-                        ng-switch on="isMobile">
-                        <img ng-switch-when="false" class="tileHorizontal rotate180" ng-src="{{tile.Image}}" />
-                        <img ng-switch-when="true" class="tileHorizontal rotate180" ng-src="{{tile.ImageSmall}}" />
-                    </span>                
-                </div>
-                <div style="clear:both"></div>
-                <div class="row HorizontalContainer">
-                    <span ng-class="{tileHorizontalContainer: !isMobile, tileHorizontalContainerMobile: isMobile}" 
-                          ng-repeat="tile in fnGetNumber(currentPlayer.TopPlayer.ActiveTilesCount) track by $index" 
-                          ng-switch on="isMobile">
-                            <img ng-switch-when="false" class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
-                            <img ng-switch-when="true" class="tileHorizontal" src="~/Content/images/tiles/50px/face-down-50px.png" />
-                    </span>
-                </div>
-            </div>
-            <div class="col-md-2"></div>
-        </div>
-    <!--end of Top Player-->
+	<!--start for Top Player-->
+		<div id="TopPlayer" class="row">
+			<div class="col-md-2"></div>
+			<div class="col-md-8" style="text-align: center">
+				<div ng-class="{'activePlayer' : isTopPlayerTurn}" class="row">
+					{{currentPlayer.TopPlayer.Name}} : {{currentPlayer.TopPlayer.CurrentPoint}} pts
+				</div>
 
-        <div id="MidSection" class="row">
+				<!--Graveyard-->
+				<div class="row HorizontalContainer">
+					<span ng-class="{tileHorizontalContainer: !isMobile, tileHorizontalContainerMobile: isMobile}"
+						ng-repeat="tile in currentPlayer.TopPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']"
+						ng-switch on="isMobile">
+						<img ng-switch-when="false" class="tileHorizontal rotate180" ng-src="{{tile.Image}}" />
+						<img ng-switch-when="true" class="tileHorizontal rotate180" ng-src="{{tile.ImageSmall}}" />
+					</span>                
+				</div>
+				<div style="clear:both"></div>
+				<div class="row HorizontalContainer">
+					<span ng-class="{tileHorizontalContainer: !isMobile, tileHorizontalContainerMobile: isMobile}" 
+						  ng-repeat="tile in fnGetNumber(currentPlayer.TopPlayer.ActiveTilesCount) track by $index" 
+						  ng-switch on="isMobile">
+							<img ng-switch-when="false" class="tileHorizontal" src="~/Content/images/tiles/64px/face-down-64px.png" />
+							<img ng-switch-when="true" class="tileHorizontal" src="~/Content/images/tiles/50px/face-down-50px.png" />
+					</span>
+				</div>
+			</div>
+			<div class="col-md-2"></div>
+		</div>
+	<!--end of Top Player-->
 
-            <!--start for Left Player-->
-                <div id="LeftPlayer">
+		<div id="MidSection" class="row">
 
-                    <div class="col-xs-1 col-md-1">
-                        <span class="rotate90container">
-                            <span ng-class="{'activePlayer' : isLeftPlayerTurn}" class="rotate90">{{currentPlayer.LeftPlayer.Name}} : {{currentPlayer.LeftPlayer.CurrentPoint}} pts</span>
-                        </span> 
-                    </div>
+			<!--start for Left Player-->
+				<div id="LeftPlayer">
 
-                    <!--Graveyard Tile-->
-                    <div class="col-xs-1 col-md-1">
-                        <div ng-class="{'tileVerticalContainer rotate90': !isMobile, 'tileVerticalContainerMobile rotate90': isMobile}" 
-                             ng-repeat="tile in currentPlayer.LeftPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']"
-                             ng-switch on="isMobile">
-                            <img ng-switch-when="false" class="tileVertical" ng-src="{{tile.Image}}" />
-		                    <img ng-switch-when="true" class="tileVertical" ng-src="{{tile.ImageSmall}}" />
-                        </div>
-                    </div>
+					<div class="col-xs-1 col-md-1">
+						<span class="rotate90container">
+							<span ng-class="{'activePlayer' : isLeftPlayerTurn}" class="rotate90">{{currentPlayer.LeftPlayer.Name}} : {{currentPlayer.LeftPlayer.CurrentPoint}} pts</span>
+						</span> 
+					</div>
 
-                    <!--active tile-->
-                    <div class="col-xs-1 col-md-1">
-	                    <div ng-class="{'tileVerticalContainer rotate90': !isMobile, 'tileVerticalContainerMobile rotate90': isMobile}" 
-                             ng-repeat="tile in fnGetNumber(currentPlayer.LeftPlayer.ActiveTilesCount) track by $index" 
-                             ng-switch on="isMobile">
-		                    <img ng-switch-when="false" class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
-		                    <img ng-switch-when="true" class="tileVertical" src="~/Content/images/tiles/50px/face-down-50px.png" />
-	                    </div>
-                    </div>
-                </div>
-            <!--end of LeftPlayer-->
+					<!--Graveyard Tile-->
+					<div class="col-xs-1 col-md-1">
+						<div ng-class="{'tileVerticalContainer rotate90': !isMobile, 'tileVerticalContainerMobile rotate90': isMobile}" 
+							 ng-repeat="tile in currentPlayer.LeftPlayer.GraveYardTiles | orderBy: ['OpenTileCounter']"
+							 ng-switch on="isMobile">
+							<img ng-switch-when="false" class="tileVertical" ng-src="{{tile.Image}}" />
+							<img ng-switch-when="true" class="tileVertical" ng-src="{{tile.ImageSmall}}" />
+						</div>
+					</div>
 
-            <!--*********************************************************************************************************************************************-->
+					<!--active tile-->
+					<div class="col-xs-1 col-md-1">
+						<div ng-class="{'tileVerticalContainer rotate90': !isMobile, 'tileVerticalContainerMobile rotate90': isMobile}" 
+							 ng-repeat="tile in fnGetNumber(currentPlayer.LeftPlayer.ActiveTilesCount) track by $index" 
+							 ng-switch on="isMobile">
+							<img ng-switch-when="false" class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
+							<img ng-switch-when="true" class="tileVertical" src="~/Content/images/tiles/50px/face-down-50px.png" />
+						</div>
+					</div>
+				</div>
+			<!--end of LeftPlayer-->
 
-            <!--start for Board-->
-                <div id="TheBoard" class="col-xs-6 col-md-6">
-                    <div id="discardedTiles">
-                        <div class="tileHorizontalContainer repeat-animation"
-                            ng-repeat="tile in boardTiles | filter: {Status : 4}: true | orderBy: 'OpenTileCounter'"
-                            ng-class="{top:topAnimation, left:leftAnimation, right:rightAnimation, bottom:bottomAnimation, tileHorizontalContainer: !isMobile, tileHorizontalContainerMobile: isMobile}"
-                            ng-switch on="isMobile">
-                            <img ng-switch-when="false" class="tileHorizontal" src="{{tile.Image}}" />
-                            <img ng-switch-when="true" class="tileHorizontal" src="{{tile.ImageSmall}}" />
-                        </div>
-                    </div>
-                </div>
-            <!--end of Board-->
+			<!--*********************************************************************************************************************************************-->
 
-
-            <!--*********************************************************************************************************************************************-->
-
-            <!--start for Right Player-->
-                <div id="RightPlayer">
-
-                    <!--active tile-->
-                    <div class="col-xs-1 col-md-1">
-                        <div ng-class="{'tileVerticalContainer rotateMinus90': !isMobile, 'tileVerticalContainerMobile rotateMinus90': isMobile}" 
-                            ng-repeat="tile in fnGetNumber(currentPlayer.RightPlayer.ActiveTilesCount) track by $index" 
-                            ng-switch on="isMobile">
-		                    <img ng-switch-when="false" class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
-		                    <img ng-switch-when="true" class="tileVertical" src="~/Content/images/tiles/50px/face-down-50px.png" />
-                        </div>
-                    </div>
-
-                    <!--Graveyard tile-->
-                    <div class="col-xs-1 col-md-1">
-                        <div ng-class="{'tileVerticalContainer rotateMinus90': !isMobile, 'tileVerticalContainerMobile rotateMinus90': isMobile}"  
-                            ng-repeat="tile in currentPlayer.RightPlayer.GraveYardTiles| orderBy: ['OpenTileCounter']"
-                            ng-switch on="isMobile">
-                            <img ng-switch-when="false" class="tileVertical" ng-src="{{tile.Image}}" />
-		                    <img ng-switch-when="true" class="tileVertical" ng-src="{{tile.ImageSmall}}" />
-                        </div>
-                    </div>
-
-                    <div class="col-xs-1 col-md-1"> 
-                        <span class="rotate90container">
-                            <span ng-class="{'activePlayer' : isRightPlayerTurn}" class="rotateMinus90">{{currentPlayer.RightPlayer.Name}} : {{currentPlayer.RightPlayer.CurrentPoint}} pts </span>
-                        </span>                     
-                    </div>
-                </div>
-            <!--end of Right Player-->
-        </div>
+			<!--start for Board-->
+				<div id="TheBoard" class="col-xs-6 col-md-6">
+					<div id="discardedTiles">
+						<div class="tileHorizontalContainer repeat-animation"
+							ng-repeat="tile in boardTiles | filter: {Status : 4}: true | orderBy: 'OpenTileCounter'"
+							ng-class="{top:topAnimation, left:leftAnimation, right:rightAnimation, bottom:bottomAnimation, tileHorizontalContainer: !isMobile, tileHorizontalContainerMobile: isMobile}"
+							ng-switch on="isMobile">
+							<img ng-switch-when="false" class="tileHorizontal" src="{{tile.Image}}" />
+							<img ng-switch-when="true" class="tileHorizontal" src="{{tile.ImageSmall}}" />
+						</div>
+					</div>
+				</div>
+			<!--end of Board-->
 
 
-    <!--start for Main Player-->
-        <div class="col-md-2"></div>
+			<!--*********************************************************************************************************************************************-->
 
-        <div id="BottomPlayer" class="col-md-8" style="text-align: center">
-            <div ng-hide="hideGameEndCountdown">Game ends in {{gameEndCountdown}}</div>
-            <div class="alert alert-danger animate-hide" ng-hide="hideAlert">
-                <strong>{{warningMessage}}</strong> 
-            </div>
+			<!--start for Right Player-->
+				<div id="RightPlayer">
 
-            <div id ="gameInfo">
-                <label id="tilesLeft">Tiles Left: {{dealer.TilesLeft}}</label><br />                
-                <label id="playerWind">Game Wind:{{currentGameWind}} - My wind:{{currentPlayerWind}}</label>
-            
-            </div>
+					<!--active tile-->
+					<div class="col-xs-1 col-md-1">
+						<div ng-class="{'tileVerticalContainer rotateMinus90': !isMobile, 'tileVerticalContainerMobile rotateMinus90': isMobile}" 
+							ng-repeat="tile in fnGetNumber(currentPlayer.RightPlayer.ActiveTilesCount) track by $index" 
+							ng-switch on="isMobile">
+							<img ng-switch-when="false" class="tileVertical" src="~/Content/images/tiles/64px/face-down-64px.png" />
+							<img ng-switch-when="true" class="tileVertical" src="~/Content/images/tiles/50px/face-down-50px.png" />
+						</div>
+					</div>
 
-            <div id="playerCommand">
-                @*<input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn btn-primary" ng-click="fnPlayerMove('flower', 0)">*@
-                @*<input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn btn-primary" ng-click="fnPlayerMove('noflower' , 0)">*@
-                <input toggle-checkbox ng-model="currentPlayer.IsTileAutoSort" ng-change="fnToggleSortTile()" data-on="Sort" data-off="Manual" type="checkbox">
-                <input type="button" ng-disabled="dealer.HaltMove && !isMyturn" id="win" value="win" class="btn btn-primary" ng-click="fnPlayerMove('win', selectedTiles)">
-                <input type="button" ng-disabled="dealer.HaltMove && !isMyturn" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', selectedTiles)">                
-                <input type="button" ng-disabled="dealer.HaltMove" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', selectedTiles)">
-                <input type="button" ng-disabled="!isMyturn || dealer.HaltMove" id="chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', selectedTiles)">
-                <input type="button" ng-disabled="dealer.IsNoWinner || !isMyturn || currentPlayer.CanPickTile" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTiles)">
-                <input type="button" ng-disabled="dealer.IsNoWinner || !canPickTile || dealer.HaltMove || !currentPlayer.CanPickTile || !isMyturn" id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', selectedTiles)">
-                <input type="button" ng-hide="dealer.TilesLeft != 1 || !isMyturn || dealer.HaltMove" id="giveup" value="giveup" class="btn btn-primary" ng-click="fnPlayerMove('giveup', selectedTiles)">               
-            </div>
+					<!--Graveyard tile-->
+					<div class="col-xs-1 col-md-1">
+						<div ng-class="{'tileVerticalContainer rotateMinus90': !isMobile, 'tileVerticalContainerMobile rotateMinus90': isMobile}"  
+							ng-repeat="tile in currentPlayer.RightPlayer.GraveYardTiles| orderBy: ['OpenTileCounter']"
+							ng-switch on="isMobile">
+							<img ng-switch-when="false" class="tileVertical" ng-src="{{tile.Image}}" />
+							<img ng-switch-when="true" class="tileVertical" ng-src="{{tile.ImageSmall}}" />
+						</div>
+					</div>
 
-            <div id="activeTiles">
-                <!--active tiles-->
-                <span ng-drop="true" ng-drop-success="onDropComplete($index, $data,$event)" 
-                    ng-click="fnSelectTile(tile.Id, $event)" 
-                    ng-class="{'activeTile' : fnIsTileSelected(tile.Id)}" 
-                    class="tileHorizontalContainer" 
-                    ng-repeat="tile in currentPlayer.ActiveTiles | filter: {Owner : currentUserId, Status: 2 }: true | orderBy: ['ActiveTileIndex']">
-                    <img ng-drag="true" ng-drag-data="tile" class="tileHorizontal" ng-src="{{tile.Image}}" />
-                </span>
+					<div class="col-xs-1 col-md-1"> 
+						<span class="rotate90container">
+							<span ng-class="{'activePlayer' : isRightPlayerTurn}" class="rotateMinus90">{{currentPlayer.RightPlayer.Name}} : {{currentPlayer.RightPlayer.CurrentPoint}} pts </span>
+						</span>                     
+					</div>
+				</div>
+			<!--end of Right Player-->
+		</div>
 
-                <!--tile that's just picked-->
-                <span class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.ActiveTiles | filter: {Owner : currentUserId, Status: 1}: true">
-                    <img ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileSelected(tile.Id)}" class="tileHorizontal" ng-src="{{tile.Image}}" />
-                </span>
-            </div>
 
-            <div style="clear:both"></div>
+	<!--start for Main Player-->
+		<div class="col-md-2"></div>
 
-            <!--Graveyard Tile-->
-            <div id="myGraveyardTiles" class="HorizontalContainer">
-                <span class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.GraveYardTiles | filter: {Owner : currentUserId, Status: 3}: true | orderBy: ['OpenTileCounter']">
-                    <img class="tileHorizontal" ng-src="{{tile.Image}}" />
-                </span>
-            </div>
+		<div id="BottomPlayer" class="col-md-8" style="text-align: center">
+			<div ng-hide="hideGameEndCountdown">Game ends in {{gameEndCountdown}}</div>
+			<div class="alert alert-danger animate-hide" ng-hide="hideAlert">
+				<strong>{{warningMessage}}</strong> 
+			</div>
 
-            <div style="clear:both"></div>
+			<div id ="gameInfo">
+				<label id="tilesLeft">Tiles Left: {{dealer.TilesLeft}}</label><br />                
+				<label id="playerWind">Game Wind:{{currentGameWind}} - My wind:{{currentPlayerWind}}</label>
+			
+			</div>
 
-            <div>
-                <label ng-class="{'activePlayer' : isMyturn}" class="currentTurn">{{currentPlayer.Name}} | Points:{{currentPlayer.CurrentPoint}} pts </label>   
-            </div>
-    <!--end of Main Player-->
-    
-    </div>
-        
-        <div class="col-md-2"></div>
+			<div id="playerCommand">
+				@*<input type="button" ng-disabled="!isMyturn" id="flower" value="flower" class="btn btn-primary" ng-click="fnPlayerMove('flower', 0)">*@
+				@*<input type="button" ng-disabled="!isMyturn" id="noFlower" value="noFlower" class="btn btn-primary" ng-click="fnPlayerMove('noflower' , 0)">*@
+				<input toggle-checkbox ng-model="currentPlayer.IsTileAutoSort" ng-change="fnToggleSortTile()" data-on="Sort" data-off="Manual" type="checkbox">
+				<input type="button" ng-disabled="dealer.HaltMove && !isMyturn" id="win" value="win" class="btn btn-primary" ng-click="fnPlayerMove('win', selectedTiles)">
+				<input type="button" ng-disabled="dealer.HaltMove && !isMyturn" id="kong" value="kong" class="btn btn-primary" ng-click="fnPlayerMove('kong', selectedTiles)">                
+				<input type="button" ng-disabled="dealer.HaltMove" id="pong" value="pong" class="btn btn-primary" ng-click="fnPlayerMove('pong', selectedTiles)">
+				<input type="button" ng-disabled="!isMyturn || dealer.HaltMove" id="chow" value="chow" class="btn btn-primary" ng-click="fnPlayerMove('chow', selectedTiles)">
+				<input type="button" ng-disabled="dealer.IsNoWinner || !isMyturn || currentPlayer.CanPickTile" id="throw" value="throw" class="btn btn-primary" ng-click="fnPlayerMove('throw', selectedTiles)">
+				<input type="button" ng-disabled="dealer.IsNoWinner || !canPickTile || dealer.HaltMove || !currentPlayer.CanPickTile || !isMyturn" id="pick" value="pick" class="btn btn-primary" ng-click="fnPlayerMove('pick', selectedTiles)">
+				<input type="button" ng-hide="dealer.TilesLeft != 1 || !isMyturn || dealer.HaltMove" id="giveup" value="giveup" class="btn btn-primary" ng-click="fnPlayerMove('giveup', selectedTiles)">               
+			</div>
 
-    </div>
-    <!--end of GameRoom-->
+			<div id="activeTiles">
+				<!--active tiles-->
+				<span ng-drop="true" ng-drop-success="onDropComplete($index, $data,$event)" 
+					ng-click="fnSelectTile(tile.Id, $event)" 
+					ng-class="{'activeTile' : fnIsTileSelected(tile.Id)}" 
+					class="tileHorizontalContainer" 
+					ng-repeat="tile in currentPlayer.ActiveTiles | filter: {Owner : currentUserId, Status: 2 }: true | orderBy: ['ActiveTileIndex']">
+					<img ng-drag="true" ng-drag-data="tile" class="tileHorizontal" ng-src="{{tile.Image}}" />
+				</span>
+
+				<!--tile that's just picked-->
+				<span class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.ActiveTiles | filter: {Owner : currentUserId, Status: 1}: true">
+					<img ng-click="fnSelectTile(tile.Id, $event)" ng-class="{'activeTile' : fnIsTileSelected(tile.Id)}" class="tileHorizontal" ng-src="{{tile.Image}}" />
+				</span>
+			</div>
+
+			<div style="clear:both"></div>
+
+			<!--Graveyard Tile-->
+			<div id="myGraveyardTiles" class="HorizontalContainer">
+				<span class="tileHorizontalContainer" ng-repeat="tile in currentPlayer.GraveYardTiles | filter: {Owner : currentUserId, Status: 3}: true | orderBy: ['OpenTileCounter']">
+					<img class="tileHorizontal" ng-src="{{tile.Image}}" />
+				</span>
+			</div>
+
+			<div style="clear:both"></div>
+
+			<div>
+				<label ng-class="{'activePlayer' : isMyturn}" class="currentTurn">{{currentPlayer.Name}} | Points:{{currentPlayer.CurrentPoint}} pts </label>   
+			</div>
+	<!--end of Main Player-->
+	
+	</div>
+		
+		<div class="col-md-2"></div>
+
+	</div>
+	<!--end of GameRoom-->
 </div>
